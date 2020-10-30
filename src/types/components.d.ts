@@ -55,6 +55,43 @@ export class FSXABaseComponent<Props> extends Component<Props> {
    * Make sure that you always provide some kind of fallback since this route change will only be available when javascript is enabled
    */
   handleRouteChangeRequest: (params: RequestRouteChangeParams) => void;
+
+  /**
+   * This method will return the mapped url for the given input parameters
+   *
+   * If no matching url could be found *null* is returned.
+   */
+  getUrlByReferenceIdAndType: (
+    referenceId: string,
+    referenceType: string,
+  ) => string | null;
+
+  /**
+   * FirstSpirit will create special formats for link templates in the richtext-text
+   *
+   * You can pass in the richtext received from the api to create working application links
+   *
+   * An optional handler can be provided to override or extend the link template generation
+   */
+  createLinksInRichText: (
+    /**
+     * the richtext received through the api
+     */
+    text: string,
+    /**
+     * optional handler to override / extend link template generation
+     */
+    handleLinkData?: (
+      type: string,
+      data: Record<string, string>,
+    ) => {
+      /**
+       * set this flag to true if this is an internal link
+       */
+      isInternalLink: boolean;
+      linkAttributes: Record<string, any>;
+    } | null,
+  ) => string;
   /**
    * Access your stored data in the vuex store
    * @param key key of the stored item

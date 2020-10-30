@@ -110,6 +110,7 @@ const GETTER_LOCALE = "locale";
 const GETTER_ITEM = "item";
 const GETTER_PAGE_BY_URL = "getPageIdByUrl";
 const GETTER_MODE = "mode";
+const GETTER_REFERENCE_URL = "getReferenceUrl";
 
 export const FSXAGetters = {
   [Getters.appState]: `${prefix}/${Getters.appState}`,
@@ -121,6 +122,7 @@ export const FSXAGetters = {
   [GETTER_ITEM]: `${prefix}/${GETTER_ITEM}`,
   [GETTER_PAGE_BY_URL]: `${prefix}/${GETTER_PAGE_BY_URL}`,
   [GETTER_MODE]: `${prefix}/${GETTER_MODE}`,
+  [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
 };
 
 const isMatchingRoute = (
@@ -242,7 +244,6 @@ export function getFSXAModule<R extends RootState>(
                 if (!currentRoute.customData || !currentRoute.customData.fsxa)
                   return false;
                 try {
-                  console.log(currentRoute.customData.fsxa.regexp);
                   const fsxaData = JSON.parse(currentRoute.customData.fsxa);
                   return isMatchingRoute(
                     currentRoute.seoRoute,
@@ -251,7 +252,6 @@ export function getFSXAModule<R extends RootState>(
                     payload.path!,
                   );
                 } catch (err) {
-                  console.log("Could not parse JSON", err);
                   return false;
                 }
                 return false;
@@ -317,7 +317,6 @@ export function getFSXAModule<R extends RootState>(
             });
           }
         } catch (error) {
-          console.log("ERROR", error);
           commit("setError", {
             appState: FSXAAppState.error,
             error: {
@@ -440,6 +439,16 @@ export function getFSXAModule<R extends RootState>(
         return (navigationData as NavigationData).seoRouteMap[url] || null;
       },
       [GETTER_MODE]: (state): FSXAContentMode => state.mode as FSXAContentMode,
+      [GETTER_REFERENCE_URL]: state => (
+        referenceId: string,
+        referenceType: "PageRef",
+      ) => {
+        const page =
+          referenceType === "PageRef"
+            ? state.navigation?.idMap[referenceId]
+            : null;
+        return page ? page.seoRoute : null;
+      },
     },
   };
 }

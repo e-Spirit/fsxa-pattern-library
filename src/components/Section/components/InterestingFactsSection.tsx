@@ -27,7 +27,7 @@ class InterestingFactsSection extends BaseSection<Payload> {
       <Sections.InterestingFactsSection
         headline={this.payload.st_headline}
         tagline={this.payload.st_tagline}
-        text={this.payload.st_text}
+        text={this.createLinksInRichText(this.payload.st_text)}
         counters={(this.payload.st_counters || []).map(counter => ({
           previewId: counter.previewId,
           value: counter.data.st_number,

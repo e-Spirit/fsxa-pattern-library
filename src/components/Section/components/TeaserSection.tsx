@@ -40,7 +40,7 @@ class TeaserSection extends BaseSection<Payload> {
       <Sections.TeaserSection
         headline={this.payload.st_headline}
         kicker={this.payload.st_kicker}
-        text={this.payload.st_text}
+        text={this.createLinksInRichText(this.payload.st_text)}
         buttonText={this.payload.st_button?.data.lt_button_text}
         handleButtonClick={() => {
           this.handleRouteChangeRequest({

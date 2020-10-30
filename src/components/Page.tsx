@@ -123,6 +123,13 @@ class Page extends BaseComponent<PageProps> {
         return false;
       });
     }
+    window.addEventListener("click", event => {
+      if ((event.target as HTMLElement).dataset.linkInternal) {
+        event.preventDefault();
+        event.stopImmediatePropagation();
+        this.handleRouteChange((event.target as any).pathname);
+      }
+    });
   }
 
   initialize({
