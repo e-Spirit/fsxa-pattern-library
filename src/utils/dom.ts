@@ -71,25 +71,4 @@ export const extractLinkMarkup = (
     );
   });
   return result;
-
-  /**let m;
-  let newValue = text;
-  while ((m = regex.exec(text)) !== null) {
-    // This is necessary to avoid infinite loops with zero-width matches
-    if (m.index === regex.lastIndex) {
-      regex.lastIndex++;
-    }
-    const json = JSON.parse(m[2]);
-    newValue = newValue.replace(
-      m[0],
-      `
-            <a class="lsg--link" href="#${getFootnoteIdentifier(
-              json.note.value,
-            )}" title="${json.title.value}">${json.text.value}<sup>${
-        json.note.value
-      }</sup></a>
-        `,
-    );
-  }
-  return newValue;**/
 };
