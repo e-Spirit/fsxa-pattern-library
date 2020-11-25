@@ -9,6 +9,7 @@ import {
   FSXAConfiguration,
   NavigationItem,
   LogLevel,
+  GCAPage,
 } from "fsxa-api";
 
 export declare type FSXAModuleParams =
@@ -67,6 +68,7 @@ export const NAVIGATION_DATA_KEY = "navigationData";
 export const GLOBAL_SETTINGS_KEY = "global_settings";
 
 const Actions = {
+  initializeApp: "initializeApp",
   initialize: "initialize",
   fetchNavigation: "fetchNavigation",
   fetchPage: "fetchPage",
@@ -83,6 +85,7 @@ const Getters = {
 };
 
 export const FSXAActions = {
+  initializeApp: `${prefix}/${Actions.initializeApp}`,
   initialize: `${prefix}/${Actions.initialize}`,
   fetchNavigation: `${prefix}/${Actions.fetchNavigation}`,
   fetchPage: `${prefix}/${Actions.fetchPage}`,
@@ -152,6 +155,70 @@ export function getFSXAModule<R extends RootState>(
       configuration: params,
     }),
     actions: {
+      [Actions.initializeApp]: async function(
+        { commit },
+        payload: {
+          defaultLocale: string;
+          initialPath?: string;
+          globalSettingsKey?: string;
+        },
+      ) {
+        const path = payload.initialPath
+          ? decodeURI(payload.initialPath)
+          : null;
+        commit("setAppAsInitializing");
+        try {
+          const fsxaAPI = new FSXAApi(
+            this.state.fsxa.mode as FSXAContentMode,
+            getFSXAConfiguration(this.state.fsxa.configuration),
+            this.state.fsxa.configuration.logLevel,
+          );
+          let navigationData = await fsxaAPI.fetchNavigation(
+            path || null,
+            payload.defaultLocale,
+          );
+          if (!navigationData && path !== null) {
+            navigationData = await fsxaAPI.fetchNavigation(
+              null,
+              payload.defaultLocale,
+            );
+          }
+          if (!navigationData) {
+            commit("setError", {
+              appState: FSXAAppState.error,
+              error: {
+                message:
+                  "Could not fetch navigation-data from NavigationService",
+                description:
+                  "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
+              },
+            });
+            return;
+          }
+          let settings = null;
+          if (payload.globalSettingsKey) {
+            settings = await fsxaAPI.fetchGCAPages(
+              navigationData
+                ? navigationData.meta.identifier.languageId
+                : payload.defaultLocale,
+              payload.globalSettingsKey,
+            );
+          }
+          commit("setAppAsInitialized", {
+            locale: navigationData.meta.identifier.languageId,
+            navigationData,
+            settings:
+              settings && settings.length !== 0 ? settings[0].data : null,
+          });
+        } catch (error) {
+          commit("setAppState", FSXAAppState.error);
+          commit("setError", {
+            message: error.message,
+            stacktrace: error.stack,
+          });
+          return;
+        }
+      },
       [Actions.initialize]: async function(
         { commit },
         payload: {
@@ -337,6 +404,27 @@ export function getFSXAModule<R extends RootState>(
       },
     },
     mutations: {
+      setAppAsInitializing(state) {
+        state.appState = FSXAAppState.initializing;
+        state.navigation = null;
+        state.settings = null;
+        state.stored = {};
+        state.error = null;
+      },
+      setAppAsInitialized(
+        state,
+        payload: {
+          locale: string;
+          navigationData: NavigationData;
+          settings: GCAPage | null;
+        },
+      ) {
+        state.appState = FSXAAppState.ready;
+        state.navigation = payload.navigationData;
+        state.settings = payload.settings;
+        state.locale = payload.locale;
+      },
+
       setFetchedPage(
         state,
         payload: { pageId: string; locale: string; data: any },

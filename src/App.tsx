@@ -1,6 +1,7 @@
 import Component from "vue-class-component";
 import BaseComponent from "./components/BaseComponent";
-import Page from "./components/Page";
+import BaseApp from "./components/App";
+import AppLayout from "./AppLayout";
 
 @Component({
   name: "App",
@@ -15,6 +16,17 @@ class App extends BaseComponent<{}> {
 
   render() {
     return (
+      <BaseApp
+        defaultLocale="de_DE"
+        currentPath={this.route}
+        devMode
+        handleRouteChange={console.log}
+        components={{
+          appLayout: AppLayout,
+        }}
+      />
+    );
+    /**return (
       <Page
         currentPath={this.route}
         devMode
@@ -24,7 +36,7 @@ class App extends BaseComponent<{}> {
           if (route) this.changeRoute(route);
         }}
       />
-    );
+    );**/
   }
 }
 export default App;

@@ -8,7 +8,11 @@ import { GCAPage } from "fsxa-api/dist/types";
 import { extractLinkMarkup } from "@/utils/dom";
 
 @Component
-class BaseComponent<Props> extends TsxComponent<Props> {
+class BaseComponent<
+  Props,
+  EventsWithOn = {},
+  ScopedSlots = {}
+> extends TsxComponent<Props, EventsWithOn, ScopedSlots> {
   @Inject({ from: FSXA_INJECT_KEY_DEV_MODE, default: false })
   isDevMode!: boolean;
   @Inject({
