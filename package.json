@@ -1,30 +1,23 @@
 {
   "name": "fsxa-pattern-library",
   "version": "1.5.1",
-  "main": "./dist/fsxa-pattern-library.common.js",
-  "license": "Apache-2.0",
-  "types": "src/types/fsxa-pattern-library.d.ts",
   "author": {
     "name": "Tobias Golbs",
     "email": "golbs@e-spirit.com"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
-    "prebuild": "rimraf dist",
     "build": "vue-cli-service build --target lib --name fsxa-pattern-library src/index.ts",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "commit": "git-cz",
+    "commitmsg": "commitlint -E HUSKY_GIT_PARAMS",
+    "prebuild": "rimraf dist",
     "precommit": "lint-staged",
     "prepush": "npm run build",
-    "semantic-release": "semantic-release",
-    "commitmsg": "commitlint -E HUSKY_GIT_PARAMS"
+    "semantic-release": "semantic-release"
   },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-conventional-changelog"
-    }
-  },
+  "main": "./dist/fsxa-pattern-library.common.js",
   "files": [
     "dist",
     "package.json",
@@ -33,14 +26,6 @@
     "src/store",
     "README.md"
   ],
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "peerDependencies": {
-    "fsxa-ui": "0.1.38"
-  },
   "dependencies": {
     "core-js": "^2.6.10",
     "date-fns": "^2.14.0",
@@ -68,11 +53,11 @@
     "@types/lodash.isequal": "^4.5.5",
     "@typescript-eslint/eslint-plugin": "^2.26.0",
     "@typescript-eslint/parser": "^2.26.0",
-    "@vue/cli-plugin-babel": "^4.3.0",
-    "@vue/cli-plugin-eslint": "^4.3.0",
-    "@vue/cli-plugin-typescript": "^4.3.0",
-    "@vue/cli-plugin-unit-jest": "^4.3.0",
-    "@vue/cli-service": "^4.3.0",
+    "@vue/cli-plugin-babel": "^4.5.9",
+    "@vue/cli-plugin-eslint": "^4.5.9",
+    "@vue/cli-plugin-typescript": "^4.5.9",
+    "@vue/cli-plugin-unit-jest": "^4.5.9",
+    "@vue/cli-service": "^4.5.9",
     "@vue/eslint-config-prettier": "^6.0.0",
     "@vue/eslint-config-typescript": "^5.0.2",
     "@vue/test-utils": "1.0.0-beta.31",
@@ -91,14 +76,28 @@
     "sass-loader": "^8.0.2",
     "semantic-release": "^17.1.1",
     "tailwindcss": "^1.9.6",
-    "typescript": "~3.8.3",
+    "typescript": "~3.9.3",
     "vue-prism": "^1.0.5",
     "vue-template-compiler": "^2.6.11",
     "vue-tsx-support": "^2.3.3"
   },
+  "peerDependencies": {
+    "fsxa-ui": "0.1.38"
+  },
+  "commitlint": {
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
+  },
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-conventional-changelog"
+    }
+  },
   "gitHooks": {
     "pre-commit": "lint-staged"
   },
+  "license": "Apache-2.0",
   "lint-staged": {
     "*.{js,jsx,vue,ts,tsx}": [
       "vue-cli-service lint",
@@ -108,5 +107,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/e-Spirit/fsxa-pattern-library.git"
-  }
+  },
+  "types": "src/types/fsxa-pattern-library.d.ts"
 }
