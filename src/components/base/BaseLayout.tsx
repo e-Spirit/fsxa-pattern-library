@@ -18,8 +18,14 @@ class BaseLayout<
   EventsWithOn = {},
   Slots = {}
 > extends BaseComponent<BaseLayoutProps<Data, Meta>, EventsWithOn, Slots> {
+  /**
+   * data that is relevant for your page and layout
+   */
   @Prop({ required: true })
   data!: BaseLayoutProps<Data, Meta>["data"];
+  /**
+   * Meta data that is relevant for your page and layout
+   */
   @Prop({ required: true }) meta!: BaseLayoutProps<Data, Meta>["meta"];
 
   /**

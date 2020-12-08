@@ -75,7 +75,6 @@ class App extends TsxComponent<AppProps> {
       TPP_SNAP.onRequestPreviewElement((previewId: string) => {
         const pageId = previewId.split(".")[0];
         const nextPage = this.navigationData?.idMap[pageId];
-        console.log("Sind drin");
         if (nextPage) this.requestRouteChange(nextPage.seoRoute);
       });
       TPP_SNAP.onRerenderView(() => {
@@ -88,6 +87,29 @@ class App extends TsxComponent<AppProps> {
       });
     }
     window.addEventListener("click", this.handleInternalClick);
+  }
+
+  /**
+   * We will watch the appState and set the preview-element in the OCM
+   * if we are in editMode and we are on the client
+   */
+  @Watch("appState")
+  onAppStateChange(nextAppState: FSXAAppState) {
+    if (
+      this.isEditMode &&
+      nextAppState === FSXAAppState.ready &&
+      typeof window !== "undefined"
+    ) {
+      // eslint-disable-next-line
+      const TPP_SNAP = require("fs-tpp-api/snap");
+      const currentRoute = determineCurrentRoute(
+        this.navigationData,
+        this.currentPath,
+      );
+      if (currentRoute) {
+        TPP_SNAP.setPreviewElement(`${currentRoute.id}.${this.locale}`);
+      }
+    }
   }
 
   beforeDestroy() {
@@ -115,6 +137,14 @@ class App extends TsxComponent<AppProps> {
 
   @ProvideReactive("requestRouteChange")
   async requestRouteChange(newRoute: string | null) {
+    if (this.isEditMode && newRoute) {
+      // eslint-disable-next-line
+      const TPP_SNAP = require("fs-tpp-api/snap");
+      const currentRoute = determineCurrentRoute(this.navigationData, newRoute);
+      if (currentRoute) {
+        TPP_SNAP.setPreviewElement(`${currentRoute.id}.${this.locale}`);
+      }
+    }
     if (newRoute) this.handleRouteChange(newRoute);
   }
 
