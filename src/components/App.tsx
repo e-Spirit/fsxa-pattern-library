@@ -1,95 +1,65 @@
-import { FSXAActions, FSXAAppState } from "@/store";
+import {
+  FSXAActions,
+  FSXAAppError,
+  FSXAAppState,
+  FSXAGetters,
+  getFSXAConfiguration,
+} from "@/store";
 import {
   determineCurrentRoute,
   NAVIGATION_ERROR_404,
 } from "@/utils/navigation";
-import { VNode } from "vue";
 import Component from "vue-class-component";
-import { Prop, Provide } from "vue-property-decorator";
+import { Prop, ProvideReactive, Watch } from "vue-property-decorator";
 import Dataset from "./Dataset";
-import BaseComponent from "./BaseComponent";
+import { Component as TsxComponent } from "vue-tsx-support";
 import {
   FSXA_INJECT_KEY_DEV_MODE,
   FSXA_INJECT_KEY_LAYOUTS,
   FSXA_INJECT_KEY_SECTIONS,
+  FSXA_INJECT_KEY_LOADER,
 } from "@/constants";
 import Page from "./Page";
-
-export type ContentType =
-  | {
-      type: "Page";
-      id: string;
-    }
-  | {
-      type: "Dataset";
-      route: string;
-    };
-
-/** TODO: Add specific typings for the components */
-export interface AppProps {
-  components?: {
-    /**
-     * Your component that will render the overall AppLayout.
-     *
-     * If no appLayout is passed the rendered content Layout + Sections is returned
-     */
-    appLayout?: any;
-    /**
-     * Pass a component that should get rendered, when no matching route was found
-     *
-     * If no 404 page is passed nothing will be rendered
-     */
-    page404?: any;
-    /**
-     * Pass your sections that will be mapped through the provided record key
-     *
-     * Nothing will be rendered, if no matching section was found and devMode is not active
-     */
-    sections?: Record<string, any>;
-    /**
-     * Pass your layouts that will be mapped through the provided record key
-     *
-     * Nothing will be rendered, if no matching layout was found and devMode is not active
-     */
-    layouts?: Record<string, any>;
-  };
-  currentPath?: string;
-  defaultLocale: string;
-  devMode?: boolean;
-  globalSettingsKey?: string;
-  handleRouteChange: (nextRoute: string) => void;
-}
+import ErrorBoundary from "./internal/ErrorBoundary";
+import InfoBox from "./internal/InfoBox";
+import Code from "./internal/Code";
+import { FSXAApi, FSXAContentMode } from "fsxa-api";
+import { AppProps } from "@/types/components";
+import PortalProvider from "./internal/PortalProvider";
 @Component({
   name: "FSXAApp",
 })
-class App extends BaseComponent<
-  AppProps,
-  {},
-  {
-    layout?: {
-      content: JSX.Element | VNode | VNode[] | string | null;
-    };
-    page404?: {};
-  }
-> {
-  @Prop() components!: AppProps["components"];
+class App extends TsxComponent<AppProps> {
+  @Prop({ default: () => ({}) }) components!: AppProps["components"];
   @Prop() currentPath!: AppProps["currentPath"];
   @Prop({ default: false }) devMode!: AppProps["devMode"];
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop() globalSettingsKey: AppProps["globalSettingsKey"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
-
-  @Provide(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
-  @Provide(FSXA_INJECT_KEY_LAYOUTS) injectedLayouts =
+  @ProvideReactive("currentPath") path = this.currentPath;
+  @ProvideReactive(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
+  @ProvideReactive(FSXA_INJECT_KEY_LAYOUTS) injectedLayouts =
     this.components?.layouts || {};
-  @Provide(FSXA_INJECT_KEY_SECTIONS) injectedSections =
+  @ProvideReactive(FSXA_INJECT_KEY_SECTIONS) injectedSections =
     this.components?.sections || {};
+  @ProvideReactive(FSXA_INJECT_KEY_LOADER) injectedLoader =
+    this.components?.loader || null;
 
-  // the following util methods will be provided through inject
-  // handleRouteChangeRequest
-  // currentPage
+  @Watch("currentPath")
+  onCurrentPathChange(nextPath: string) {
+    this.path = nextPath;
+  }
 
-  // provide utility methods
+  @Watch("devMode")
+  onDevModeChange(nextDevMode: boolean) {
+    this.injectedDevMode = nextDevMode;
+  }
+
+  @Watch("components")
+  onComponentsChange(nextComponents: AppProps["components"]) {
+    this.injectedLayouts = nextComponents?.layouts || {};
+    this.injectedSections = nextComponents?.sections || {};
+  }
 
   serverPrefetch() {
     return this.initialize();
@@ -97,6 +67,42 @@ class App extends BaseComponent<
 
   mounted() {
     if (this.appState === FSXAAppState.not_initialized) this.initialize();
+
+    // we will load tpp-snap, if we are in devMode
+    if (this.isEditMode) {
+      // eslint-disable-next-line
+      const TPP_SNAP = require("fs-tpp-api/snap");
+      TPP_SNAP.onRequestPreviewElement((previewId: string) => {
+        const pageId = previewId.split(".")[0];
+        const nextPage = this.navigationData?.idMap[pageId];
+        console.log("Sind drin");
+        if (nextPage) this.requestRouteChange(nextPage.seoRoute);
+      });
+      TPP_SNAP.onRerenderView(() => {
+        window.setTimeout(() => this.initialize(), 300);
+        return false;
+      });
+      TPP_SNAP.onNavigationChange(() => {
+        window.setTimeout(() => this.initialize(), 300);
+        return false;
+      });
+    }
+    window.addEventListener("click", this.handleInternalClick);
+  }
+
+  beforeDestroy() {
+    window.removeEventListener("click", this.handleInternalClick);
+  }
+
+  handleInternalClick(event: MouseEvent) {
+    if (
+      "linkInternal" in (event.target as HTMLElement).dataset &&
+      (event.target as HTMLElement).dataset.linkInternal === "true"
+    ) {
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      this.requestRouteChange((event.target as any).pathname);
+    }
   }
 
   initialize() {
@@ -107,8 +113,32 @@ class App extends BaseComponent<
     });
   }
 
+  @ProvideReactive("requestRouteChange")
+  async requestRouteChange(newRoute: string | null) {
+    if (newRoute) this.handleRouteChange(newRoute);
+  }
+
+  get isEditMode() {
+    return this.$store.getters[FSXAGetters.mode] === "preview";
+  }
+
+  get fsxaApi(): FSXAApi {
+    return new FSXAApi(
+      this.isEditMode ? FSXAContentMode.PREVIEW : FSXAContentMode.RELEASE,
+      getFSXAConfiguration(this.$store.state.fsxa.configuration),
+    );
+  }
+
+  get locale(): string {
+    return this.$store.getters[FSXAGetters.locale];
+  }
+
   get appState(): FSXAAppState {
     return this.$store.state.fsxa.appState;
+  }
+
+  get appError(): FSXAAppError {
+    return this.$store.state.fsxa.error;
   }
 
   get navigationData() {
@@ -117,19 +147,23 @@ class App extends BaseComponent<
 
   renderContent() {
     if (this.$slots.default) return this.$slots.default || null;
+    if (
+      [FSXAAppState.not_initialized, FSXAAppState.initializing].includes(
+        this.appState,
+      )
+    ) {
+      if (this.components?.loader) {
+        const Loader = this.components.loader;
+        return <Loader />;
+      }
+      return null;
+    }
     try {
       const currentNode = determineCurrentRoute(
         this.navigationData,
         this.currentPath,
       );
-      console.log(
-        "CurrentNode",
-        currentNode,
-        this.currentPath,
-        this.navigationData,
-      );
       if (currentNode && (currentNode as any).seoRouteRegex !== null) {
-        // we want to render a dataset
         return this.currentPath ? (
           <Dataset
             route={this.currentPath}
@@ -140,15 +174,11 @@ class App extends BaseComponent<
         return <Page id={currentNode?.caasDocumentId} />;
       }
     } catch (error) {
+      // We will render a 404 page if this is passed as a component
       if (error.message === NAVIGATION_ERROR_404) {
         if (this.components?.page404) {
           const Page404Layout = this.components.page404;
-          return (
-            <Page404Layout
-              currentPath={this.currentPath}
-              locale={this.locale}
-            />
-          );
+          return <Page404Layout currentPath={this.currentPath} />;
         }
         return null;
       }
@@ -157,12 +187,48 @@ class App extends BaseComponent<
   }
 
   render() {
-    const content = this.renderContent();
-    if (this.components?.appLayout) {
-      const AppLayout = this.components.appLayout;
-      return <AppLayout>{content}</AppLayout>;
+    const AppLayout = this.components?.appLayout;
+    if (!AppLayout && this.appState === FSXAAppState.error) {
+      return (
+        <InfoBox
+          type="error"
+          headline="Encountered error while rendering the FSXAApp"
+        >
+          {this.appError.stacktrace ? (
+            <Code language="js">{this.appError?.stacktrace}</Code>
+          ) : (
+            <div class="text-gray-900">
+              <h2 class="text-lg font-medium text-gray-900">
+                {this.appError?.message}
+              </h2>
+              {this.appError.description && (
+                <h3>{this.appError?.description}</h3>
+              )}
+            </div>
+          )}
+        </InfoBox>
+      );
     }
-    return content;
+    // We only want to generate the content, when the app is correctly initialized
+    const content =
+      this.appState === FSXAAppState.ready ? this.renderContent() : [];
+    if (AppLayout) {
+      const appLayout = (
+        <AppLayout appState={this.appState} appError={this.appError}>
+          {content}
+        </AppLayout>
+      );
+      return (
+        <ErrorBoundary title="Error rendering custom AppLayout component">
+          {this.devMode ? (
+            <PortalProvider>{appLayout}</PortalProvider>
+          ) : (
+            appLayout
+          )}
+        </ErrorBoundary>
+      );
+    }
+    return this.devMode ? <PortalProvider>{content}</PortalProvider> : content;
   }
 }
 export default App;

@@ -3,11 +3,9 @@ import Vuex, { Module } from "vuex";
 import {
   FSXAApi,
   NavigationData,
-  Page,
   FSXAApiParams,
   FSXAContentMode,
   FSXAConfiguration,
-  NavigationItem,
   LogLevel,
   GCAPage,
 } from "fsxa-api";
@@ -26,9 +24,6 @@ export declare type FSXAModuleParams =
       mode: "remote";
       config: FSXAConfiguration;
     };
-export interface CurrentPage extends NavigationItem {
-  content: Page;
-}
 export interface FSXAAppError {
   message: string;
   description?: string;
@@ -38,20 +33,21 @@ export enum FSXAAppState {
   not_initialized = "not_initialized",
   initializing = "initializing",
   ready = "ready",
-  fetching = "fetching",
-  fetching_error = "fetching_error",
   error = "error",
 }
 export interface FSXAVuexState {
-  locale?: string;
+  locale: string | null;
   configuration: FSXAModuleParams;
   appState: FSXAAppState;
-  currentPageId: string | null;
   navigation: NavigationData | null;
   settings: any | null;
   error: FSXAAppError | null;
   stored: {
-    [key: string]: any;
+    [key: string]: {
+      ttl: number;
+      fetchedAt: number;
+      value: any;
+    };
   };
   mode: "release" | "preview";
 }
@@ -59,23 +55,16 @@ export interface RootState {
   fsxa: FSXAVuexState;
 }
 
-// check if we can require the config folder
 Vue.use(Vuex);
 
 const prefix = "fsxa";
 
-export const NAVIGATION_DATA_KEY = "navigationData";
 export const GLOBAL_SETTINGS_KEY = "global_settings";
 
 const Actions = {
   initializeApp: "initializeApp",
-  initialize: "initialize",
-  fetchNavigation: "fetchNavigation",
-  fetchPage: "fetchPage",
   hydrateClient: "hydrateClient",
   setStoredItem: "setStoredItem",
-  fetchSettings: "fetchSettings",
-  pathChanged: "pathChanged",
 };
 
 const Getters = {
@@ -86,12 +75,8 @@ const Getters = {
 
 export const FSXAActions = {
   initializeApp: `${prefix}/${Actions.initializeApp}`,
-  initialize: `${prefix}/${Actions.initialize}`,
-  fetchNavigation: `${prefix}/${Actions.fetchNavigation}`,
-  fetchPage: `${prefix}/${Actions.fetchPage}`,
   hydrateClient: `${prefix}/${Actions.hydrateClient}`,
   setStoredItem: `${prefix}/${Actions.setStoredItem}`,
-  fetchSettings: `${prefix}/${Actions.fetchSettings}`,
 };
 
 export const getFSXAConfiguration = (
@@ -118,7 +103,6 @@ const GETTER_REFERENCE_URL = "getReferenceUrl";
 export const FSXAGetters = {
   [Getters.appState]: `${prefix}/${Getters.appState}`,
   [Getters.error]: `${prefix}/${Getters.error}`,
-  [Getters.currentPage]: `${prefix}/${Getters.currentPage}`,
   [GETTER_NAVIGATION_DATA]: `${prefix}/${GETTER_NAVIGATION_DATA}`,
   [GETTER_CONFIGURATION]: `${prefix}/${GETTER_CONFIGURATION}`,
   [GETTER_LOCALE]: `${prefix}/${GETTER_LOCALE}`,
@@ -126,16 +110,6 @@ export const FSXAGetters = {
   [GETTER_PAGE_BY_URL]: `${prefix}/${GETTER_PAGE_BY_URL}`,
   [GETTER_MODE]: `${prefix}/${GETTER_MODE}`,
   [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
-};
-
-const isMatchingRoute = (
-  route: string,
-  keys: Record<string, string>,
-  currentPath: string,
-) => {
-  let regexp = route;
-  Object.keys(keys).forEach(key => (regexp = regexp.replace(key, "(.*?)")));
-  return currentPath.match(regexp) !== null;
 };
 
 export function getFSXAModule<R extends RootState>(
@@ -146,7 +120,7 @@ export function getFSXAModule<R extends RootState>(
     namespaced: true,
     state: () => ({
       stored: {},
-      currentPageId: null,
+      locale: null,
       navigation: null,
       settings: null,
       appState: FSXAAppState.not_initialized,
@@ -183,15 +157,12 @@ export function getFSXAModule<R extends RootState>(
               payload.defaultLocale,
             );
           }
+
           if (!navigationData) {
             commit("setError", {
-              appState: FSXAAppState.error,
-              error: {
-                message:
-                  "Could not fetch navigation-data from NavigationService",
-                description:
-                  "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
-              },
+              message: "Could not fetch navigation-data from NavigationService",
+              description:
+                "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
             });
             return;
           }
@@ -219,188 +190,11 @@ export function getFSXAModule<R extends RootState>(
           return;
         }
       },
-      [Actions.initialize]: async function(
-        { commit },
-        payload: {
-          locale: string;
-          path: string;
-          pageId?: string;
-          isClient: string;
-        },
-      ) {
-        const path = payload.path ? decodeURI(payload.path) : null;
-        // Set app state to initializing
-        commit("startInitialization");
-        try {
-          const fsxaAPI = new FSXAApi(
-            this.state.fsxa.mode as FSXAContentMode,
-            getFSXAConfiguration(this.state.fsxa.configuration),
-            this.state.fsxa.configuration.logLevel,
-          );
-          let navigationData = await fsxaAPI.fetchNavigation(
-            path || null,
-            payload.locale,
-          );
-          if (!navigationData && path !== null) {
-            navigationData = await fsxaAPI.fetchNavigation(
-              null,
-              payload.locale,
-            );
-          }
-          if (!navigationData) {
-            commit("setError", {
-              appState: FSXAAppState.error,
-              error: {
-                message:
-                  "Could not fetch navigation-data from NavigationService",
-                description:
-                  "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
-              },
-            });
-            return;
-          }
-          const settings = await fsxaAPI.fetchGCAPages(
-            navigationData
-              ? navigationData.meta.identifier.languageId
-              : payload.locale,
-            GLOBAL_SETTINGS_KEY,
-          );
-          commit("setGlobalData", {
-            locale: navigationData.meta.identifier.languageId,
-            navigationData,
-            settings: settings.length !== 0 ? settings[0] : null,
-          });
-          // dispatch fetchPage action
-          return await this.dispatch(FSXAActions.fetchPage, {
-            locale: navigationData.meta.identifier.languageId,
-            path: path,
-            pageId: payload.pageId,
-            isClient: payload.isClient,
-          });
-        } catch (error) {
-          commit("setAppState", FSXAAppState.error);
-          commit("setError", {
-            message: error.message,
-            stacktrace: error.stack,
-          });
-          return;
-        }
-      },
-      [Actions.fetchPage]: async function(
-        { commit },
-        payload: {
-          locale?: string;
-          path?: string;
-          pageId?: string;
-          isClient: boolean;
-        },
-      ) {
-        const locale = payload.locale || this.state.fsxa.locale;
-        if (!locale) return null;
-        try {
-          const navigationData = this.state.fsxa.navigation;
-          if (!navigationData) return;
-          if (!payload.pageId && !payload.path)
-            throw new Error("You have to pass pageId or path");
-          let requestedPageId = null;
-          if (payload.path) {
-            requestedPageId = navigationData.seoRouteMap[payload.path];
-            if (!requestedPageId) {
-              const routeId = Object.keys(navigationData.idMap).find(key => {
-                const currentRoute = navigationData.idMap[key];
-                if (!currentRoute.customData || !currentRoute.customData.fsxa)
-                  return false;
-                try {
-                  const fsxaData = JSON.parse(currentRoute.customData.fsxa);
-                  return isMatchingRoute(
-                    currentRoute.seoRoute,
-                    fsxaData.keys,
-                    // eslint-disable-next-line
-                    payload.path!,
-                  );
-                } catch (err) {
-                  return false;
-                }
-                return false;
-              });
-              if (routeId) {
-                requestedPageId = routeId;
-              }
-            }
-          }
-          if (payload.pageId) requestedPageId = payload.pageId;
-
-          if (
-            !requestedPageId &&
-            payload.path &&
-            ["", "/"].indexOf(payload.path) !== -1
-          )
-            requestedPageId =
-              navigationData.seoRouteMap[navigationData.pages.index];
-          if (requestedPageId) {
-            // do not load data if page already exists
-            if (this.state.fsxa.stored[requestedPageId + "." + locale]) {
-              commit("setCurrentPage", requestedPageId);
-              return navigationData.idMap[requestedPageId].seoRoute;
-            }
-            commit("setAppState", FSXAAppState.fetching);
-            const contentReferenceId =
-              navigationData.idMap[requestedPageId].caasDocumentId;
-            const fsxaAPI = new FSXAApi(
-              this.state.fsxa.mode as FSXAContentMode,
-              getFSXAConfiguration(this.state.fsxa.configuration),
-              this.state.fsxa.configuration.logLevel,
-            );
-            const [page] = await Promise.all([
-              fsxaAPI.fetchPage(contentReferenceId, locale),
-              new Promise(resolve =>
-                setTimeout(resolve, payload.isClient ? 300 : 0),
-              ),
-            ]);
-            if (!page) {
-              commit("setError", {
-                appState: FSXAAppState.fetching_error,
-                error: {
-                  message: "Could not fetch page",
-                  description: "We were not able to fetch your requested page.",
-                },
-              });
-              return;
-            }
-            commit("setFetchedPage", {
-              pageId: requestedPageId,
-              locale: locale,
-              data: page,
-            });
-            return navigationData.idMap[requestedPageId].seoRoute;
-          } else {
-            // if we did not find any valid page, we set appState to fetching_error so the application can show an error
-            commit("setError", {
-              appState: FSXAAppState.fetching_error,
-              error: {
-                message: `Could not find page for given path: ${payload.path}`,
-                description: "",
-              },
-            });
-          }
-        } catch (error) {
-          commit("setError", {
-            appState: FSXAAppState.error,
-            error: {
-              message: error.message,
-              stacktrace: error.stacktrace,
-            },
-          });
-        }
-      },
       [Actions.hydrateClient]: function({ commit }, payload: FSXAVuexState) {
         commit("setInitialStateFromServer", payload);
       },
-      [Actions.setStoredItem]: async function(
-        { commit },
-        { key, value }: { key: string; value: any },
-      ) {
-        commit("setStoredItem", { key, value });
+      [Actions.setStoredItem]: async function({ commit }, payload) {
+        commit("setStoredItem", payload);
       },
     },
     mutations: {
@@ -424,21 +218,6 @@ export function getFSXAModule<R extends RootState>(
         state.settings = payload.settings;
         state.locale = payload.locale;
       },
-
-      setFetchedPage(
-        state,
-        payload: { pageId: string; locale: string; data: any },
-      ) {
-        Vue.set(state, "stored", {
-          ...state.stored,
-          [payload.pageId + "." + payload.locale]: payload.data,
-        });
-        Vue.set(state, "currentPageId", payload.pageId);
-        Vue.set(state, "appState", FSXAAppState.ready);
-      },
-      setCurrentPage(state, pageId: string) {
-        Vue.set(state, "currentPageId", pageId);
-      },
       setLocale(state, locale: string) {
         Vue.set(state, "locale", locale);
       },
@@ -459,21 +238,16 @@ export function getFSXAModule<R extends RootState>(
         Vue.set(state, "navigation", payload.navigationData);
         Vue.set(state, "settings", payload.settings);
       },
-      setStoredItem(state, { key, value }) {
-        Vue.set(state.stored, key, value);
-      },
-      setStoredItems(state, payload: { [key: string]: any }) {
-        Vue.set(state, "stored", {
-          ...state.stored,
-          ...payload,
+      setStoredItem(state, { key, value, fetchedAt, ttl }) {
+        Vue.set(state.stored, key, {
+          value,
+          fetchedAt,
+          ttl,
         });
-      },
-      setConfiguration(state, configuration) {
-        Vue.set(state, "configuration", configuration);
       },
       setInitialStateFromServer(state, initialStateFromServer: FSXAVuexState) {
         Vue.set(state, "configuration", initialStateFromServer.configuration);
-        Vue.set(state, "currentPageId", initialStateFromServer.currentPageId);
+        Vue.set(state, "locale", initialStateFromServer.locale);
         Vue.set(state, "navigation", initialStateFromServer.navigation);
         Vue.set(state, "settings", initialStateFromServer.settings);
         Vue.set(state, "appState", initialStateFromServer.appState);
@@ -483,17 +257,9 @@ export function getFSXAModule<R extends RootState>(
       setAppState(state, appState) {
         Vue.set(state, "appState", appState);
       },
-      setError(
-        state,
-        payload: {
-          error: FSXAAppError | null;
-          appState?: FSXAAppState;
-        },
-      ) {
-        if (payload.appState) {
-          Vue.set(state, "appState", payload.appState);
-        }
-        Vue.set(state, "error", payload.error);
+      setError(state, payload: FSXAAppError) {
+        state.appState = FSXAAppState.error;
+        state.error = payload;
       },
     },
     getters: {
@@ -502,14 +268,6 @@ export function getFSXAModule<R extends RootState>(
       },
       [Getters.error]: function(state) {
         return state.error;
-      },
-      [Getters.currentPage]: function(state): CurrentPage | null {
-        if (!state.currentPageId) return null;
-        if (!state.navigation) return null;
-        return {
-          ...state.navigation.idMap[state.currentPageId],
-          content: state.stored[state.currentPageId + "." + state.locale],
-        };
       },
       [GETTER_NAVIGATION_DATA]: function(state) {
         return state.navigation || null;

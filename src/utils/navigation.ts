@@ -6,18 +6,18 @@ export const determineCurrentRoute = (
   currentPath?: string,
 ): NavigationItem | null => {
   if (!navigationData) return null;
-
-  // we will check if the currentPath is set
-  if (currentPath && currentPath !== "/") {
+  const path = decodeURIComponent(currentPath || "");
+  // we will check if the path is set
+  if (path && path !== "/") {
     let node: NavigationItem | null =
-      navigationData.idMap[navigationData.seoRouteMap[currentPath]] || null;
+      navigationData.idMap[navigationData.seoRouteMap[path]] || null;
     if (!node) {
-      // the currentPath is not mapped in the seoRouteMap
+      // the path is not mapped in the seoRouteMap
       // we will check for dynamic routes
       node =
         Object.values(navigationData.idMap)
           .filter((item: any) => item.seoRouteRegex)
-          .find((item: any) => currentPath.match(item.seoRouteRegex)) || null;
+          .find((item: any) => path.match(item.seoRouteRegex)) || null;
     }
     if (node) return node;
     // we will throw an error, when no route was found, so the callee can show an error page

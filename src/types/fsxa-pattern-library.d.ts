@@ -1,3 +1,5 @@
+import "vue-tsx-support/enable-check";
+
 import { Module } from "vuex";
 import { RootState, FSXAVuexState, FSXAModuleParams } from "./../store";
 import { FSXAContentMode } from "fsxa-api";

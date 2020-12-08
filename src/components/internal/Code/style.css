@@ -1,0 +1,7 @@
+.Code[class*="language-"] {
+  @apply text-xs bg-gray-900 my-4;
+}
+
+:not(pre) > code[class*="language-"].Code {
+  @apply px-2 py-1;
+}
