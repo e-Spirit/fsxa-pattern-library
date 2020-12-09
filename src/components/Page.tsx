@@ -1,8 +1,10 @@
-import BaseComponent from "@/components/base/BaseComponent";
-import { Component, InjectReactive, Prop, Watch } from "vue-property-decorator";
 import { Page as APIPage } from "fsxa-api";
-import Layout from "./Layout";
+import { Component, InjectReactive, Prop, Watch } from "vue-property-decorator";
+
+import BaseComponent from "@/components/base/BaseComponent";
 import { FSXA_INJECT_KEY_LOADER } from "@/constants";
+
+import Layout from "./Layout";
 
 export interface PageProps {
   id?: string;

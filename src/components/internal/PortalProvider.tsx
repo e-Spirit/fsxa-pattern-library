@@ -26,7 +26,7 @@ class PortalProvider extends TsxComponent<{}> {
       <Fragment>
         {this.$slots.default}
         {this.portalContent && (
-          <div class="absolute w-full h-screen top-0 left-0 flex items-start justify-center">
+          <div class="fixed w-full h-screen top-0 left-0 flex items-start justify-center z-50">
             <div
               class="absolute top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 z-0"
               onClick={event => {

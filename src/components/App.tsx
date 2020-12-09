@@ -102,13 +102,16 @@ class App extends TsxComponent<AppProps> {
     ) {
       // eslint-disable-next-line
       const TPP_SNAP = require("fs-tpp-api/snap");
-      const currentRoute = determineCurrentRoute(
-        this.navigationData,
-        this.currentPath,
-      );
-      if (currentRoute) {
-        TPP_SNAP.setPreviewElement(`${currentRoute.id}.${this.locale}`);
-      }
+      try {
+        const currentRoute = determineCurrentRoute(
+          this.navigationData,
+          this.currentPath,
+        );
+        if (currentRoute) {
+          TPP_SNAP.setPreviewElement(`${currentRoute.id}.${this.locale}`);
+        }
+        // eslint-disable-next-line
+      } catch (err) {}
     }
   }
 

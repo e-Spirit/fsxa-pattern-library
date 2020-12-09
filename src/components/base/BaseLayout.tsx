@@ -35,7 +35,7 @@ class BaseLayout<
    */
   renderContentByName(name: string) {
     const contentRenderer = (this.$scopedSlots as any)[name];
-    return contentRenderer ? contentRenderer() : null;
+    return contentRenderer ? contentRenderer({}) : null;
   }
 
   render() {

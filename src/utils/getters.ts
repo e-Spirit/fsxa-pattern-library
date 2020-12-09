@@ -93,6 +93,7 @@ export async function triggerRouteChange(
         seoRoute: params.route,
       })?.id || null;
 
+    // We throw away the old state and reinitialize the app with the new locale
     await $store.dispatch(FSXAActions.initializeApp, {
       defaultLocale: params.locale,
       globalSettingsKey,

@@ -178,8 +178,7 @@ export function getFSXAModule<R extends RootState>(
           commit("setAppAsInitialized", {
             locale: navigationData.meta.identifier.languageId,
             navigationData,
-            settings:
-              settings && settings.length !== 0 ? settings[0].data : null,
+            settings: settings && settings.length !== 0 ? settings[0] : null,
           });
         } catch (error) {
           commit("setAppState", FSXAAppState.error);

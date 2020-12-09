@@ -1,16 +1,18 @@
+import { PageBody, PageBodyContent } from "fsxa-api";
+import { Fragment } from "vue-fragment";
+import Component from "vue-class-component";
+import { Inject, InjectReactive, Prop } from "vue-property-decorator";
+
 import {
   FSXA_INJECT_KEY_LAYOUTS,
   FSXA_INJECT_KEY_SET_PORTAL_CONTENT,
 } from "@/constants";
-import { PageBody, PageBodyContent } from "fsxa-api/dist/types";
-import Component from "vue-class-component";
-import { Inject, InjectReactive, Prop } from "vue-property-decorator";
+
 import ErrorBoundary from "./internal/ErrorBoundary";
 import Code from "./internal/Code";
 import InfoBox from "./internal/InfoBox";
 import TabbedContent from "./internal/TabbedContent";
 import RenderUtils from "./base/RenderUtils";
-import { Fragment } from "vue-fragment";
 
 export interface LayoutProps<Data, Meta> {
   previewId: string;
@@ -200,11 +202,7 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
           this.mappedLayout.name}`}
       >
         <Fragment>
-          {this.isEditMode ? (
-            <div data-preview-id={this.previewId}>{content}</div>
-          ) : (
-            content
-          )}
+          <div data-preview-id={this.previewId}>{content}</div>
           {this.isDevMode ? (
             <a
               href="#"
