@@ -190,7 +190,7 @@ class Section<
       );
       return (
         <ErrorBoundary
-          class="group"
+          class="pl-group"
           title={`Error rendering Section: ${MappedSection &&
             MappedSection.name}`}
         >
