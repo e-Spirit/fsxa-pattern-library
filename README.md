@@ -197,10 +197,8 @@ FSXA_CAAS=https://url-to.your.caas
 FSXA_PROJECT_ID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 # URL pointing to the NavigationService
 FSXA_NAVIGATION_SERVICE=https://your.navigation-service.cloud/navigation
-# Which mode should be used? (preview/release)
-FSXA_MODE=preview
-# KEY:VALUE map where semicolon is used as separator (key:uuid;key:uuid)
-FSXA_REMOTES=en_EN
+# key-value pairs in JSON notation. Keys are used to use Remote Projects with fsxa-api 
+FSXA_REMOTES={"remoteMedia": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx", "xyz": "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"}
 # This tenantId is required, when using caas-connect module 3.0.9 and above
 FSXA_TENANT_ID=xxxxxxxxxxxxxxx
 ```
