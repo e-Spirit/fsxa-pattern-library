@@ -1,7 +1,11 @@
-import { FSXA_INJECT_KEY_SET_PORTAL_CONTENT } from "@/constants";
+import {
+  FSXA_INJECT_KEY_SET_PORTAL_CONTENT,
+  FSXA_INJECT_KEY_COMPONENTS,
+} from "@/constants";
 import { RichTextElement } from "fsxa-api/dist/types";
 import Component from "vue-class-component";
-import { Inject, Prop } from "vue-property-decorator";
+import { AppComponents } from "@/types/components";
+import { Inject, Prop, InjectReactive } from "vue-property-decorator";
 import BaseComponent from "../base/BaseComponent";
 import Code from "../internal/Code";
 import InfoBox from "../internal/InfoBox";
@@ -17,11 +21,46 @@ class MissingRichTextComponent extends BaseComponent<
   MissingRichTextComponentProps
 > {
   @Prop({ required: true }) element!: MissingRichTextComponentProps["element"];
+  @InjectReactive({ from: FSXA_INJECT_KEY_COMPONENTS })
+  components!: AppComponents;
   @Inject({
     from: FSXA_INJECT_KEY_SET_PORTAL_CONTENT,
     default: () => ({}),
   })
   setPortalContent!: (portalContent: any) => void;
+
+  renderImportInformation() {
+    const DevModeInfoComponent = this.components.devModeInfo || null;
+    if (DevModeInfoComponent)
+      return (
+        <DevModeInfoComponent
+          type="richtext"
+          componentName={this.element.type}
+        />
+      );
+    return (
+      <div>
+        You can pass your own component by adding it to the{" "}
+        <Code inline language="js">
+          components
+        </Code>{" "}
+        map.
+        <Code class="pl-mt-4" language="tsx">
+          {`import YourCustomRichTextComponent from "...";
+
+<FSXAApp
+  components={{
+    richtext: {
+      "${this.element.type}": YourCustomRichTextComponent,
+    }
+  }}
+/>`}
+        </Code>
+        If you are not using the fsxa-pattern-library directly make sure to
+        check the documentation of your project specific integration.
+      </div>
+    );
+  }
 
   renderDevInfoPortal() {
     this.setPortalContent(
@@ -38,26 +77,7 @@ class MissingRichTextComponent extends BaseComponent<
         }
       >
         <div>
-          You can pass your own component by adding it to the{" "}
-          <Code inline language="js">
-            components
-          </Code>{" "}
-          map.
-          <Code class="pl-mt-4" language="tsx">
-            {`import YourCustomRichTextComponent from "...";
-
-<FSXAApp
-  components={{
-    richtext: {
-      "${this.element.type}": YourCustomRichTextComponent,
-    }
-  }}
-/>`}
-          </Code>
-          If you are not using the fsxa-pattern-library directly make sure to
-          check the documentation of your project specific integration.
-          <br />
-          <br />
+          {this.renderImportInformation()}
           You can extend the
           <Code class="pl-mx-1" inline language="tsx">
             FSXABaseRichTextElement
