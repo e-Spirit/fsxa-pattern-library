@@ -7,5 +7,8 @@ export const getFSXAConfigFromEnvFile = (): FSXAConfiguration => {
     projectId: process.env.VUE_APP_PROJECT_ID as string,
     navigationService: process.env.VUE_APP_NAVIGATION_SERVICE as string,
     tenantId: process.env.VUE_APP_TENANT_ID as string,
+    remotes: process.env.VUE_APP_REMOTES
+      ? (JSON.parse(process.env.VUE_APP_REMOTES) as Record<string, string>)
+      : undefined,
   };
 };
