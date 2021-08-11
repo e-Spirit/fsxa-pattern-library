@@ -11,7 +11,7 @@
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
     "baseUrl": ".",
-    "types": ["webpack-env", "jest"],
+    "types": ["webpack-env"],
     "paths": {
       "@/*": ["src/*"],
       // added this, so we do have code-completion in our examples
