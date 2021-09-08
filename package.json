@@ -8,6 +8,7 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --name fsxa-pattern-library src/index.ts",
+    "build:local": "rimraf fsxa-pattern-library-*.tgz && npm version prerelease --no-git-tag-version --preid alpha && npm run build && npm pack",
     "test:unit": "vue-cli-service test:unit",
     "lint": "vue-cli-service lint",
     "commit": "git-cz",
