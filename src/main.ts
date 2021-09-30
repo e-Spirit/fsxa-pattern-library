@@ -6,7 +6,12 @@ import TsxApp from "./../examples/tsx";
 import SFCApp from "./../examples/sfc/index.vue";
 import createStore from "./store";
 import { getFSXAConfigFromEnvFile } from "./utils/config";
-import { FSXAContentMode } from "fsxa-api";
+import {
+  FSXAContentMode,
+  FSXAProxyApi,
+  FSXARemoteApi,
+  LogLevel,
+} from "fsxa-api";
 Vue.config.productionTip = false;
 import "prismjs";
 import "prismjs/components/prism-json";
@@ -14,20 +19,31 @@ import "prismjs/components/prism-typescript";
 import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
 import "prismjs/themes/prism-okaidia.css";
+import "setimmediate";
 
-const store = createStore(process.env.VUE_APP_MODE as FSXAContentMode, {
-  mode: "remote",
-  config: getFSXAConfigFromEnvFile(),
-});
-const store2 = createStore(process.env.VUE_APP_MODE as FSXAContentMode, {
-  mode: "remote",
-  config: getFSXAConfigFromEnvFile(),
-});
+const proxyApiConfig = {
+  url: "http://localhost:3002/api",
+  logLevel: LogLevel.INFO,
+};
+
+const remoteApiConfig = {
+  apikey: getFSXAConfigFromEnvFile().apiKey,
+  caasURL: getFSXAConfigFromEnvFile().caas,
+  contentMode: FSXAContentMode.PREVIEW,
+  navigationServiceURL: getFSXAConfigFromEnvFile().navigationService,
+  projectID: getFSXAConfigFromEnvFile().projectId,
+  tenantID: getFSXAConfigFromEnvFile().tenantId,
+  logLevel: 0,
+};
+
+const store = createStore({ mode: "proxy", config: proxyApiConfig });
 new Vue({
   store,
   render: h => h(TsxApp),
 }).$mount("#app");
+
+/*const store2 = createStore(remoteApi);
 new Vue({
   store: store2,
   render: h => h(SFCApp),
-}).$mount("#app2");
+}).$mount("#app2");*/

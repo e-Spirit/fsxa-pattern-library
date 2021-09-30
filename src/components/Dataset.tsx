@@ -39,7 +39,10 @@ class Dataset extends RenderUtils<DatasetProps> {
   fetchPage() {
     if (!this.pageId) return null;
     try {
-      return this.fsxaApi.fetchElement(this.pageId, this.locale);
+      return this.fsxaApi.fetchElement({
+        id: this.pageId,
+        locale: this.locale,
+      });
     } catch (err) {
       return null;
     }
@@ -51,16 +54,16 @@ class Dataset extends RenderUtils<DatasetProps> {
         "You either have to provide an id or the route of a dataset",
       );
     }
-    const response = await this.fsxaApi.fetchByFilter(
-      [
+    const response = await this.fsxaApi.fetchByFilter({
+      filters: [
         {
           field: this.id ? "identifier" : "route",
           operator: ComparisonQueryOperatorEnum.EQUALS,
           value: this.id ? this.id : this.route!,
         },
       ],
-      this.locale,
-    );
+      locale: this.locale,
+    });
     return response.length ? response[0] : null;
   }
 

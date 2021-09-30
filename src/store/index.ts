@@ -1,30 +1,17 @@
 import Vue from "vue";
 import Vuex, { Module } from "vuex";
 import {
-  FSXAApi,
   NavigationData,
-  FSXAApiParams,
   FSXAContentMode,
-  FSXAConfiguration,
-  LogLevel,
   GCAPage,
   FSXAApiErrors,
+  FSXAProxyApi,
+  FSXARemoteApi,
 } from "fsxa-api";
-
-export declare type FSXAModuleParams =
-  | {
-      mode: "proxy";
-      logLevel?: LogLevel;
-      baseUrl: {
-        client: string;
-        server: string;
-      };
-    }
-  | {
-      logLevel?: LogLevel;
-      mode: "remote";
-      config: FSXAConfiguration;
-    };
+import {
+  CreateStoreProxyOptions,
+  CreateStoreRemoteOptions,
+} from "@/types/fsxa-pattern-library";
 export interface FSXAAppError {
   message: string;
   description?: string;
@@ -38,7 +25,7 @@ export enum FSXAAppState {
 }
 export interface FSXAVuexState {
   locale: string | null;
-  configuration: FSXAModuleParams;
+  configuration: any;
   appState: FSXAAppState;
   navigation: NavigationData | null;
   settings: any | null;
@@ -51,6 +38,7 @@ export interface FSXAVuexState {
     };
   };
   mode: "release" | "preview";
+  auth: any;
 }
 export interface RootState {
   fsxa: FSXAVuexState;
@@ -78,9 +66,7 @@ export const FSXAActions = {
   setStoredItem: `${prefix}/${Actions.setStoredItem}`,
 };
 
-export const getFSXAConfiguration = (
-  config: FSXAModuleParams,
-): FSXAApiParams => {
+export const getFSXAConfiguration = (config: any): any => {
   if (config.mode === "remote") return config;
   return {
     mode: config.mode,
@@ -116,9 +102,13 @@ const isNotFoundError = (errorLike: any) =>
   errorLike.message === FSXAApiErrors.NOT_FOUND;
 
 export function getFSXAModule<R extends RootState>(
-  mode: FSXAContentMode,
-  params: FSXAModuleParams,
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R> {
+  const fsxaApi =
+    options.mode === "remote"
+      ? new FSXARemoteApi(options.config)
+      : new FSXAProxyApi(options.config.url, options.config.logLevel);
+
   return {
     namespaced: true,
     state: () => ({
@@ -128,8 +118,13 @@ export function getFSXAModule<R extends RootState>(
       settings: null,
       appState: FSXAAppState.not_initialized,
       error: null,
-      mode,
-      configuration: params,
+      fsxaApiMode: options.mode,
+      mode:
+        options.mode === "remote"
+          ? options.config.contentMode
+          : ("remote" as any),
+      configuration: options.config,
+      auth: null,
     }),
     actions: {
       [Actions.initializeApp]: async function(
@@ -141,29 +136,22 @@ export function getFSXAModule<R extends RootState>(
       ) {
         const path = payload.initialPath
           ? decodeURI(payload.initialPath)
-          : null;
+          : undefined;
+
         commit("setAppAsInitializing");
         try {
-          const fsxaAPI = new FSXAApi(
-            this.state.fsxa.mode as FSXAContentMode,
-            getFSXAConfiguration(this.state.fsxa.configuration),
-            this.state.fsxa.configuration.logLevel,
-          );
-
-          let navigationData = await fsxaAPI
-            .fetchNavigation(path || null, payload.defaultLocale)
-            .catch(reason => {
-              if (isNotFoundError(reason)) return null;
-              throw reason;
-            });
-
+          let navigationData = await fsxaApi.fetchNavigation({
+            initialPath: "/",
+            locale: payload.defaultLocale,
+            authData: this.state.fsxa.auth,
+          });
           if (!navigationData && path !== null) {
-            navigationData = await fsxaAPI.fetchNavigation(
-              null,
-              payload.defaultLocale,
-            );
+            navigationData = await fsxaApi.fetchNavigation({
+              initialPath: path,
+              locale: payload.defaultLocale,
+              authData: this.state.fsxa.auth,
+            });
           }
-
           if (!navigationData) {
             commit("setError", {
               message: "Could not fetch navigation-data from NavigationService",
@@ -172,20 +160,24 @@ export function getFSXAModule<R extends RootState>(
             });
             return;
           }
-          const settings = await fsxaAPI.fetchProjectProperties(
-            navigationData.meta.identifier.languageId,
-          );
+
+          const settings = await fsxaApi.fetchProjectProperties({
+            locale: navigationData.meta.identifier.languageId,
+          });
+
           commit("setAppAsInitialized", {
             locale: navigationData.meta.identifier.languageId,
             navigationData,
             settings: settings && settings.length !== 0 ? settings[0] : null,
           });
         } catch (error) {
-          commit("setAppState", FSXAAppState.error);
-          commit("setError", {
-            message: error.message,
-            stacktrace: error.stack,
-          });
+          if (error instanceof Error) {
+            commit("setAppState", FSXAAppState.error);
+            commit("setError", {
+              message: error.message,
+              stacktrace: error.stack,
+            });
+          }
           return;
         }
       },
@@ -197,6 +189,12 @@ export function getFSXAModule<R extends RootState>(
       },
     },
     mutations: {
+      setNavigation(state, payload) {
+        state.navigation = payload;
+      },
+      setAuth(state, payload) {
+        state.auth = payload;
+      },
       setAppAsInitializing(state) {
         state.appState = FSXAAppState.initializing;
         state.navigation = null;
@@ -297,11 +295,14 @@ export function getFSXAModule<R extends RootState>(
     },
   };
 }
-const createStore = (mode: FSXAContentMode, params: FSXAModuleParams) => {
+
+const createStore = (
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
+) => {
   const store = new Vuex.Store<RootState>({
     modules: {
       fsxa: {
-        ...getFSXAModule<RootState>(mode, params),
+        ...getFSXAModule<RootState>(options),
       },
     },
   });

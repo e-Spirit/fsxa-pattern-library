@@ -54,7 +54,10 @@ class Page extends BaseComponent<PageProps> {
         "You either have to pass already loaded pageData or the id of the page that should be loaded.",
       );
     try {
-      const page = await this.fsxaApi.fetchElement(this.id, this.locale);
+      const page = await this.fsxaApi.fetchElement({
+        id: this.id,
+        locale: this.locale,
+      });
       this.setStoredItem(this.id, page);
     } catch (err) {
       this.setStoredItem(this.id, null);

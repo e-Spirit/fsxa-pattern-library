@@ -2,7 +2,8 @@ import { FSXAActions, FSXAGetters, RootState } from "@/store";
 import {
   ComparisonQueryOperatorEnum,
   Dataset,
-  FSXAApi,
+  FSXAProxyApi,
+  FSXARemoteApi,
   NavigationData,
   NavigationItem,
 } from "fsxa-api";
@@ -66,7 +67,7 @@ export interface TriggerRouteChangeParams {
 }
 export async function triggerRouteChange(
   $store: Store<RootState>,
-  $fsxaApi: FSXAApi,
+  $fsxaApi: FSXAProxyApi | FSXARemoteApi,
   params: TriggerRouteChangeParams,
   currentLocale: string,
   globalSettingsKey?: string,
@@ -101,16 +102,16 @@ export async function triggerRouteChange(
 
     if (currentDatasetId) {
       // we will load the new dataset from the caas
-      const [dataset] = await $fsxaApi.fetchByFilter(
-        [
+      const [dataset] = await $fsxaApi.fetchByFilter({
+        filters: [
           {
             operator: ComparisonQueryOperatorEnum.EQUALS,
             value: currentDatasetId,
             field: "identifier",
           },
         ],
-        params.locale,
-      );
+        locale: params.locale,
+      });
       if (dataset) {
         const route = (dataset as Dataset).route;
         $store.dispatch(FSXAActions.setStoredItem, {

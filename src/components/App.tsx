@@ -26,7 +26,7 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import { FSXAApi, FSXAContentMode } from "fsxa-api";
+import { FSXAContentMode, FSXAProxyApi } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
@@ -195,10 +195,9 @@ class App extends TsxComponent<AppProps> {
     return this.$store.getters[FSXAGetters.mode] === "preview";
   }
 
-  get fsxaApi(): FSXAApi {
-    return new FSXAApi(
-      this.isEditMode ? FSXAContentMode.PREVIEW : FSXAContentMode.RELEASE,
-      getFSXAConfiguration(this.$store.state.fsxa.configuration),
+  get fsxaApi(): FSXAProxyApi {
+    return new FSXAProxyApi(
+      this.$store.state.fsxa.configuration.baseUrl.server,
     );
   }
 
@@ -248,12 +247,14 @@ class App extends TsxComponent<AppProps> {
       }
     } catch (error) {
       // We will render a 404 page if this is passed as a component
-      if (error.message === NAVIGATION_ERROR_404) {
-        if (this.components?.page404) {
-          const Page404Layout = this.components.page404;
-          return <Page404Layout currentPath={this.currentPath} />;
+      if (error instanceof Error) {
+        if (error.message === NAVIGATION_ERROR_404) {
+          if (this.components?.page404) {
+            const Page404Layout = this.components.page404;
+            return <Page404Layout currentPath={this.currentPath} />;
+          }
+          return null;
         }
-        return null;
       }
     }
     return null;
