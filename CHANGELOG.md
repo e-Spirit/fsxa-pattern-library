@@ -1,6 +1,25 @@
 # [3.4.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.3.0...v3.4.0) (2021-11-25)
 
 
+### Bug Fixes
+
+* increase alpha version ([89e69a6](https://github.com/e-Spirit/fsxa-pattern-library/commit/89e69a6fb16b2bec987a6d594961b7520e0d047f))
+
+
+### Features
+
+* update fsxa-api and implement new fsxa-api classes ([#17](https://github.com/e-Spirit/fsxa-pattern-library/issues/17)) ([bbf622d](https://github.com/e-Spirit/fsxa-pattern-library/commit/bbf622d6d462fba8d024025ed51b788a4d2a2657))
+
+
+### BREAKING CHANGES
+
+* The original fsxa-api class was removed and the new ones FSXAProxyApi and
+FSXARemoteApi were implemented. Their have a slightly different, but better, method signatures. For
+more information, please read the README file.
+
+# [4.0.0-alpha.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.2.4...v4.0.0-alpha.1) (2021-09-30)
+
+
 ### Features
 
 * **404 page:** identify and handle not-found ([#19](https://github.com/e-Spirit/fsxa-pattern-library/issues/19)) ([c389f94](https://github.com/e-Spirit/fsxa-pattern-library/commit/c389f9412137a081decd30ee6f0aefb15ffbc430))
