@@ -33,7 +33,7 @@ const remoteApiConfig = {
   navigationServiceURL: getFSXAConfigFromEnvFile().navigationService,
   projectID: getFSXAConfigFromEnvFile().projectId,
   tenantID: getFSXAConfigFromEnvFile().tenantId,
-  logLevel: 0,
+  logLevel: LogLevel.INFO,
 };
 
 const store = createStore({ mode: "proxy", config: proxyApiConfig });
