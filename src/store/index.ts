@@ -8,6 +8,7 @@ import {
   FSXAConfiguration,
   LogLevel,
   GCAPage,
+  FSXAApiErrors,
 } from "fsxa-api";
 
 export declare type FSXAModuleParams =
@@ -110,6 +111,11 @@ export const FSXAGetters = {
   [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
 };
 
+const isNotFoundError = (errorLike: any) =>
+  typeof errorLike === "object" &&
+  "message" in errorLike &&
+  errorLike.message === FSXAApiErrors.NOT_FOUND;
+
 export function getFSXAModule<R extends RootState>(
   mode: FSXAContentMode,
   params: FSXAModuleParams,
@@ -144,10 +150,14 @@ export function getFSXAModule<R extends RootState>(
             getFSXAConfiguration(this.state.fsxa.configuration),
             this.state.fsxa.configuration.logLevel,
           );
-          let navigationData = await fsxaAPI.fetchNavigation(
-            path || null,
-            payload.defaultLocale,
-          );
+
+          let navigationData = await fsxaAPI
+            .fetchNavigation(path || null, payload.defaultLocale)
+            .catch(reason => {
+              if (isNotFoundError(reason)) return null;
+              throw reason;
+            });
+
           if (!navigationData && path !== null) {
             navigationData = await fsxaAPI.fetchNavigation(
               null,
