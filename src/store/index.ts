@@ -113,7 +113,6 @@ export const FSXAGetters = {
 
 const isNotFoundError = (errorLike: any) =>
   typeof errorLike === "object" &&
-  "message" in errorLike &&
   errorLike.message === FSXAApiErrors.NOT_FOUND;
 
 export function getFSXAModule<R extends RootState>(
