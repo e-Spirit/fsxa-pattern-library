@@ -26,14 +26,16 @@ export interface FSXAVuexState {
   locale: string | null;
   configuration: any;
   appState: FSXAAppState;
-  navigation: NavigationData | null;
+  navigation: { [lang: string]: NavigationData | null };
   settings: any | null;
   error: FSXAAppError | null;
   stored: {
-    [key: string]: {
-      ttl: number;
-      fetchedAt: number;
-      value: any;
+    [lang: string]: {
+      [key: string]: {
+        ttl: number;
+        fetchedAt: number;
+        value: any;
+      };
     };
   };
   mode: "release" | "preview";
@@ -49,6 +51,7 @@ const prefix = "fsxa";
 
 const Actions = {
   initializeApp: "initializeApp",
+  reinitializeApp: "reinitializeApp",
   hydrateClient: "hydrateClient",
   setStoredItem: "setStoredItem",
 };
@@ -61,6 +64,7 @@ const Getters = {
 
 export const FSXAActions = {
   initializeApp: `${prefix}/${Actions.initializeApp}`,
+  reinitializeApp: `${prefix}/${Actions.reinitializeApp}`,
   hydrateClient: `${prefix}/${Actions.hydrateClient}`,
   setStoredItem: `${prefix}/${Actions.setStoredItem}`,
 };
@@ -109,7 +113,7 @@ export function getFSXAModule<R extends RootState>(
     state: () => ({
       stored: {},
       locale: null,
-      navigation: null,
+      navigation: {},
       settings: null,
       appState: FSXAAppState.not_initialized,
       error: null,
@@ -129,11 +133,70 @@ export function getFSXAModule<R extends RootState>(
           initialPath?: string;
         },
       ) {
+        commit("setLocale", payload.defaultLocale);
         const path = payload.initialPath
           ? decodeURI(payload.initialPath)
           : undefined;
 
         commit("setAppAsInitializing");
+        try {
+          let navigationData = await fsxaApi.fetchNavigation({
+            initialPath: "/",
+            locale: payload.defaultLocale,
+            authData: this.state.fsxa.auth,
+          });
+          if (!navigationData && path !== null) {
+            navigationData = await fsxaApi.fetchNavigation({
+              initialPath: path,
+              locale: payload.defaultLocale,
+              authData: this.state.fsxa.auth,
+            });
+          }
+          if (!navigationData) {
+            commit("setError", {
+              message: "Could not fetch navigation-data from NavigationService",
+              description:
+                "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
+            });
+            return;
+          }
+
+          const settings = await fsxaApi.fetchProjectProperties({
+            locale: navigationData.meta.identifier.languageId,
+          });
+
+          commit("setAppAsInitialized", {
+            locale: navigationData.meta.identifier.languageId,
+            navigationData,
+            settings: settings && settings.length !== 0 ? settings[0] : null,
+          });
+        } catch (error) {
+          if (error instanceof Error) {
+            commit("setAppState", FSXAAppState.error);
+            commit("setError", {
+              message: error.message,
+              stacktrace: error.stack,
+            });
+          }
+          return;
+        }
+      },
+      [Actions.reinitializeApp]: async function(
+        { commit, state },
+        payload: {
+          defaultLocale: string;
+          initialPath?: string;
+        },
+      ) {
+        commit("setLocale", payload.defaultLocale);
+        const path = payload.initialPath
+          ? decodeURI(payload.initialPath)
+          : undefined;
+
+        commit("setAppAsReinitializing", {
+          stored: state.stored,
+          navigation: state.navigation,
+        });
         try {
           let navigationData = await fsxaApi.fetchNavigation({
             initialPath: "/",
@@ -182,6 +245,9 @@ export function getFSXAModule<R extends RootState>(
       [Actions.setStoredItem]: async function({ commit }, payload) {
         commit("setStoredItem", payload);
       },
+      setLocale: async function({ commit }, payload) {
+        commit("setLocale", payload);
+      },
     },
     mutations: {
       setNavigation(state, payload) {
@@ -192,9 +258,16 @@ export function getFSXAModule<R extends RootState>(
       },
       setAppAsInitializing(state) {
         state.appState = FSXAAppState.initializing;
-        state.navigation = null;
+        state.navigation = {};
         state.settings = null;
         state.stored = {};
+        state.error = null;
+      },
+      setAppAsReinitializing(state, payload) {
+        state.appState = FSXAAppState.initializing;
+        state.navigation = payload.navigation;
+        state.settings = null;
+        state.stored = payload.stored;
         state.error = null;
       },
       setAppAsInitialized(
@@ -206,9 +279,12 @@ export function getFSXAModule<R extends RootState>(
         },
       ) {
         state.appState = FSXAAppState.ready;
-        state.navigation = payload.navigationData;
-        state.settings = payload.settings;
         state.locale = payload.locale;
+        state.navigation = {
+          [payload.locale]: payload.navigationData,
+          ...state.navigation,
+        };
+        state.settings = payload.settings;
       },
       setLocale(state, locale: string) {
         Vue.set(state, "locale", locale);
@@ -231,7 +307,10 @@ export function getFSXAModule<R extends RootState>(
         Vue.set(state, "settings", payload.settings);
       },
       setStoredItem(state, { key, value, fetchedAt, ttl }) {
-        Vue.set(state.stored, key, {
+        if (!state.stored[state.locale!]) {
+          Vue.set(state.stored, state.locale!, {});
+        }
+        Vue.set(state.stored[state.locale!], key, {
           value,
           fetchedAt,
           ttl,
@@ -262,7 +341,8 @@ export function getFSXAModule<R extends RootState>(
         return state.error;
       },
       [GETTER_NAVIGATION_DATA]: function(state) {
-        return state.navigation || null;
+        if (!state.navigation[state.locale!]) return null;
+        return state.navigation[state.locale!] || null;
       },
       [GETTER_CONFIGURATION]: function(state) {
         return state.configuration || null;
@@ -270,7 +350,10 @@ export function getFSXAModule<R extends RootState>(
       [GETTER_LOCALE]: function(state) {
         return state.locale || null;
       },
-      [GETTER_ITEM]: (state): any => (id: string) => state.stored[id] || null,
+      [GETTER_ITEM]: (state): any => (id: string) => {
+        if (!state.stored[state.locale!]) return null;
+        return state.stored[state.locale!][id] || null;
+      },
       [GETTER_PAGE_BY_URL]: (state, getters) => (url: string) => {
         const navigationData = getters[FSXAGetters[GETTER_NAVIGATION_DATA]];
         if (!navigationData) return null;
@@ -283,7 +366,7 @@ export function getFSXAModule<R extends RootState>(
       ) => {
         const page =
           referenceType === "PageRef"
-            ? state.navigation?.idMap[referenceId]
+            ? state.navigation[state.locale!]?.idMap[referenceId]
             : null;
         return page ? page.seoRoute : null;
       },

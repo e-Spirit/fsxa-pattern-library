@@ -1,5 +1,6 @@
 import { Component } from "vue-property-decorator";
 import { FSXABaseAppLayout } from "fsxa-pattern-library";
+import { NavigationItem } from "fsxa-api/dist/types";
 
 @Component({
   name: "AppLayout",
@@ -21,20 +22,22 @@ class AppLayout extends FSXABaseAppLayout {
             <div class="pl-flex-1 pl-text-right">
               {this.navigationData && (
                 <ul class="pl-nline-block">
-                  {this.navigationData.structure?.map(item => (
-                    <li class="pl-inline-block pl-px-2 pl-text-sm">
-                      <a
-                        class="hover:pl-underline"
-                        href={this.navigationData!.idMap[item.id].seoRoute}
-                        onClick={event => {
-                          event.preventDefault();
-                          this.triggerRouteChange({ pageId: item.id });
-                        }}
-                      >
-                        {this.navigationData!.idMap[item.id].label}
-                      </a>
-                    </li>
-                  ))}
+                  {this.navigationData.structure?.map(
+                    ({ id }: { id: string }) => (
+                      <li class="pl-inline-block pl-px-2 pl-text-sm">
+                        <a
+                          class="hover:pl-underline"
+                          href={this.navigationData.idMap[id].seoRoute}
+                          onClick={event => {
+                            event.preventDefault();
+                            this.triggerRouteChange({ pageId: id });
+                          }}
+                        >
+                          {this.navigationData.idMap[id].label}
+                        </a>
+                      </li>
+                    ),
+                  )}
                 </ul>
               )}
             </div>

@@ -41,6 +41,8 @@ export function findNavigationItemInNavigationData(
     pageId?: string;
   },
 ): NavigationItem | null {
+  console.log("findNavigationItemInNavigation", params);
+  params.seoRoute = decodeURIComponent(params.seoRoute || "");
   if (
     (!params.pageId && !params.seoRoute) ||
     (params.pageId && params.seoRoute)
@@ -65,6 +67,20 @@ export interface TriggerRouteChangeParams {
   pageId?: string;
   locale?: string;
 }
+
+function insertUrlParam(key: string, value: string) {
+  const searchParams = new URLSearchParams(window.location.search);
+  searchParams.set(key, value);
+  const newurl =
+    window.location.protocol +
+    "//" +
+    window.location.host +
+    window.location.pathname +
+    "?" +
+    searchParams.toString();
+  window.history.pushState({ path: newurl }, "", newurl);
+}
+
 export async function triggerRouteChange(
   $store: Store<RootState>,
   $fsxaApi: FSXAProxyApi | FSXARemoteApi,
@@ -72,6 +88,8 @@ export async function triggerRouteChange(
   currentLocale: string,
   globalSettingsKey?: string,
 ): Promise<string | null> {
+  console.log(params);
+
   if (!params.locale || params.locale === currentLocale) {
     if (params.route) return params.route;
     if (params.pageId)
@@ -82,10 +100,11 @@ export async function triggerRouteChange(
       );
   }
   if (params.locale && params.locale !== currentLocale) {
+    insertUrlParam("lang", currentLocale);
     // we will store the possible old datasetId, so that we can fetch the translated one as well and redirect to the new seoRoute
     const currentDatasetId =
       (params.route
-        ? ($store.state.fsxa.stored[params.route]?.value as Dataset) || null
+        ? $store.state.fsxa.stored[params.route]?.value.value || null
         : null
       )?.id || null;
     const currentPageId =
@@ -93,9 +112,8 @@ export async function triggerRouteChange(
         pageId: params.pageId,
         seoRoute: params.route,
       })?.id || null;
-
     // We throw away the old state and reinitialize the app with the new locale
-    await $store.dispatch(FSXAActions.initializeApp, {
+    await $store.dispatch(FSXAActions.reinitializeApp, {
       defaultLocale: params.locale,
       globalSettingsKey,
     });

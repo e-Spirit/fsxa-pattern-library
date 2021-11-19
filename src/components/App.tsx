@@ -58,6 +58,10 @@ class App extends TsxComponent<AppProps> {
 
   @Watch("currentPath")
   onCurrentPathChange(nextPath: string) {
+    const newLang = new URLSearchParams(window.location.search).get("lang");
+    if (newLang && newLang !== this.locale)
+      this.$store.dispatch("fsxa/setLocale", newLang);
+
     this.path = nextPath;
   }
 
@@ -214,7 +218,7 @@ class App extends TsxComponent<AppProps> {
   }
 
   get navigationData() {
-    return this.$store.state.fsxa.navigation;
+    return this.$store.getters[FSXAGetters.navigationData];
   }
 
   renderContent() {

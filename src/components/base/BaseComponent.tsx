@@ -134,7 +134,7 @@ class BaseComponent<
   /**
    * the current navigation data state
    */
-  get navigationData(): NavigationData | null {
+  get navigationData(): any | null {
     return this.$store.getters[FSXAGetters.navigationData];
   }
 

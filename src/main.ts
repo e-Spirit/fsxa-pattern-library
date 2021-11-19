@@ -33,10 +33,10 @@ const remoteApiConfig = {
   navigationServiceURL: getFSXAConfigFromEnvFile().navigationService,
   projectID: getFSXAConfigFromEnvFile().projectId,
   tenantID: getFSXAConfigFromEnvFile().tenantId,
-  logLevel: LogLevel.INFO,
+  logLevel: LogLevel.ERROR,
 };
 
-const store = createStore({ mode: "proxy", config: proxyApiConfig });
+const store = createStore({ mode: "remote", config: remoteApiConfig });
 new Vue({
   store,
   render: h => h(TsxApp),
