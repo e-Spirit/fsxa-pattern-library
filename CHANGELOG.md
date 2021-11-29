@@ -1,3 +1,10 @@
+# [4.0.0-alpha.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.0-alpha.4...v4.0.0-alpha.5) (2021-11-29)
+
+
+### Bug Fixes
+
+* implement solution to deal with trailing slashes ([#18](https://github.com/e-Spirit/fsxa-pattern-library/issues/18)) ([645707a](https://github.com/e-Spirit/fsxa-pattern-library/commit/645707aadf2f3d51845a65250e22f51bed93d798))
+
 # [4.0.0-alpha.4](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.0-alpha.3...v4.0.0-alpha.4) (2021-10-01)
 
 
