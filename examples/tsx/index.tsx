@@ -9,6 +9,7 @@ import Paragraph from "./components/richtext/Paragraph";
 import Text from "./components/richtext/Text";
 import List from "./components/richtext/List";
 import ListItem from "./components/richtext/ListItem";
+import CategoryProducts from "./components/sections/CategoryProducts";
 
 @Component({
   name: "App",
@@ -52,6 +53,7 @@ class App extends TsxComponent<{}> {
             "products.product": ProductDetailSection,
             teaser: TeaserSection,
             text: TeaserSection,
+            "products.category_products": CategoryProducts,
           },
           richtext: {
             paragraph: Paragraph,
