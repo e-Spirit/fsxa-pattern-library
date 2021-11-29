@@ -36,7 +36,7 @@ const remoteApiConfig = {
   logLevel: LogLevel.INFO,
 };
 
-const store = createStore({ mode: "proxy", config: proxyApiConfig });
+const store = createStore({ mode: "remote", config: remoteApiConfig });
 new Vue({
   store,
   render: h => h(TsxApp),
