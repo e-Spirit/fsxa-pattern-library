@@ -1,3 +1,29 @@
+# [4.0.0-alpha.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.4.0...v4.0.0-alpha.1) (2021-11-30)
+
+
+### Bug Fixes
+
+* **404Page:** fix merge conflict ([afe79bc](https://github.com/e-Spirit/fsxa-pattern-library/commit/afe79bcc2c95276357fbc47d73d3ee165d58db3f))
+* fix import path ([2129bc8](https://github.com/e-Spirit/fsxa-pattern-library/commit/2129bc8396a5041e33af5ead38d96e3d94a1bbbe))
+* implement solution to deal with trailing slashes ([#18](https://github.com/e-Spirit/fsxa-pattern-library/issues/18)) ([520f321](https://github.com/e-Spirit/fsxa-pattern-library/commit/520f321b9b2a211976e5a934b0b377e02f2f6260))
+* increase alpha version ([442d8e2](https://github.com/e-Spirit/fsxa-pattern-library/commit/442d8e20b284b04b0a3feaa4d98d18fc0ee1636b))
+* increase version ([df118ec](https://github.com/e-Spirit/fsxa-pattern-library/commit/df118ecb5fafce8c113b0b3785a3b8ca31f14072))
+* remove unused file ([1df2049](https://github.com/e-Spirit/fsxa-pattern-library/commit/1df2049bc3d8deb8cb41568c596c065bc4c9d301))
+* remove unused file fsxa.config.js ([3b72248](https://github.com/e-Spirit/fsxa-pattern-library/commit/3b72248616bf9d39ebdf643a9a10c7c91b1856c7))
+* replace number with enum ([718df10](https://github.com/e-Spirit/fsxa-pattern-library/commit/718df100124e1bba996f6284c8f55a0f613fbc71))
+
+
+### Features
+
+* update fsxa-api and implement new fsxa-api classes ([#17](https://github.com/e-Spirit/fsxa-pattern-library/issues/17)) ([1788abf](https://github.com/e-Spirit/fsxa-pattern-library/commit/1788abf368dfb6d71b38e9b0997d7dde38e2848a))
+
+
+### BREAKING CHANGES
+
+* The original fsxa-api class was removed and the new ones FSXAProxyApi and
+FSXARemoteApi were implemented. Their have a slightly different, but better, method signatures. For
+more information, please read the README file.
+
 # [3.4.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.3.0...v3.4.0) (2021-11-25)
 
 
