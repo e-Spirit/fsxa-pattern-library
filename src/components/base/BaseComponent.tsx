@@ -1,8 +1,7 @@
 import { Component as TsxComponent } from "vue-tsx-support";
 import { Component, Inject, InjectReactive } from "vue-property-decorator";
-import { FSXAGetters, getFSXAConfiguration } from "@/store";
+import { FSXAGetters } from "@/store";
 import {
-  FSXAContentMode,
   FSXAProxyApi,
   FSXARemoteApi,
   GCAPage,

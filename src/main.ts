@@ -3,15 +3,10 @@ import Vue from "vue";
 import TsxApp from "./../examples/tsx";
 // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
 // @ts-ignore
-import SFCApp from "./../examples/sfc/index.vue";
+// import SFCApp from "./../examples/sfc/index.vue";
 import createStore from "./store";
 import { getFSXAConfigFromEnvFile } from "./utils/config";
-import {
-  FSXAContentMode,
-  FSXAProxyApi,
-  FSXARemoteApi,
-  LogLevel,
-} from "fsxa-api";
+import { FSXAContentMode, LogLevel } from "fsxa-api";
 Vue.config.productionTip = false;
 import "prismjs";
 import "prismjs/components/prism-json";
@@ -21,10 +16,10 @@ import "prismjs/components/prism-tsx";
 import "prismjs/themes/prism-okaidia.css";
 import "setimmediate";
 
-const proxyApiConfig = {
+/* const proxyApiConfig = {
   url: "http://localhost:3002/api",
   logLevel: LogLevel.INFO,
-};
+}; */
 
 const remoteApiConfig = {
   apikey: getFSXAConfigFromEnvFile().apiKey,

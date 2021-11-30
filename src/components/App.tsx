@@ -1,10 +1,4 @@
-import {
-  FSXAActions,
-  FSXAAppError,
-  FSXAAppState,
-  FSXAGetters,
-  getFSXAConfiguration,
-} from "@/store";
+import { FSXAActions, FSXAAppError, FSXAAppState, FSXAGetters } from "@/store";
 import {
   determineCurrentRoute,
   NAVIGATION_ERROR_404,
@@ -26,7 +20,7 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import { FSXAContentMode, FSXAProxyApi } from "fsxa-api";
+import { FSXAProxyApi } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
