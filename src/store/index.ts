@@ -150,6 +150,9 @@ export function getFSXAModule<R extends RootState>(
               initialPath: path,
               locale: payload.defaultLocale,
               authData: this.state.fsxa.auth,
+            }).catch(reason => {
+              if (isNotFoundError(reason)) return null;
+              throw reason;
             });
           }
           if (!navigationData) {
