@@ -16,11 +16,6 @@ import "prismjs/components/prism-tsx";
 import "prismjs/themes/prism-okaidia.css";
 import "setimmediate";
 
-/* const proxyApiConfig = {
-  url: "http://localhost:3002/api",
-  logLevel: LogLevel.INFO,
-}; */
-
 const remoteApiConfig = {
   apikey: getFSXAConfigFromEnvFile().apiKey,
   caasURL: getFSXAConfigFromEnvFile().caas,
