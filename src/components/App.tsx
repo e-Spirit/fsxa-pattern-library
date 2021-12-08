@@ -107,22 +107,6 @@ class App extends TsxComponent<AppProps> {
                 if (nextPage) this.requestRouteChange(nextPage.seoRoute);
               });
           });
-          // Temporary solution to enable the cropping of images with multiple resolutions when using the data-tpp-context-image-resolution.
-          // Should be removed after OCM-518 is done.
-          TPP_SNAP.overrideDefaultButton("crop", {
-            execute: async ({
-              previewId,
-              $node: {
-                dataset: { tppContextImageResolution = "ORIGINAL" },
-              },
-            }: {
-              previewId: string;
-              $node: { dataset: { tppContextImageResolution: string } };
-            }) => {
-              const resolutions = tppContextImageResolution.split(",");
-              TPP_SNAP.cropImage(previewId, resolutions);
-            },
-          });
           TPP_SNAP.onRerenderView(() => {
             window.setTimeout(() => this.initialize(), 300);
             return false;
