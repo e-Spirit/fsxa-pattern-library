@@ -11,10 +11,17 @@ class AppLayout extends FSXABaseAppLayout {
         <div class="pl-bg-gray-200">
           <div class="pl-w-full pl-flex pl-items-center pl-justify-center pl-px-4 md:pl-px-6 lg:pl-px-10 pl-py-3">
             <div class="pl-flex-shrink-0 pl-font-bold">TSX App</div>
+            <button
+              onClick={() => {
+                this.$store.dispatch("fsxa/login");
+              }}
+            >
+              LOGIN
+            </button>
             <div class="pl-flex-1 pl-text-right">
               {this.navigationData && (
                 <ul class="pl-nline-block">
-                  {this.navigationData.structure.map(item => (
+                  {this.navigationData.structure?.map(item => (
                     <li class="pl-inline-block pl-px-2 pl-text-sm">
                       <a
                         class="hover:pl-underline"

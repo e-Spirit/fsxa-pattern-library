@@ -1,12 +1,13 @@
 import "vue-tsx-support/enable-check";
-
 import { Module } from "vuex";
-import { RootState, FSXAVuexState, FSXAModuleParams } from "./../store";
-import { FSXAContentMode } from "fsxa-api";
+import { RootState, FSXAVuexState } from "./../store";
+import {
+  CreateStoreProxyOptions,
+  CreateStoreRemoteOptions,
+} from "./components";
 
 export function getFSXAModule<R extends RootState>(
-  mode: FSXAContentMode,
-  params: FSXAModuleParams,
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R>;
 
 export {

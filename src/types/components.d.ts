@@ -1,6 +1,9 @@
 import { Component } from "vue-tsx-support";
 import {
-  FSXAApi,
+  FSXAProxyApi,
+  FSXARemoteApi,
+  FSXARemoteApiConfig,
+  LogLevel,
   NavigationData,
   NavigationItem,
   Page as APIPage,
@@ -59,7 +62,7 @@ export class FSXABaseComponent<
   /**
    * get preconfigured and ready to use FSXAApi instance
    */
-  get fsxaApi(): FSXAApi;
+  get fsxaApi(): FSXARemoteApi | FSXAProxyApi;
   /**
    * the current locale the content is displayed in
    */
@@ -72,6 +75,10 @@ export class FSXABaseComponent<
    * The content of your globally configured GCAPage "global_settings"
    */
   get globalSettings(): GCAPage | null;
+  /**
+   * Provides the TPPSnap API
+   */
+  get tppSnap(): any;
   /**
    * Access your stored data in the vuex store
    */
@@ -365,3 +372,13 @@ export interface RequestRouteChangeParams {
    */
   locale?: string;
 }
+
+export type CreateStoreProxyOptions = {
+  mode: "proxy";
+  config: { url: string; logLevel: LogLevel };
+};
+
+export type CreateStoreRemoteOptions = {
+  mode: "remote";
+  config: FSXARemoteApiConfig;
+};

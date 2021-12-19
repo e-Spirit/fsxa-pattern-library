@@ -1,14 +1,15 @@
 import { Component as TsxComponent } from "vue-tsx-support";
 import { Component, Inject, InjectReactive } from "vue-property-decorator";
-import { FSXAGetters, getFSXAConfiguration } from "@/store";
+import { FSXAGetters } from "@/store";
 import {
-  FSXAApi,
-  FSXAContentMode,
+  FSXAProxyApi,
+  FSXARemoteApi,
   GCAPage,
   NavigationData,
   NavigationItem,
 } from "fsxa-api";
 import {
+  findNavigationItemInNavigationData,
   getStoredItem,
   setStoredItem,
   triggerRouteChange,
@@ -18,8 +19,8 @@ import {
   FSXA_INJECT_KEY_DEV_MODE,
   FSXA_INJECT_KEY_TPP_VERSION,
 } from "@/constants";
-import { findNavigationItemInNavigationData } from "@/utils/getters";
 import { determineCurrentRoute } from "@/utils/navigation";
+import { getTPPSnap } from "@/utils";
 
 @Component({
   name: "BaseComponent",
@@ -115,11 +116,12 @@ class BaseComponent<
   /**
    * get preconfigured and ready to use FSXAApi instance
    */
-  get fsxaApi(): FSXAApi {
-    return new FSXAApi(
-      this.isEditMode ? FSXAContentMode.PREVIEW : FSXAContentMode.RELEASE,
-      getFSXAConfiguration(this.$store.state.fsxa.configuration),
-    );
+  get fsxaApi(): FSXAProxyApi | FSXARemoteApi {
+    const { fsxaApiMode, configuration } = this.$store.state.fsxa;
+
+    return fsxaApiMode === "remote"
+      ? new FSXARemoteApi(configuration)
+      : new FSXAProxyApi(configuration.url, configuration.logLevel);
   }
 
   /**
@@ -143,6 +145,13 @@ class BaseComponent<
    */
   get globalSettings(): GCAPage | null {
     return this.$store.state.fsxa.settings || null;
+  }
+
+  /**
+   * Provides the TPPSnap API
+   */
+  get tppSnap(): any {
+    return getTPPSnap();
   }
 
   /**
