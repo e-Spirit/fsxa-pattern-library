@@ -1,30 +1,30 @@
 ## [4.0.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.1...v4.0.2) (2021-12-22)
 
-
 ### Bug Fixes
 
-* **tpp-snap:** removed workaround for OCM-518 ([#28](https://github.com/e-Spirit/fsxa-pattern-library/issues/28)) ([8f7d52a](https://github.com/e-Spirit/fsxa-pattern-library/commit/8f7d52aadaa552d939da7fee0dab8eb9ed6a08eb))
+- **tpp-snap:** enable cropping for all resolutions ([#28](https://github.com/e-Spirit/fsxa-pattern-library/issues/28)) ([8f7d52a](https://github.com/e-Spirit/fsxa-pattern-library/commit/8f7d52aadaa552d939da7fee0dab8eb9ed6a08eb))
+
+### Update Notice
+
+The bug fix only works with a TPP_SNAP version >= 2.4.1
 
 ## [4.0.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.0...v4.0.1) (2021-12-21)
 
-
 ### Bug Fixes
 
-* **store:** fix definition of state's mode property ([#29](https://github.com/e-Spirit/fsxa-pattern-library/issues/29)) ([7ff4955](https://github.com/e-Spirit/fsxa-pattern-library/commit/7ff49551ca5d8f5fcaac1f32dca6db1e3c48849f))
+- **store:** fix definition of state's mode property ([#29](https://github.com/e-Spirit/fsxa-pattern-library/issues/29)) ([7ff4955](https://github.com/e-Spirit/fsxa-pattern-library/commit/7ff49551ca5d8f5fcaac1f32dca6db1e3c48849f))
 
 # [4.0.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.4.0...v4.0.0) (2021-12-07)
 
-
 ### Features
 
-* add NavigationFilter ([#27](https://github.com/e-Spirit/fsxa-pattern-library/issues/27)) ([38973fd](https://github.com/e-Spirit/fsxa-pattern-library/commit/38973fdbac8ccacccc3e44f521b3d7859ba454df)), closes [#17](https://github.com/e-Spirit/fsxa-pattern-library/issues/17) [#18](https://github.com/e-Spirit/fsxa-pattern-library/issues/18)
-
+- add NavigationFilter ([#27](https://github.com/e-Spirit/fsxa-pattern-library/issues/27)) ([38973fd](https://github.com/e-Spirit/fsxa-pattern-library/commit/38973fdbac8ccacccc3e44f521b3d7859ba454df)), closes [#17](https://github.com/e-Spirit/fsxa-pattern-library/issues/17) [#18](https://github.com/e-Spirit/fsxa-pattern-library/issues/18)
 
 ### BREAKING CHANGES
 
-* The original fsxa-api class was removed and the new ones FSXAProxyApi and
-FSXARemoteApi are used. Their have a slightly different, but better, method signatures. For
-more information, please read the [migration guide in the CHANGELOG of the FSXA-API](https://github.com/e-Spirit/fsxa-api/blob/master/CHANGELOG.md#migration-guide).
+- The original fsxa-api class was removed and the new ones FSXAProxyApi and
+  FSXARemoteApi are used. Their have a slightly different, but better, method signatures. For
+  more information, please read the [migration guide in the CHANGELOG of the FSXA-API](https://github.com/e-Spirit/fsxa-api/blob/master/CHANGELOG.md#migration-guide).
 
 # [3.4.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v3.3.0...v3.4.0) (2021-11-25)
 

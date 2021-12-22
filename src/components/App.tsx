@@ -25,7 +25,7 @@ import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
 
-const DEFAULT_TPP_SNAP_VERSION = "2.4.0";
+const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 @Component({
   name: "FSXAApp",
 })
