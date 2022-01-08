@@ -115,6 +115,22 @@ class App extends TsxComponent<AppProps> {
             `Could not load correct fs-tpp-api version: ${this.tppVersion}. Please make sure that it exists.`,
           );
         });
+
+      const { fsxaApiMode, configuration } = this.$store.state.fsxa;
+      if (fsxaApiMode === "proxy") {
+        const fsxaApi = new FSXAProxyApi(
+          configuration.url,
+          configuration.logLevel,
+        );
+
+        const eventSource = fsxaApi.connectEventStream();
+        eventSource.addEventListener("open", () => {
+          // TODO enable Snap CaaS mode
+        });
+        eventSource.addEventListener("message", event => {
+          // TODO trigger change-stream-adapter
+        });
+      }
     }
   }
 
