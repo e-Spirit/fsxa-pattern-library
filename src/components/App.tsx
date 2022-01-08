@@ -25,7 +25,7 @@ import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
 
-const DEFAULT_TPP_SNAP_VERSION = "2.4.0";
+const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 @Component({
   name: "FSXAApp",
 })
@@ -100,22 +100,6 @@ class App extends TsxComponent<AppProps> {
                 const nextPage = this.navigationData?.idMap[pageId];
                 if (nextPage) this.requestRouteChange(nextPage.seoRoute);
               });
-          });
-          // Temporary solution to enable the cropping of images with multiple resolutions when using the data-tpp-context-image-resolution.
-          // Should be removed after OCM-518 is done.
-          TPP_SNAP.overrideDefaultButton("crop", {
-            execute: async ({
-              previewId,
-              $node: {
-                dataset: { tppContextImageResolution = "ORIGINAL" },
-              },
-            }: {
-              previewId: string;
-              $node: { dataset: { tppContextImageResolution: string } };
-            }) => {
-              const resolutions = tppContextImageResolution.split(",");
-              TPP_SNAP.cropImage(previewId, resolutions);
-            },
           });
           TPP_SNAP.onRerenderView(() => {
             window.setTimeout(() => this.initialize(), 300);

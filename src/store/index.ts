@@ -119,10 +119,7 @@ export function getFSXAModule<R extends RootState>(
       appState: FSXAAppState.not_initialized,
       error: null,
       fsxaApiMode: options.mode,
-      mode:
-        options.mode === "remote"
-          ? options.config.contentMode
-          : ("remote" as any),
+      mode: options.config.contentMode,
       configuration: options.config,
       auth: null,
     }),

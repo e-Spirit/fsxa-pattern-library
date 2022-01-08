@@ -1,9 +1,9 @@
 import { Component } from "vue-tsx-support";
 import {
   FSXAProxyApi,
+  FSXAProxyApiConfig,
   FSXARemoteApi,
   FSXARemoteApiConfig,
-  LogLevel,
   NavigationData,
   NavigationItem,
   Page as APIPage,
@@ -375,7 +375,7 @@ export interface RequestRouteChangeParams {
 
 export type CreateStoreProxyOptions = {
   mode: "proxy";
-  config: { url: string; logLevel: LogLevel };
+  config: FSXAProxyApiConfig;
 };
 
 export type CreateStoreRemoteOptions = {
