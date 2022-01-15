@@ -16,6 +16,7 @@ import TabbedContent from "@/components/internal/TabbedContent";
 })
 class RichText extends BaseComponent<RichTextProps, {}, Record<string, any>> {
   @Prop({ required: true }) content!: RichTextProps["content"];
+  @Prop(String) editorName: RichTextProps["editorName"];
   @InjectReactive({ from: FSXA_INJECT_KEY_COMPONENTS })
   components!: AppComponents;
 
@@ -164,6 +165,15 @@ ${JSON.stringify(this.content, null, 2)}
   }
 
   render() {
+    if (this.isEditMode && this.editorName) {
+      return (
+        <div>
+          <span data-preview-id={"#" + this.editorName} data-inedit>
+            {this.content.map(this.renderElement)}
+          </span>
+        </div>
+      );
+    }
     return <div>{this.content.map(this.renderElement)}</div>;
   }
 }

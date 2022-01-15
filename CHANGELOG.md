@@ -1,3 +1,29 @@
+## [5.1.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.1.0...v5.1.1) (2022-01-14)
+
+
+### Bug Fixes
+
+* **dependencies:** update fsxa-api ([#33](https://github.com/e-Spirit/fsxa-pattern-library/issues/33)) ([1f08b4e](https://github.com/e-Spirit/fsxa-pattern-library/commit/1f08b4e5176e3ce15400d405f708b8f107121da7))
+
+# [5.1.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.0.0...v5.1.0) (2022-01-11)
+
+
+### Features
+
+* **InEdit:** add properties for InEdit([#26](https://github.com/e-Spirit/fsxa-pattern-library/issues/26)) ([9f4c5a5](https://github.com/e-Spirit/fsxa-pattern-library/commit/9f4c5a5e3e897e23b19d5020a446d1815604e3a3))
+
+# [5.0.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.2...v5.0.0) (2022-01-11)
+
+
+### Features
+
+* update usage of fetchByFilter ([#31](https://github.com/e-Spirit/fsxa-pattern-library/issues/31)) ([263b085](https://github.com/e-Spirit/fsxa-pattern-library/commit/263b0856a6a04b77fef62a97be2c8ae0d7a88c93))
+
+
+### BREAKING CHANGES
+
+* fetchByFilter from fsxa-api now has an extended structure. Please read the fsxa-api/[CHANGELOG.md](https://github.com/e-Spirit/fsxa-api/blob/master/CHANGELOG.md#breaking-change) for more information.
+
 ## [4.0.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v4.0.1...v4.0.2) (2021-12-22)
 
 ### Bug Fixes
