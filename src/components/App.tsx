@@ -263,7 +263,7 @@ class App extends TsxComponent<AppProps> {
     }
     // We only want to generate the content, when the app is correctly initialized
     const content =
-      this.appState === FSXAAppState.ready ? this.renderContent() : [];
+      this.appState === FSXAAppState.ready ? this.renderContent() : null;
     if (AppLayout) {
       const appLayout = (
         <AppLayout appState={this.appState} appError={this.appError}>
