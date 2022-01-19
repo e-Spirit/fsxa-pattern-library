@@ -3,11 +3,12 @@ import { createLocalVue } from "@vue/test-utils";
 import { render, waitFor } from "@testing-library/vue";
 import App from "./App";
 import { AppProps } from "@/types/components";
-import Vuex from "vuex";
-import createStore, { FSXAActions } from "@/store";
+import Vuex, { Store } from "vuex";
+import createStore, { FSXAActions, RootState } from "@/store";
 import { FSXAContentMode, FSXAProxyRoutes, LogLevel } from "fsxa-api";
 import nock from "nock";
 import { getMockNavigationData } from "../../testing/getMockNavigationData";
+import { VueConstructor } from "vue";
 
 const API_URL = "http://fsxa.local";
 
@@ -27,19 +28,25 @@ const setup = () => {
 };
 
 describe("App", () => {
+  const renderApp = (cfg: {
+    localVue: VueConstructor;
+    store: Store<RootState>;
+  }) =>
+    render(App, {
+      localVue: cfg.localVue,
+      store: cfg.store,
+      props: {
+        defaultLocale: "de",
+        handleRouteChange: () => undefined,
+        currentPath: "/some/path",
+      } as AppProps,
+    });
+
   it("dispatches initializeApp on mount", async () => {
     const { store, localVue } = setup();
     store.dispatch = jest.fn();
 
-    render(App, {
-      localVue,
-      store,
-      props: {
-        defaultLocale: "de",
-        handleRouteChange: () => void 0,
-        currentPath: "/some/path",
-      } as AppProps,
-    });
+    renderApp({ store, localVue });
 
     expect(store.dispatch).toHaveBeenCalledWith(FSXAActions.initializeApp, {
       defaultLocale: "de",
@@ -55,16 +62,19 @@ describe("App", () => {
       .post(FSXAProxyRoutes.FETCH_PROPERTIES_ROUTE)
       .reply(200, []);
 
-    render(App, {
-      localVue,
-      store,
-      props: {
-        defaultLocale: "de",
-        handleRouteChange: () => void 0,
-        currentPath: "/some/path",
-      } as AppProps,
-    });
+    renderApp({ store, localVue });
 
+    // ensure all endpoints were called
     await waitFor(() => expect(srv.isDone()).toBe(true));
+  });
+  it("renders an app error if the navigation data failed to load", async () => {
+    const { store, localVue } = setup();
+    nock(API_URL)
+      .post(FSXAProxyRoutes.FETCH_NAVIGATION_ROUTE)
+      .reply(404, getMockNavigationData());
+
+    const app = renderApp({ store, localVue });
+
+    await app.findByText("Encountered error while rendering the FSXAApp");
   });
 });
