@@ -12,26 +12,25 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
   { commit, state }: ActionContext<FSXAVuexState, RootState>,
   payload: InitializeAppPayload,
 ): Promise<void> => {
+  function fetchNavigationByPath(path: string) {
+    return fsxaApi
+      .fetchNavigation({
+        initialPath: path,
+        locale: payload.defaultLocale,
+        authData: state.auth,
+      })
+      .catch(reason => {
+        if (isNotFoundError(reason)) return null;
+        throw reason;
+      });
+  }
   const path = payload.initialPath ? decodeURI(payload.initialPath) : undefined;
 
   commit("setAppAsInitializing");
   try {
-    let navigationData = await fsxaApi.fetchNavigation({
-      initialPath: "/",
-      locale: payload.defaultLocale,
-      authData: state.auth,
-    });
-    if (!navigationData && path !== null) {
-      navigationData = await fsxaApi
-        .fetchNavigation({
-          initialPath: path,
-          locale: payload.defaultLocale,
-          authData: state.auth,
-        })
-        .catch(reason => {
-          if (isNotFoundError(reason)) return null;
-          throw reason;
-        });
+    let navigationData = await fetchNavigationByPath("/");
+    if (!navigationData && path) {
+      navigationData = await fetchNavigationByPath(path);
     }
     if (!navigationData) {
       commit("setError", {

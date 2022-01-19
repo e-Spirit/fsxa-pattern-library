@@ -1,3 +1,4 @@
+import "@testing-library/jest-dom";
 import "cross-fetch/polyfill";
 import { createLocalVue } from "@vue/test-utils";
 import { render, waitFor } from "@testing-library/vue";
@@ -28,6 +29,10 @@ const setup = () => {
 };
 
 describe("App", () => {
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   const renderApp = (cfg: {
     localVue: VueConstructor;
     store: Store<RootState>;
@@ -71,10 +76,23 @@ describe("App", () => {
     const { store, localVue } = setup();
     nock(API_URL)
       .post(FSXAProxyRoutes.FETCH_NAVIGATION_ROUTE)
-      .reply(404, getMockNavigationData());
+      .reply(404)
+      .persist();
 
     const app = renderApp({ store, localVue });
+    await expect(app.findByRole("alert")).resolves.toHaveTextContent(
+      "Could not fetch navigation-data from NavigationService",
+    );
+  });
+  it("renders an app error if the project properties failed to load", async () => {
+    const { store, localVue } = setup();
+    nock(API_URL)
+      .post(FSXAProxyRoutes.FETCH_NAVIGATION_ROUTE)
+      .reply(200, getMockNavigationData())
+      .post(FSXAProxyRoutes.FETCH_PROPERTIES_ROUTE)
+      .reply(404);
 
-    await app.findByText("Encountered error while rendering the FSXAApp");
+    const app = renderApp({ store, localVue });
+    return app.findByText("Resource could not be found", { exact: false });
   });
 });

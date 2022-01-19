@@ -251,7 +251,7 @@ class App extends TsxComponent<AppProps> {
           ) : (
             <div class="pl-text-gray-900">
               <h2 class="pl-text-lg pl-font-medium pl-text-gray-900">
-                {this.appError?.message}
+                <span role="alert">{this.appError?.message}</span>
               </h2>
               {this.appError.description && (
                 <h3>{this.appError?.description}</h3>
