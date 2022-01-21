@@ -54,7 +54,7 @@ class Dataset extends RenderUtils<DatasetProps> {
         "You either have to provide an id or the route of a dataset",
       );
     }
-    const response = await this.fsxaApi.fetchByFilter({
+    const { items } = await this.fsxaApi.fetchByFilter({
       filters: [
         {
           field: this.id ? "identifier" : "route",
@@ -64,7 +64,7 @@ class Dataset extends RenderUtils<DatasetProps> {
       ],
       locale: this.locale,
     });
-    return response.length ? response[0] : null;
+    return items.length ? items[0] : null;
   }
 
   get page(): APIPage | undefined {

@@ -21,7 +21,7 @@ class CategoryProducts extends FSXABaseSection<CategoryProductsProps> {
   products: ProductProps[] | null = null;
 
   async mounted() {
-    this.products = await this.fsxaApi.fetchByFilter({
+    const { items } = await this.fsxaApi.fetchByFilter({
       filters: [
         {
           field: "entityType",
@@ -36,6 +36,8 @@ class CategoryProducts extends FSXABaseSection<CategoryProductsProps> {
       ],
       locale: this.locale,
     });
+
+    this.products = items as ProductProps[];
   }
 
   render() {

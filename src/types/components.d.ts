@@ -350,7 +350,7 @@ export class FSXABaseRichTextElement<
   renderContent: () => JSX.Element[];
 }
 
-export interface RichTextProps {
+export interface RichTextProps extends InEditEditorProps {
   content: RichTextElement[];
 }
 export class FSXARichText extends FSXABaseComponent<RichTextProps> {}
@@ -382,3 +382,20 @@ export type CreateStoreRemoteOptions = {
   mode: "remote";
   config: FSXARemoteApiConfig;
 };
+
+export interface InEditProps extends InEditEditorProps {
+  /**
+   * String content that should be rendered
+   */
+  content: string;
+}
+export class FSXAInEdit extends FSXABaseComponent<InEditProps> {}
+
+export interface InEditEditorProps {
+  /**
+   * The name of the editor input component, specified in the FirstSpirit template
+   *
+   * A list of supported input components could be found in the ODFS {@link https://docs.e-spirit.com/odfs/template-develo/content-highlig/use-projects/index.html#unterstuetzte_eingabekomponenten__inedit}
+   */
+  editorName?: string;
+}

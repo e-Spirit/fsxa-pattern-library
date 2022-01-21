@@ -102,7 +102,9 @@ export async function triggerRouteChange(
 
     if (currentDatasetId) {
       // we will load the new dataset from the caas
-      const [dataset] = await $fsxaApi.fetchByFilter({
+      const {
+        items: [dataset],
+      } = await $fsxaApi.fetchByFilter({
         filters: [
           {
             operator: ComparisonQueryOperatorEnum.EQUALS,
