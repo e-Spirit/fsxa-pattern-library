@@ -4,7 +4,6 @@ import {
   NavigationData,
   FSXAContentMode,
   GCAPage,
-  FSXAApiErrors,
   FSXAProxyApi,
   FSXARemoteApi,
 } from "fsxa-api";
