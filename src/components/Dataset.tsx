@@ -23,7 +23,10 @@ class Dataset extends RenderUtils<DatasetProps> {
   }
 
   mounted() {
-    if (!this.page || !this.dataset) this.fetchData();
+    if (!this.page || !this.dataset)
+      this.fetchData().catch(error => {
+        console.error("[Dataset.mounted]", error);
+      });
   }
 
   async fetchData() {

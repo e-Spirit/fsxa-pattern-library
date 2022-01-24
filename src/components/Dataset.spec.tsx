@@ -60,7 +60,7 @@ describe("Dataset", () => {
   it("fetches page data when mounted and a pageId is given", async () => {
     const { store, localVue } = setup();
     const api = new FSXAProxyApi("proxy-url");
-    api.fetchByFilter = jest.fn().mockResolvedValue([]);
+    api.fetchByFilter = jest.fn().mockResolvedValue({ items: [] });
     const datasetId = "test-dataset-id";
     const pageId = "test-page-id";
     renderDataset({ api, store, localVue, props: { id: datasetId, pageId } });
@@ -81,7 +81,7 @@ describe("Dataset", () => {
   it("fetches the dataset by id if specified", async () => {
     const { store, localVue } = setup();
     const api = new FSXAProxyApi("proxy-url");
-    api.fetchByFilter = jest.fn().mockResolvedValue([]);
+    api.fetchByFilter = jest.fn().mockResolvedValue({ items: [] });
     const datasetId = "test-dataset-id";
     renderDataset({ api, store, localVue, props: { id: datasetId } });
     expect(api.fetchByFilter).toHaveBeenCalledWith({
@@ -99,7 +99,7 @@ describe("Dataset", () => {
   it("fetches the dataset by route if specified", async () => {
     const { store, localVue } = setup();
     const api = new FSXAProxyApi("proxy-url");
-    api.fetchByFilter = jest.fn().mockResolvedValue([]);
+    api.fetchByFilter = jest.fn().mockResolvedValue({ items: [] });
     const route = "test-dataset-route";
     renderDataset({ api, store, localVue, props: { route } });
     expect(api.fetchByFilter).toHaveBeenCalledWith({

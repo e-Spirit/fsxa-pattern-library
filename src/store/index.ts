@@ -11,7 +11,7 @@ import {
   CreateStoreProxyOptions,
   CreateStoreRemoteOptions,
 } from "../types/fsxa-pattern-library";
-import { initializeApp } from "@/store/actions/initializeApp";
+import { initializeApp } from "./actions/initializeApp";
 export interface FSXAAppError {
   message: string;
   description?: string;
