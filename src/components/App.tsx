@@ -24,6 +24,7 @@ import { FSXAProxyApi } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
+import { connectCaasEvents } from "@/utils/caas-events";
 
 const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 @Component({
@@ -80,6 +81,14 @@ class App extends TsxComponent<AppProps> {
     if (this.appState === FSXAAppState.not_initialized) this.initialize();
     // we will load tpp-snap, if we are in devMode
     if (this.isEditMode) {
+      const caasEvents = connectCaasEvents(this.fsxaProxyApi);
+
+      const routeToPreviewId = (previewId: string) => {
+        const [pageId] = previewId.split(".");
+        const nextPage = this.navigationData?.idMap[pageId];
+        if (nextPage) this.requestRouteChange(nextPage.seoRoute);
+      };
+
       importTPPSnapAPI(this.tppVersion)
         .then(TPP_SNAP => {
           if (!TPP_SNAP) {
@@ -88,26 +97,23 @@ class App extends TsxComponent<AppProps> {
           TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
             // This event handles the initial loading of the pwa in the ocm or after a site was created or section changed
             // Here we need to wait a few moments, so that the CaaS/Navigation-Service could be filled with the new information, before we initialize the app to get the new data.
-            new Promise<void>(resolve => {
-              const wait = setTimeout(() => {
-                clearTimeout(wait);
-                resolve();
-              }, 2000);
-            })
-              .then(this.initialize)
-              .then(() => {
-                const pageId = previewId.split(".")[0];
-                const nextPage = this.navigationData?.idMap[pageId];
-                if (nextPage) this.requestRouteChange(nextPage.seoRoute);
-              });
+            await caasEvents.waitFor(previewId, { timeout: 2000 });
+            await this.initialize();
+            routeToPreviewId(previewId);
           });
           TPP_SNAP.onRerenderView(() => {
-            window.setTimeout(() => this.initialize(), 300);
+            TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
+              await caasEvents.waitFor(previewId, { timeout: 300 });
+              await this.initialize();
+            });
             return false;
           });
-          TPP_SNAP.onNavigationChange(() => {
-            window.setTimeout(() => this.initialize(), 300);
-            return false;
+          TPP_SNAP.onNavigationChange(async (previewId: string | null) => {
+            TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
+              await caasEvents.waitFor(previewId, { timeout: 300 });
+              await this.initialize();
+              if (previewId) routeToPreviewId(previewId);
+            });
           });
         })
         .catch(() => {
@@ -115,22 +121,6 @@ class App extends TsxComponent<AppProps> {
             `Could not load correct fs-tpp-api version: ${this.tppVersion}. Please make sure that it exists.`,
           );
         });
-
-      const { fsxaApiMode, configuration } = this.$store.state.fsxa;
-      if (fsxaApiMode === "proxy") {
-        const fsxaApi = new FSXAProxyApi(
-          configuration.url,
-          configuration.logLevel,
-        );
-
-        const eventSource = fsxaApi.connectEventStream();
-        eventSource.addEventListener("open", () => {
-          // TODO enable Snap CaaS mode
-        });
-        eventSource.addEventListener("message", event => {
-          // TODO trigger change-stream-adapter
-        });
-      }
     }
   }
 
@@ -151,7 +141,7 @@ class App extends TsxComponent<AppProps> {
           this.currentPath,
         );
         if (currentRoute) {
-          getTPPSnap().setPreviewElement(`${currentRoute.id}.${this.locale}`);
+          getTPPSnap()?.setPreviewElement(`${currentRoute.id}.${this.locale}`);
         }
         // eslint-disable-next-line
       } catch (err) {}
@@ -193,6 +183,15 @@ class App extends TsxComponent<AppProps> {
     return new FSXAProxyApi(
       this.$store.state.fsxa.configuration.baseUrl.server,
     );
+  }
+
+  get fsxaProxyApi(): FSXAProxyApi | null {
+    const { fsxaApiMode, configuration } = this.$store.state.fsxa;
+    if (fsxaApiMode === "proxy") {
+      return new FSXAProxyApi(configuration.url, configuration.logLevel);
+    } else {
+      return null;
+    }
   }
 
   get locale(): string {
