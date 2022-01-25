@@ -1,11 +1,18 @@
 import { ActionContext } from "vuex";
-import { FSXAApi } from "fsxa-api";
-import { FSXAAppState, FSXAVuexState, RootState } from "@/store";
-import { isNotFoundError } from "@/utils/isNotFoundError";
+import { FSXAApi, FSXAApiErrors } from "fsxa-api";
+import { FSXAAppState, FSXAVuexState, RootState } from "../";
 
 export interface InitializeAppPayload {
   defaultLocale: string;
   initialPath?: string;
+}
+
+function isNotFoundError(errorLike: unknown) {
+  return (
+    errorLike &&
+    typeof errorLike === "object" &&
+    (errorLike as Record<string, unknown>).message === FSXAApiErrors.NOT_FOUND
+  );
 }
 
 export const initializeApp = (fsxaApi: FSXAApi) => async (
