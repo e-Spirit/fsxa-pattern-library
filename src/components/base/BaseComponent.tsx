@@ -121,7 +121,7 @@ class BaseComponent<
 
     return fsxaApiMode === "remote"
       ? new FSXARemoteApi(configuration)
-      : new FSXAProxyApi(configuration.url, configuration.logLevel);
+      : FSXAProxyApiSingleton.Instance;
   }
 
   /**
