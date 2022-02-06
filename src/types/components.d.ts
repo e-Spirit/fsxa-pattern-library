@@ -303,6 +303,16 @@ export interface AppProps {
    * The TPP-API is used for enabling the editing experience in the OCM
    */
   fsTppVersion?: string;
+  /**
+   * When activated, events for `insert`, `replace` and `delete` CaaS documents can be observerd and handled.
+   *
+   * It's currently used in preview mode, to sync updated data in FirstSpirit with the CaaS and the App State.
+   *
+   * It could be also used in release mode to e.g. inform the user that the current page has been updated, while the user is on it. Feel free to utilize `src/utils/caas-events.ts`.
+   *
+   * *Note*: This is an experimental feature and must be explicit turned on.
+   */
+  enableEventStream?: boolean;
 }
 export class FSXAApp extends Component<AppProps> {}
 

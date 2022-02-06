@@ -15,6 +15,7 @@ import {
   FSXA_INJECT_KEY_COMPONENTS,
   FSXA_INJECT_KEY_TPP_VERSION,
   FSXA_INJECT_DEV_MODE_INFO,
+  FSXA_INJECT_KEY_ENABLE_EVENT_STREAM,
 } from "@/constants";
 import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
@@ -37,6 +38,7 @@ class App extends TsxComponent<AppProps> {
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
+  @Prop({ default: false }) enableEventStream!: AppProps["enableEventStream"];
   @ProvideReactive("currentPath") path = this.currentPath;
   @ProvideReactive(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
   @ProvideReactive(FSXA_INJECT_KEY_COMPONENTS) injectedComponents = this
@@ -50,6 +52,9 @@ class App extends TsxComponent<AppProps> {
     this.components?.loader || null;
   @ProvideReactive(FSXA_INJECT_DEV_MODE_INFO) injectedInfoError =
     this.components?.devModeInfo || null;
+
+  @ProvideReactive(FSXA_INJECT_KEY_ENABLE_EVENT_STREAM)
+  injectedEnableEventStream = this.enableEventStream;
 
   @Watch("currentPath")
   onCurrentPathChange(nextPath: string) {
@@ -81,7 +86,17 @@ class App extends TsxComponent<AppProps> {
     if (this.appState === FSXAAppState.not_initialized) this.initialize();
     // we will load tpp-snap, if we are in devMode
     if (this.isEditMode) {
-      const caasEvents = connectCaasEvents(this.fsxaProxyApi);
+      let fsxaProxyApi: FSXAProxyApi | null = null;
+      if (this.injectedEnableEventStream) {
+        const { fsxaApiMode, configuration } = this.$store.state.fsxa;
+        if (fsxaApiMode === "proxy") {
+          fsxaProxyApi = new FSXAProxyApi(
+            configuration.url,
+            configuration.logLevel,
+          );
+        }
+      }
+      const caasEvents = connectCaasEvents(fsxaProxyApi);
 
       const routeToPreviewId = (previewId: string) => {
         const [pageId] = previewId.split(".");
@@ -103,14 +118,24 @@ class App extends TsxComponent<AppProps> {
           });
           TPP_SNAP.onRerenderView(() => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-              await caasEvents.waitFor(previewId, { timeout: 300 });
+              if (caasEvents.isConnected()) {
+                await caasEvents.waitFor(previewId, { timeout: 2000 });
+              } else {
+                // no realtime events, so just wait
+                await new Promise(resolve => setTimeout(resolve, 300));
+              }
               await this.initialize();
             });
             return false;
           });
           TPP_SNAP.onNavigationChange(async (previewId: string | null) => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-              await caasEvents.waitFor(previewId, { timeout: 300 });
+              if (caasEvents.isConnected()) {
+                await caasEvents.waitFor(previewId, { timeout: 2000 });
+              } else {
+                // no realtime events, so just wait
+                await new Promise(resolve => setTimeout(resolve, 300));
+              }
               await this.initialize();
               if (previewId) routeToPreviewId(previewId);
             });
@@ -183,15 +208,6 @@ class App extends TsxComponent<AppProps> {
     return new FSXAProxyApi(
       this.$store.state.fsxa.configuration.baseUrl.server,
     );
-  }
-
-  get fsxaProxyApi(): FSXAProxyApi | null {
-    const { fsxaApiMode, configuration } = this.$store.state.fsxa;
-    if (fsxaApiMode === "proxy") {
-      return new FSXAProxyApi(configuration.url, configuration.logLevel);
-    } else {
-      return null;
-    }
   }
 
   get locale(): string {
