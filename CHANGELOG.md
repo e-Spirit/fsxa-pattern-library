@@ -1,3 +1,10 @@
+## [5.1.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.1.1...v5.1.2) (2022-01-25)
+
+
+### Bug Fixes
+
+* **infrastructure:** test navigation initialization ([#35](https://github.com/e-Spirit/fsxa-pattern-library/issues/35)) ([0c77435](https://github.com/e-Spirit/fsxa-pattern-library/commit/0c7743574f93a2eb84463bb40bb0c98f29d5df7c))
+
 ## [5.1.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.1.0...v5.1.1) (2022-01-14)
 
 

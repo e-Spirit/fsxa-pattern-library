@@ -313,6 +313,17 @@ npm run lint
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
 
+### Testing
+
+Test files are co-located, meaning they are placed next to the unit they are primarily testing.
+When running `npm run test:unit` all files ending with `*.spec.ts(x)` in the `src` folder are considered for the test
+run. You may override this behavior by altering the `jest.config.js` in the repository root.
+The library `@testing-library/vue` is used as an opinionated testing framework, adhering to its primary principle
+> The more your tests resemble the way your software is used, the more confidence they can give you.
+
+This framework is a thin wrapper around the default testing capabilities of the `@vue/test-utils`.
+Refer to the [testing library documentation](https://testing-library.com/docs/vue-testing-library/intro) for more information.
+
 ## Legal Notices
 FSXA-Pattern-library is a product of [e-Spirit AG](http://www.e-spirit.com), Dortmund, Germany.
 The FSXA-Pattern-library is subject to the Apache-2.0 license.

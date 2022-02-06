@@ -4,7 +4,6 @@ import {
   NavigationData,
   FSXAContentMode,
   GCAPage,
-  FSXAApiErrors,
   FSXAProxyApi,
   FSXARemoteApi,
 } from "fsxa-api";
@@ -12,6 +11,7 @@ import {
   CreateStoreProxyOptions,
   CreateStoreRemoteOptions,
 } from "../types/fsxa-pattern-library";
+import { initializeApp } from "./actions/initializeApp";
 export interface FSXAAppError {
   message: string;
   description?: string;
@@ -97,10 +97,6 @@ export const FSXAGetters = {
   [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
 };
 
-const isNotFoundError = (errorLike: any) =>
-  typeof errorLike === "object" &&
-  errorLike.message === FSXAApiErrors.NOT_FOUND;
-
 export function getFSXAModule<R extends RootState>(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R> {
@@ -124,65 +120,7 @@ export function getFSXAModule<R extends RootState>(
       auth: null,
     }),
     actions: {
-      [Actions.initializeApp]: async function(
-        { commit },
-        payload: {
-          defaultLocale: string;
-          initialPath?: string;
-        },
-      ) {
-        const path = payload.initialPath
-          ? decodeURI(payload.initialPath)
-          : undefined;
-
-        commit("setAppAsInitializing");
-        try {
-          let navigationData = await fsxaApi.fetchNavigation({
-            initialPath: "/",
-            locale: payload.defaultLocale,
-            authData: this.state.fsxa.auth,
-          });
-          if (!navigationData && path !== null) {
-            navigationData = await fsxaApi
-              .fetchNavigation({
-                initialPath: path,
-                locale: payload.defaultLocale,
-                authData: this.state.fsxa.auth,
-              })
-              .catch(reason => {
-                if (isNotFoundError(reason)) return null;
-                throw reason;
-              });
-          }
-          if (!navigationData) {
-            commit("setError", {
-              message: "Could not fetch navigation-data from NavigationService",
-              description:
-                "Please make sure that the Navigation-Service is available and your config is correct. See the documentation for more information.",
-            });
-            return;
-          }
-
-          const settings = await fsxaApi.fetchProjectProperties({
-            locale: navigationData.meta.identifier.languageId,
-          });
-
-          commit("setAppAsInitialized", {
-            locale: navigationData.meta.identifier.languageId,
-            navigationData,
-            settings: settings && settings.length !== 0 ? settings[0] : null,
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            commit("setAppState", FSXAAppState.error);
-            commit("setError", {
-              message: error.message,
-              stacktrace: error.stack,
-            });
-          }
-          return;
-        }
-      },
+      [Actions.initializeApp]: initializeApp(fsxaApi),
       [Actions.hydrateClient]: function({ commit }, payload: FSXAVuexState) {
         commit("setInitialStateFromServer", payload);
       },
