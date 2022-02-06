@@ -15,7 +15,6 @@ import {
   FSXA_INJECT_KEY_COMPONENTS,
   FSXA_INJECT_KEY_TPP_VERSION,
   FSXA_INJECT_DEV_MODE_INFO,
-  FSXA_INJECT_KEY_ENABLE_EVENT_STREAM,
 } from "@/constants";
 import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
@@ -122,7 +121,7 @@ class App extends TsxComponent<AppProps> {
             });
             return false;
           });
-          TPP_SNAP.onNavigationChange(async (previewId: string | null) => {
+          TPP_SNAP.onNavigationChange(async () => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
               if (caasEvents.isConnected()) {
                 await caasEvents.waitFor(previewId, { timeout: 2000 });

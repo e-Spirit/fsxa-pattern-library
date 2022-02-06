@@ -24,9 +24,9 @@ const remoteApiConfig = {
   projectID: getFSXAConfigFromEnvFile().projectId,
   tenantID: getFSXAConfigFromEnvFile().tenantId,
   logLevel: LogLevel.INFO,
-  enableEventStream: getFSXAConfigFromEnvFile().enableEventStream,
 };
 
+console.log("ct:x", remoteApiConfig);
 const store = createStore({ mode: "remote", config: remoteApiConfig });
 new Vue({
   store,
