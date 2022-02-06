@@ -103,7 +103,11 @@ export function getFSXAModule<R extends RootState>(
   const fsxaApi =
     options.mode === "remote"
       ? new FSXARemoteApi(options.config)
-      : new FSXAProxyApi(options.config.url, options.config.logLevel);
+      : new FSXAProxyApi(
+          options.config.url,
+          options.config.logLevel,
+          options.config.enableEventStream,
+        );
 
   return {
     namespaced: true,

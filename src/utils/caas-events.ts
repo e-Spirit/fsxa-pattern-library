@@ -60,7 +60,12 @@ const _onMessage = ({ data }: MessageEvent) => {
 };
 
 export function connectCaasEvents(fsxaApi: FSXAProxyApi | null) {
-  if (caasEventSource === null && fsxaApi && "connectEventStream" in fsxaApi) {
+  if (
+    caasEventSource === null &&
+    fsxaApi !== null &&
+    "connectEventStream" in fsxaApi &&
+    fsxaApi.enableEventStream
+  ) {
     caasEventSource = fsxaApi.connectEventStream();
     caasEventSource.addEventListener("message", _onMessage);
   }

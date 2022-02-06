@@ -38,7 +38,6 @@ class App extends TsxComponent<AppProps> {
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
-  @Prop({ default: false }) enableEventStream!: AppProps["enableEventStream"];
   @ProvideReactive("currentPath") path = this.currentPath;
   @ProvideReactive(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
   @ProvideReactive(FSXA_INJECT_KEY_COMPONENTS) injectedComponents = this
@@ -52,10 +51,6 @@ class App extends TsxComponent<AppProps> {
     this.components?.loader || null;
   @ProvideReactive(FSXA_INJECT_DEV_MODE_INFO) injectedInfoError =
     this.components?.devModeInfo || null;
-
-  @ProvideReactive(FSXA_INJECT_KEY_ENABLE_EVENT_STREAM)
-  injectedEnableEventStream = this.enableEventStream;
-
   @Watch("currentPath")
   onCurrentPathChange(nextPath: string) {
     this.path = nextPath;
@@ -87,14 +82,13 @@ class App extends TsxComponent<AppProps> {
     // we will load tpp-snap, if we are in devMode
     if (this.isEditMode) {
       let fsxaProxyApi: FSXAProxyApi | null = null;
-      if (this.injectedEnableEventStream) {
-        const { fsxaApiMode, configuration } = this.$store.state.fsxa;
-        if (fsxaApiMode === "proxy") {
-          fsxaProxyApi = new FSXAProxyApi(
-            configuration.url,
-            configuration.logLevel,
-          );
-        }
+      const { fsxaApiMode, configuration } = this.$store.state.fsxa;
+      if (fsxaApiMode === "proxy") {
+        fsxaProxyApi = new FSXAProxyApi(
+          configuration.url,
+          configuration.logLevel,
+          configuration.enableEventStream,
+        );
       }
       const caasEvents = connectCaasEvents(fsxaProxyApi);
 

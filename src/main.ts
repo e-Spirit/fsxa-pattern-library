@@ -24,6 +24,7 @@ const remoteApiConfig = {
   projectID: getFSXAConfigFromEnvFile().projectId,
   tenantID: getFSXAConfigFromEnvFile().tenantId,
   logLevel: LogLevel.INFO,
+  enableEventStream: getFSXAConfigFromEnvFile().enableEventStream,
 };
 
 const store = createStore({ mode: "remote", config: remoteApiConfig });
