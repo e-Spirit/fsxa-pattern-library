@@ -304,7 +304,7 @@ export interface AppProps {
    */
   fsTppVersion?: string;
   /**
-   * When activated, events for `insert`, `replace` and `delete` CaaS documents can be observerd and handled.
+   * When enabled, events for `insert`, `replace` and `delete` CaaS documents can be observed and handled.
    *
    * It's currently used in preview mode, to sync updated data in FirstSpirit with the CaaS and the App State.
    *
