@@ -2,8 +2,7 @@ import { FSXAActions, FSXAGetters, RootState } from "@/store";
 import {
   ComparisonQueryOperatorEnum,
   Dataset,
-  FSXAProxyApi,
-  FSXARemoteApi,
+  FSXAApi,
   NavigationData,
   NavigationItem,
 } from "fsxa-api";
@@ -67,7 +66,7 @@ export interface TriggerRouteChangeParams {
 }
 export async function triggerRouteChange(
   $store: Store<RootState>,
-  $fsxaApi: FSXAProxyApi | FSXARemoteApi,
+  $fsxaApi: FSXAApi,
   params: TriggerRouteChangeParams,
   currentLocale: string,
   globalSettingsKey?: string,

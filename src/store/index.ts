@@ -6,8 +6,9 @@ import {
   GCAPage,
   FSXARemoteApi,
   FSXAProxyApiConfig,
-  FSXAProxyApiSingleton,
   FSXARemoteApiConfig,
+  FSXAApiSingleton,
+  FSXAProxyApi,
 } from "fsxa-api";
 import {
   CreateStoreProxyOptions,
@@ -96,23 +97,7 @@ export const FSXAGetters = {
 export function getFSXAModule<R extends RootState>(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R> {
-  let fsxaApi;
-  if (options.mode === "remote") {
-    fsxaApi = new FSXARemoteApi(options.config);
-  } else {
-    try {
-      // this is not needed for actual runtime but for cleanly running test suites
-      // since they create the store multiple times for different tests
-      fsxaApi = FSXAProxyApiSingleton.Instance;
-    } catch (_) {
-      FSXAProxyApiSingleton.init(
-        getFSXAProxyApiUrl(options.config),
-        options.config.logLevel,
-      );
-      fsxaApi = FSXAProxyApiSingleton.Instance;
-    }
-  }
-
+  initializeApi(options);
   return {
     namespaced: true,
     state: () => ({
@@ -128,7 +113,7 @@ export function getFSXAModule<R extends RootState>(
       auth: null,
     }),
     actions: {
-      [Actions.initializeApp]: initializeApp(fsxaApi),
+      [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
       [Actions.hydrateClient]: function({ commit }, payload: FSXAVuexState) {
         commit("setInitialStateFromServer", payload);
       },
@@ -257,3 +242,18 @@ const createStore = (
   return store;
 };
 export default createStore;
+
+function initializeApi(
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
+) {
+  if (options.mode === "remote") {
+    FSXAApiSingleton.init(new FSXARemoteApi(options.config));
+  } else {
+    FSXAApiSingleton.init(
+      new FSXAProxyApi(
+        getFSXAProxyApiUrl(options.config),
+        options.config.logLevel,
+      ),
+    );
+  }
+}

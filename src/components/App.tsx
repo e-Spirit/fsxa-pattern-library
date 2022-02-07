@@ -1,10 +1,4 @@
-import {
-  FSXAActions,
-  FSXAAppError,
-  FSXAAppState,
-  FSXAGetters,
-  FSXAVuexState,
-} from "@/store";
+import { FSXAActions, FSXAAppError, FSXAAppState, FSXAGetters } from "@/store";
 import {
   determineCurrentRoute,
   NAVIGATION_ERROR_404,
@@ -26,12 +20,7 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import {
-  FSXAProxyApi,
-  FSXAProxyApiSingleton,
-  FSXARemoteApi,
-  FSXARemoteApiConfig,
-} from "fsxa-api";
+import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
@@ -184,12 +173,8 @@ class App extends TsxComponent<AppProps> {
     return this.$store.getters[FSXAGetters.mode] === "preview";
   }
 
-  get fsxaApi(): FSXAProxyApi | FSXARemoteApi {
-    const { fsxaApiMode, configuration } = this.$store.state as FSXAVuexState;
-
-    return fsxaApiMode === "remote"
-      ? new FSXARemoteApi(configuration as FSXARemoteApiConfig)
-      : FSXAProxyApiSingleton.Instance;
+  get fsxaApi(): FSXAApi {
+    return FSXAApiSingleton.instance;
   }
 
   get locale(): string {
