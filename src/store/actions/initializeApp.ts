@@ -36,8 +36,7 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
 
   commit("setAppAsInitializing");
   try {
-    let navigationData;
-    navigationData = await fetchNavigationByPath(path);
+    let navigationData = await fetchNavigationByPath(path);
     if (!navigationData) {
       // unable to find path in NavigationData. Fetch Nav for root
       navigationData = await fetchNavigationByPath("/");
