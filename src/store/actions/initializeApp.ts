@@ -1,6 +1,7 @@
 import { ActionContext } from "vuex";
 import { FSXAApi, FSXAApiErrors } from "fsxa-api";
 import { FSXAAppState, FSXAVuexState, RootState } from "../";
+import { Logger } from "fsxa-api/dist/types/modules";
 
 export interface InitializeAppPayload {
   defaultLocale: string;
@@ -31,11 +32,16 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
         throw reason;
       });
   }
-  const path = payload.initialPath ? decodeURI(payload.initialPath) : undefined;
+  const path = payload.initialPath ? decodeURI(payload.initialPath) : "/";
 
   commit("setAppAsInitializing");
   try {
-    const navigationData = await fetchNavigationByPath(path || "/");
+    let navigationData;
+    navigationData = await fetchNavigationByPath(path);
+    if (!navigationData) {
+      // unable to find path in NavigationData. Fetch Nav for root
+      navigationData = await fetchNavigationByPath("/");
+    }
 
     if (!navigationData) {
       commit("setError", {
