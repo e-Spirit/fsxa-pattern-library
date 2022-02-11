@@ -1,7 +1,6 @@
 import { ActionContext } from "vuex";
 import { FSXAApi, FSXAApiErrors } from "fsxa-api";
 import { FSXAAppState, FSXAVuexState, RootState } from "../";
-import { Logger } from "fsxa-api/dist/types/modules";
 
 export interface InitializeAppPayload {
   defaultLocale: string;

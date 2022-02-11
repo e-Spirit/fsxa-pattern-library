@@ -28,7 +28,7 @@
     "README.md"
   ],
   "dependencies": {
-    "fsxa-api": "^8.0.0",
+    "fsxa-api": "^8.1.0",
     "prismjs": "^1.25.0",
     "setimmediate": "^1.0.5",
     "vue": "^2.6.14",
