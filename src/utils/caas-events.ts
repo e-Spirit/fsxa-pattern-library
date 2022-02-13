@@ -1,4 +1,4 @@
-import { FSXAProxyApi } from "fsxa-api";
+import { FSXAApi, FSXAProxyApi } from "fsxa-api";
 
 export type CaaSEventType = "insert" | "replace" | "delete";
 
@@ -59,12 +59,11 @@ const _onMessage = ({ data }: MessageEvent) => {
     });
 };
 
-export function connectCaasEvents(fsxaApi: FSXAProxyApi | null) {
+export function connectCaasEvents(fsxaApi: FSXAApi) {
   if (
     caasEventSource === null &&
-    fsxaApi !== null &&
-    "connectEventStream" in fsxaApi &&
-    fsxaApi.enableEventStream
+    fsxaApi.enableEventStream() &&
+    fsxaApi instanceof FSXAProxyApi
   ) {
     caasEventSource = fsxaApi.connectEventStream();
     caasEventSource.addEventListener("message", _onMessage);

@@ -31,10 +31,10 @@ export function initializeApi(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ) {
   if (options.mode === "remote") {
-    FSXAApiSingleton.init(
-      new FSXARemoteApi(options.config),
-      options.config.logLevel,
-    );
+    FSXAApiSingleton.init(new FSXARemoteApi(options.config), {
+      logLevel: options.config.logLevel,
+      enableEventStream: options.config.enableEventStream,
+    });
   } else {
     FSXAApiSingleton.init(
       new FSXAProxyApi(
@@ -43,7 +43,10 @@ export function initializeApi(
           : options.config.serverUrl,
         options.config.logLevel,
       ),
-      options.config.logLevel,
+      {
+        logLevel: options.config.logLevel,
+        enableEventStream: options.config.enableEventStream,
+      },
     );
   }
 }

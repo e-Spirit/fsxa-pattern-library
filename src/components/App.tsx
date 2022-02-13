@@ -80,16 +80,7 @@ class App extends TsxComponent<AppProps> {
     if (this.appState === FSXAAppState.not_initialized) this.initialize();
     // we will load tpp-snap, if we are in devMode
     if (this.isEditMode) {
-      let fsxaProxyApi: FSXAProxyApi | null = null;
-      const { fsxaApiMode, configuration } = this.$store.state.fsxa;
-      if (fsxaApiMode === "proxy") {
-        fsxaProxyApi = new FSXAProxyApi(
-          configuration.url,
-          configuration.logLevel,
-          configuration.enableEventStream,
-        );
-      }
-      const caasEvents = connectCaasEvents(fsxaProxyApi);
+      const caasEvents = connectCaasEvents(this.fsxaApi);
 
       const routeToPreviewId = (previewId: string) => {
         const [pageId] = previewId.split(".");
