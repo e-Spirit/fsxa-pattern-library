@@ -2,11 +2,11 @@ import { Component as TsxComponent } from "vue-tsx-support";
 import { Component, Inject, InjectReactive } from "vue-property-decorator";
 import { FSXAGetters } from "@/store";
 import {
-  FSXAProxyApi,
-  FSXARemoteApi,
+  FSXAApiSingleton,
   GCAPage,
   NavigationData,
   NavigationItem,
+  FSXAApi,
 } from "fsxa-api";
 import {
   findNavigationItemInNavigationData,
@@ -116,16 +116,8 @@ class BaseComponent<
   /**
    * get preconfigured and ready to use FSXAApi instance
    */
-  get fsxaApi(): FSXAProxyApi | FSXARemoteApi {
-    const { fsxaApiMode, configuration } = this.$store.state.fsxa;
-
-    return fsxaApiMode === "remote"
-      ? new FSXARemoteApi(configuration)
-      : new FSXAProxyApi(
-          configuration.url,
-          configuration.logLevel,
-          configuration.enableEventStream,
-        );
+  get fsxaApi(): FSXAApi {
+    return FSXAApiSingleton.instance;
   }
 
   /**

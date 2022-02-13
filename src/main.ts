@@ -6,7 +6,7 @@ import TsxApp from "./../examples/tsx";
 // import SFCApp from "./../examples/sfc/index.vue";
 import createStore from "./store";
 import { getFSXAConfigFromEnvFile } from "./utils/config";
-import { FSXAContentMode, LogLevel } from "fsxa-api";
+import { FSXAContentMode, FSXARemoteApiConfig, LogLevel } from "fsxa-api";
 Vue.config.productionTip = false;
 import "prismjs";
 import "prismjs/components/prism-json";
@@ -15,8 +15,10 @@ import "prismjs/components/prism-jsx";
 import "prismjs/components/prism-tsx";
 import "prismjs/themes/prism-okaidia.css";
 import "setimmediate";
+import { initializeApi } from "./utils";
+import { CreateStoreRemoteOptions } from "./types/fsxa-pattern-library";
 
-const remoteApiConfig = {
+const remoteApiConfig: FSXARemoteApiConfig = {
   apikey: getFSXAConfigFromEnvFile().apiKey,
   caasURL: getFSXAConfigFromEnvFile().caas,
   contentMode: FSXAContentMode.PREVIEW,
@@ -26,7 +28,13 @@ const remoteApiConfig = {
   logLevel: LogLevel.INFO,
 };
 
-console.log("ct:x", remoteApiConfig);
+const options: CreateStoreRemoteOptions = {
+  mode: "remote",
+  config: remoteApiConfig,
+};
+
+initializeApi(options);
+
 const store = createStore({ mode: "remote", config: remoteApiConfig });
 new Vue({
   store,

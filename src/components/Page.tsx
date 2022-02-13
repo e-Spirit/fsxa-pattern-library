@@ -49,10 +49,11 @@ class Page extends BaseComponent<PageProps> {
 
   async fetchPage() {
     if (this.pageData) return;
-    if (!this.id)
+    if (!this.id) {
       throw new Error(
         "You either have to pass already loaded pageData or the id of the page that should be loaded.",
       );
+    }
     try {
       const page = await this.fsxaApi.fetchElement({
         id: this.id,
@@ -80,6 +81,7 @@ class Page extends BaseComponent<PageProps> {
     if (this.page === null) {
       throw new Error("Could not load page");
     }
+
     return this.page ? (
       <Layout
         pageId={this.id!}

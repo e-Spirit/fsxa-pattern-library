@@ -1,3 +1,9 @@
+import {
+  CreateStoreProxyOptions,
+  CreateStoreRemoteOptions,
+} from "@/types/fsxa-pattern-library";
+import { FSXAApiSingleton, FSXAProxyApi, FSXARemoteApi } from "fsxa-api";
+
 export const isClient = () => typeof window !== "undefined";
 
 export const getTPPSnap = (): any | null => {
@@ -20,3 +26,24 @@ export const importTPPSnapAPI = async (
     document.head.appendChild(script);
   });
 };
+
+export function initializeApi(
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
+) {
+  if (options.mode === "remote") {
+    FSXAApiSingleton.init(
+      new FSXARemoteApi(options.config),
+      options.config.logLevel,
+    );
+  } else {
+    FSXAApiSingleton.init(
+      new FSXAProxyApi(
+        typeof window !== "undefined"
+          ? options.config.clientUrl
+          : options.config.serverUrl,
+        options.config.logLevel,
+      ),
+      options.config.logLevel,
+    );
+  }
+}

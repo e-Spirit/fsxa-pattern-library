@@ -1,3 +1,30 @@
+# [6.1.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v6.0.1...v6.1.0) (2022-02-11)
+
+
+### Features
+
+* **fsxa-api:** update fsxa-api for references to sections ([#42](https://github.com/e-Spirit/fsxa-pattern-library/issues/42)) ([9c463c7](https://github.com/e-Spirit/fsxa-pattern-library/commit/9c463c7a67775f8e33328f805477160ed182fe91))
+
+## [6.0.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v6.0.0...v6.0.1) (2022-02-09)
+
+
+### Bug Fixes
+
+* **initializeApp:** fix handling of path on initital pageload ([#41](https://github.com/e-Spirit/fsxa-pattern-library/issues/41)) ([eef8e26](https://github.com/e-Spirit/fsxa-pattern-library/commit/eef8e26a4f6c2065ab0807962688a19b72c61509))
+
+# [6.0.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.1.2...v6.0.0) (2022-02-08)
+
+
+### Features
+
+* **api-config:** update api and use api singleton ([#40](https://github.com/e-Spirit/fsxa-pattern-library/issues/40)) ([aac69b5](https://github.com/e-Spirit/fsxa-pattern-library/commit/aac69b5836292ef30040e46669d66c66b1c6db49))
+
+
+### BREAKING CHANGES
+
+* **api-config:** `App.tsx` and `BaseComponent.tsx` return a FSXAApiSingleton instead of new FSXAApi instances with each fsxaApi call.
+We also updated the dependency to latest fsxa-api version, introducing new "type" attribute for public interfaces. This may cause your application to break. Details how to handle this can be found in the [Changelog of the fsxa-api](https://github.com/e-Spirit/fsxa-api/blob/master/CHANGELOG.md#breaking-changes).
+
 ## [5.1.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v5.1.1...v5.1.2) (2022-01-25)
 
 

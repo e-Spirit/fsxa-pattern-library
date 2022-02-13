@@ -44,6 +44,28 @@ describe("initializeApp action", () => {
     );
   });
 
+  it("fetches navigation data for path if initial path is set and for '/' otherwise", async () => {
+    const { fsxaApi, action } = setup();
+    const ctx = getMockContext();
+
+    await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
+    expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialPath: "somewhere",
+        locale: "jp",
+        authData: ctx.state.auth,
+      }),
+    );
+    await action(ctx, { defaultLocale: "jp", initialPath: undefined });
+    expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
+      expect.objectContaining({
+        initialPath: "/",
+        locale: "jp",
+        authData: ctx.state.auth,
+      }),
+    );
+  });
+
   it("fetches navigation data for the given path if the api yielded no results for the root path", async () => {
     const { fsxaApi, action } = setup();
     const ctx = getMockContext();
@@ -54,7 +76,7 @@ describe("initializeApp action", () => {
     await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
     expect(fsxaApi.fetchNavigation).not.toHaveBeenCalledWith(
       expect.objectContaining({
-        initialPath: "somewhere",
+        initialPath: "/",
         locale: "jp",
         authData: ctx.state.auth,
       }),

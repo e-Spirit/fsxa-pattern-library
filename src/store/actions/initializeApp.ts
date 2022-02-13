@@ -31,14 +31,16 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
         throw reason;
       });
   }
-  const path = payload.initialPath ? decodeURI(payload.initialPath) : undefined;
+  const path = payload.initialPath ? decodeURI(payload.initialPath) : "/";
 
   commit("setAppAsInitializing");
   try {
-    let navigationData = await fetchNavigationByPath("/");
-    if (!navigationData && path) {
-      navigationData = await fetchNavigationByPath(path);
+    let navigationData = await fetchNavigationByPath(path);
+    if (!navigationData) {
+      // unable to find path in NavigationData. Fetch Nav for root
+      navigationData = await fetchNavigationByPath("/");
     }
+
     if (!navigationData) {
       commit("setError", {
         message: "Could not fetch navigation-data from NavigationService",

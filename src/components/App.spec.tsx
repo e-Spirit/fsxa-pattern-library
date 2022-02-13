@@ -10,21 +10,29 @@ import { FSXAContentMode, FSXAProxyRoutes, LogLevel } from "fsxa-api";
 import nock from "nock";
 import { getMockNavigationData } from "../../testing/getMockNavigationData";
 import { VueConstructor } from "vue";
+import { initializeApi } from "@/utils";
+import { CreateStoreProxyOptions } from "@/types/fsxa-pattern-library";
 
 const API_URL = "http://fsxa.local";
+
+const options: CreateStoreProxyOptions = {
+  mode: "proxy",
+  config: {
+    contentMode: FSXAContentMode.PREVIEW,
+    clientUrl: API_URL,
+    serverUrl: API_URL,
+    logLevel: LogLevel.NONE,
+  },
+};
+
+initializeApi(options);
 
 const setup = () => {
   const localVue = createLocalVue();
   localVue.use(Vuex);
 
-  const store = createStore({
-    mode: "proxy",
-    config: {
-      contentMode: FSXAContentMode.PREVIEW,
-      url: API_URL,
-      logLevel: LogLevel.NONE,
-    },
-  });
+  const store = createStore(options);
+
   return { localVue, store };
 };
 

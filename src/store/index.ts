@@ -4,8 +4,9 @@ import {
   NavigationData,
   FSXAContentMode,
   GCAPage,
-  FSXAProxyApi,
-  FSXARemoteApi,
+  FSXAProxyApiConfig,
+  FSXARemoteApiConfig,
+  FSXAApiSingleton,
 } from "fsxa-api";
 import {
   CreateStoreProxyOptions,
@@ -25,7 +26,8 @@ export enum FSXAAppState {
 }
 export interface FSXAVuexState {
   locale: string | null;
-  configuration: any;
+  fsxaApiMode: "proxy" | "remote";
+  configuration: FSXAProxyApiConfig | FSXARemoteApiConfig;
   appState: FSXAAppState;
   navigation: NavigationData | null;
   settings: any | null;
@@ -66,17 +68,6 @@ export const FSXAActions = {
   setStoredItem: `${prefix}/${Actions.setStoredItem}`,
 };
 
-export const getFSXAConfiguration = (config: any): any => {
-  if (config.mode === "remote") return config;
-  return {
-    mode: config.mode,
-    baseUrl:
-      typeof window !== "undefined"
-        ? config.baseUrl.client
-        : config.baseUrl.server,
-  };
-};
-
 const GETTER_NAVIGATION_DATA = "navigationData";
 const GETTER_CONFIGURATION = "configuration";
 const GETTER_LOCALE = "locale";
@@ -100,15 +91,6 @@ export const FSXAGetters = {
 export function getFSXAModule<R extends RootState>(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R> {
-  const fsxaApi =
-    options.mode === "remote"
-      ? new FSXARemoteApi(options.config)
-      : new FSXAProxyApi(
-          options.config.url,
-          options.config.logLevel,
-          options.config.enableEventStream,
-        );
-
   return {
     namespaced: true,
     state: () => ({
@@ -124,7 +106,7 @@ export function getFSXAModule<R extends RootState>(
       auth: null,
     }),
     actions: {
-      [Actions.initializeApp]: initializeApp(fsxaApi),
+      [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
       [Actions.hydrateClient]: function({ commit }, payload: FSXAVuexState) {
         commit("setInitialStateFromServer", payload);
       },

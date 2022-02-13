@@ -12,22 +12,32 @@ import {
 } from "fsxa-api";
 import { DatasetProps } from "@/types/components";
 import { VueConstructor } from "vue";
-import { RootState } from "@/types/fsxa-pattern-library";
+import {
+  CreateStoreProxyOptions,
+  RootState,
+} from "@/types/fsxa-pattern-library";
+import { initializeApi } from "@/utils";
 
 jest.mock("fsxa-api");
+
+const options: CreateStoreProxyOptions = {
+  mode: "proxy",
+  config: {
+    contentMode: FSXAContentMode.PREVIEW,
+    clientUrl: "somewhere",
+    serverUrl: "somewhere/else",
+    logLevel: LogLevel.NONE,
+  },
+};
+
+initializeApi(options);
 
 const setup = () => {
   const localVue = createLocalVue();
   localVue.use(Vuex);
 
-  const store = createStore({
-    mode: "proxy",
-    config: {
-      contentMode: FSXAContentMode.PREVIEW,
-      url: "somewhere",
-      logLevel: LogLevel.NONE,
-    },
-  });
+  const store = createStore(options);
+
   store.replaceState({
     ...store.state,
     fsxa: {
@@ -35,6 +45,7 @@ const setup = () => {
       locale: "de",
     },
   });
+
   return { localVue, store };
 };
 
