@@ -35,7 +35,7 @@ const options: CreateStoreRemoteOptions = {
 
 initializeApi(options);
 
-const store = createStore({ mode: "remote", config: remoteApiConfig });
+const store = createStore(options);
 new Vue({
   store,
   render: h => h(TsxApp),

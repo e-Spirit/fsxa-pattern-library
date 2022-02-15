@@ -24,7 +24,10 @@ import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { getTPPSnap, importTPPSnapAPI } from "@/utils";
-import { connectCaasEvents } from "@/utils/caas-events";
+import {
+  connectCaasEvents,
+  DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+} from "@/utils/caas-events";
 
 const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 @Component({
@@ -78,7 +81,6 @@ class App extends TsxComponent<AppProps> {
 
   mounted() {
     if (this.appState === FSXAAppState.not_initialized) this.initialize();
-    // we will load tpp-snap, if we are in devMode
     if (this.isEditMode) {
       const caasEvents = connectCaasEvents(this.fsxaApi);
 
@@ -88,25 +90,34 @@ class App extends TsxComponent<AppProps> {
         if (nextPage) this.requestRouteChange(nextPage.seoRoute);
       };
 
+      // we will load tpp-snap, if we are in devMode
       importTPPSnapAPI(this.tppVersion)
         .then(TPP_SNAP => {
+          const defaultWaitingTimeoutInMs = 300;
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");
           }
           TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
             // This event handles the initial loading of the pwa in the ocm or after a site was created or section changed
             // Here we need to wait a few moments, so that the CaaS/Navigation-Service could be filled with the new information, before we initialize the app to get the new data.
-            await caasEvents.waitFor(previewId, { timeout: 2000 });
+            await caasEvents.waitFor(previewId, {
+              timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+            });
             await this.initialize();
             routeToPreviewId(previewId);
           });
           TPP_SNAP.onRerenderView(() => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
               if (caasEvents.isConnected()) {
-                await caasEvents.waitFor(previewId, { timeout: 2000 });
+                await caasEvents.waitFor(previewId, {
+                  timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+                  allowedEventTypes: ["replace"],
+                });
               } else {
                 // no realtime events, so just wait
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve =>
+                  setTimeout(resolve, defaultWaitingTimeoutInMs),
+                );
               }
               await this.initialize();
             });
@@ -115,10 +126,14 @@ class App extends TsxComponent<AppProps> {
           TPP_SNAP.onNavigationChange(async () => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
               if (caasEvents.isConnected()) {
-                await caasEvents.waitFor(previewId, { timeout: 2000 });
+                await caasEvents.waitFor(previewId, {
+                  timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+                });
               } else {
                 // no realtime events, so just wait
-                await new Promise(resolve => setTimeout(resolve, 300));
+                await new Promise(resolve =>
+                  setTimeout(resolve, defaultWaitingTimeoutInMs),
+                );
               }
               await this.initialize();
               if (previewId) routeToPreviewId(previewId);

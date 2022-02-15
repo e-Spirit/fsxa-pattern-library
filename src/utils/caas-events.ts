@@ -2,16 +2,18 @@ import { FSXAApi, FSXAProxyApi } from "fsxa-api";
 
 export type CaaSEventType = "insert" | "replace" | "delete";
 
+export const DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS = 2000;
+
 type CaaSEvent = {
   operationType: CaaSEventType;
   documentKey: { _id: string };
 };
 
-type ResolverRegistryItem = {
+interface ResolverRegistryItem {
   documentId: string;
   allowedEventTypes?: CaaSEventType[];
   resolve: () => void;
-};
+}
 
 const resolverRegistry: ResolverRegistryItem[] = [];
 let caasEventSource: EventSource | null = null;
