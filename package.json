@@ -16,7 +16,8 @@
     "prebuild": "rimraf dist",
     "precommit": "lint-staged",
     "prepush": "npm run build",
-    "semantic-release": "semantic-release"
+    "semantic-release": "semantic-release",
+    "semantic-release:dry-run": "semantic-release --dry-run"
   },
   "main": "./dist/fsxa-pattern-library.umd.min.js",
   "files": [
