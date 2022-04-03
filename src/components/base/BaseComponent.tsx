@@ -7,6 +7,7 @@ import {
   NavigationData,
   NavigationItem,
   FSXAApi,
+  Dataset,
 } from "fsxa-api";
 import {
   findNavigationItemInNavigationData,
@@ -102,6 +103,15 @@ class BaseComponent<
       // page could not be found
       return null;
     }
+  }
+
+  /**
+   * Get the Dataset for the the current path
+   *
+   * If null is returned, this path is not a content projection
+   */
+  get currentDataset(): Dataset | null {
+    return getStoredItem(this.$store, this.currentPath) || null;
   }
 
   /**
