@@ -57,7 +57,7 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
     commit("setAppAsInitialized", {
       locale: navigationData.meta.identifier.languageId,
       navigationData,
-      settings: settings && settings.length !== 0 ? settings[0] : null,
+      settings,
     });
   } catch (error) {
     if (error instanceof Error) {
