@@ -11,7 +11,7 @@ import {
   RichTextElement,
 } from "fsxa-api";
 import { FSXAAppState, FSXAAppError } from "./../store";
-import { GCAPage } from "fsxa-api";
+import { GCAPage, Dataset } from "fsxa-api";
 
 export class FSXABaseComponent<
   Props = {},
@@ -52,6 +52,12 @@ export class FSXABaseComponent<
    * If null is returned, no current route could be matched to the current path
    */
   get currentPage(): NavigationItem | null;
+  /**
+   * Get the Dataset for the the current path
+   *
+   * If null is returned, this path is not a content projection
+   */
+  get currentDataset(): Dataset | null;
 
   /**
    * Check if this app is delivering preview or released data
