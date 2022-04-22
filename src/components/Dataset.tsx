@@ -5,6 +5,8 @@ import {
   ComparisonQueryOperatorEnum,
   PageBodyContent,
   Section,
+  QueryBuilderQuery,
+  LogicalQueryOperatorEnum,
 } from "fsxa-api";
 import Page from "./Page";
 import RenderUtils from "./base/RenderUtils";
@@ -51,6 +53,40 @@ class Dataset extends RenderUtils<DatasetProps> {
     }
   }
 
+  get idFilter(): QueryBuilderQuery[] | null {
+    return this.id
+      ? [
+          {
+            field: "identifier",
+            operator: ComparisonQueryOperatorEnum.EQUALS,
+            value: this.id,
+          },
+        ]
+      : null;
+  }
+
+  get routeFilter(): QueryBuilderQuery[] | null {
+    return this.route
+      ? [
+          {
+            operator: LogicalQueryOperatorEnum.OR,
+            filters: [
+              {
+                field: "route",
+                operator: ComparisonQueryOperatorEnum.EQUALS,
+                value: this.route,
+              },
+              {
+                field: "routes",
+                operator: ComparisonQueryOperatorEnum.EQUALS,
+                value: this.route,
+              },
+            ],
+          },
+        ]
+      : null;
+  }
+
   async fetchDataset() {
     if (!this.id && !this.route) {
       throw new Error(
@@ -58,13 +94,7 @@ class Dataset extends RenderUtils<DatasetProps> {
       );
     }
     const { items } = await this.fsxaApi.fetchByFilter({
-      filters: [
-        {
-          field: this.id ? "identifier" : "route",
-          operator: ComparisonQueryOperatorEnum.EQUALS,
-          value: this.id ? this.id : this.route!,
-        },
-      ],
+      filters: this.id ? this.idFilter! : this.routeFilter!,
       locale: this.locale,
     });
     return items.length ? items[0] : null;
