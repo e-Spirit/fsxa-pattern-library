@@ -8,10 +8,11 @@ import {
   NavigationItem,
   Page as APIPage,
   PageBodyContent,
+  ProjectProperties,
   RichTextElement,
 } from "fsxa-api";
 import { FSXAAppState, FSXAAppError } from "./../store";
-import { GCAPage, Dataset } from "fsxa-api";
+import { Dataset } from "fsxa-api";
 
 export class FSXABaseComponent<
   Props = {},
@@ -80,7 +81,7 @@ export class FSXABaseComponent<
   /**
    * The content of your globally configured GCAPage "global_settings"
    */
-  get globalSettings(): GCAPage | null;
+  get globalSettings(): ProjectProperties | null;
   /**
    * Provides the TPPSnap API
    */
