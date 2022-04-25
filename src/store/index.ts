@@ -3,10 +3,10 @@ import Vuex, { Module } from "vuex";
 import {
   NavigationData,
   FSXAContentMode,
-  GCAPage,
   FSXAProxyApiConfig,
   FSXARemoteApiConfig,
   FSXAApiSingleton,
+  ProjectProperties,
 } from "fsxa-api";
 import {
   CreateStoreProxyOptions,
@@ -30,7 +30,7 @@ export interface FSXAVuexState {
   configuration: FSXAProxyApiConfig | FSXARemoteApiConfig;
   appState: FSXAAppState;
   navigation: NavigationData | null;
-  settings: any | null;
+  settings: ProjectProperties | null;
   error: FSXAAppError | null;
   stored: {
     [key: string]: {
@@ -133,7 +133,7 @@ export function getFSXAModule<R extends RootState>(
         payload: {
           locale: string;
           navigationData: NavigationData;
-          settings: GCAPage | null;
+          settings: ProjectProperties | null;
         },
       ) {
         state.appState = FSXAAppState.ready;
