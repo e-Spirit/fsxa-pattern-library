@@ -40,7 +40,6 @@ export interface FSXAVuexState {
     };
   };
   mode: "release" | "preview";
-  auth: any;
 }
 export interface RootState {
   fsxa: FSXAVuexState;
@@ -103,7 +102,6 @@ export function getFSXAModule<R extends RootState>(
       fsxaApiMode: options.mode,
       mode: options.config.contentMode,
       configuration: options.config,
-      auth: null,
     }),
     actions: {
       [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
@@ -117,9 +115,6 @@ export function getFSXAModule<R extends RootState>(
     mutations: {
       setNavigation(state, payload) {
         state.navigation = payload;
-      },
-      setAuth(state, payload) {
-        state.auth = payload;
       },
       setAppAsInitializing(state) {
         state.appState = FSXAAppState.initializing;

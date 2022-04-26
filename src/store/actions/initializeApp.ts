@@ -24,7 +24,6 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
       .fetchNavigation({
         initialPath: path,
         locale: payload.defaultLocale,
-        authData: state.auth,
       })
       .catch(reason => {
         if (isNotFoundError(reason)) return null;

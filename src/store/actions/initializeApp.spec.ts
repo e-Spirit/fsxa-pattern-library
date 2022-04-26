@@ -35,7 +35,6 @@ describe("initializeApp action", () => {
       expect.objectContaining({
         initialPath: "/",
         locale: "jp",
-        authData: ctx.state.auth,
       }),
     );
     expect(ctx.commit).toHaveBeenCalledWith(
@@ -53,7 +52,6 @@ describe("initializeApp action", () => {
       expect.objectContaining({
         initialPath: "somewhere",
         locale: "jp",
-        authData: ctx.state.auth,
       }),
     );
     await action(ctx, { defaultLocale: "jp", initialPath: undefined });
@@ -61,7 +59,6 @@ describe("initializeApp action", () => {
       expect.objectContaining({
         initialPath: "/",
         locale: "jp",
-        authData: ctx.state.auth,
       }),
     );
   });
@@ -78,7 +75,6 @@ describe("initializeApp action", () => {
       expect.objectContaining({
         initialPath: "/",
         locale: "jp",
-        authData: ctx.state.auth,
       }),
     );
     // mock the api to return nothing on the root path
@@ -90,7 +86,6 @@ describe("initializeApp action", () => {
       expect.objectContaining({
         initialPath: "somewhere",
         locale: "jp",
-        authData: ctx.state.auth,
       }),
     );
     expect(ctx.commit).toHaveBeenCalledWith(
