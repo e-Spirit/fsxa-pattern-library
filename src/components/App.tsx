@@ -248,9 +248,9 @@ class App extends TsxComponent<AppProps> {
             pageId={currentNode.caasDocumentId}
           />
         ) : null;
-      } else {
-        return <Page id={currentNode?.caasDocumentId} />;
-      }
+      } else if (currentNode && currentNode?.caasDocumentId) {
+        return <Page id={currentNode.caasDocumentId} />;
+      } else throw new Error(NAVIGATION_ERROR_404);
     } catch (error) {
       // We will render a 404 page if this is passed as a component
       if (error instanceof Error) {
@@ -261,6 +261,7 @@ class App extends TsxComponent<AppProps> {
           }
           return null;
         }
+        console.error(error.message);
       }
     }
     return null;
