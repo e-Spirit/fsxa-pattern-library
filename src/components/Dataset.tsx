@@ -77,7 +77,7 @@ class Dataset extends RenderUtils<DatasetProps> {
                 value: this.route,
               },
               {
-                field: "routes",
+                field: "routes.route",
                 operator: ComparisonQueryOperatorEnum.EQUALS,
                 value: this.route,
               },

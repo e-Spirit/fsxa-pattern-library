@@ -125,7 +125,7 @@ describe("Dataset", () => {
               value: route,
             },
             {
-              field: "routes",
+              field: "routes.route",
               operator: ComparisonQueryOperatorEnum.EQUALS,
               value: route,
             },
