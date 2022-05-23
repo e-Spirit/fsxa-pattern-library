@@ -16,7 +16,7 @@ function isNotFoundError(errorLike: unknown) {
 }
 
 export const initializeApp = (fsxaApi: FSXAApi) => async (
-  { commit, state }: ActionContext<FSXAVuexState, RootState>,
+  { commit }: ActionContext<FSXAVuexState, RootState>,
   payload: InitializeAppPayload,
 ): Promise<void> => {
   function fetchNavigationByPath(path: string) {
