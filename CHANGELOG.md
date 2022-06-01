@@ -1,3 +1,10 @@
+# [8.2.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.1.0...v8.2.0) (2022-06-01)
+
+
+### Features
+
+* **component:** add RenderContentElement component ([#57](https://github.com/e-Spirit/fsxa-pattern-library/issues/57)) ([ada65ae](https://github.com/e-Spirit/fsxa-pattern-library/commit/ada65aeb1d456dceb042081bf7a95d2722ee5dfe))
+
 # [8.1.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.0.0...v8.1.0) (2022-05-23)
 
 
