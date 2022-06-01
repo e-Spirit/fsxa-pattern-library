@@ -416,3 +416,14 @@ export interface InEditEditorProps {
    */
   editorName?: string;
 }
+
+export interface RenderContentElementProps {
+  /**
+   * PageBodyContent element that should be rendered
+   */
+  element?: PageBodyContent;
+}
+
+export class FSXARenderContentElement extends FSXABaseComponent<
+  RenderContentElementProps
+> {}
