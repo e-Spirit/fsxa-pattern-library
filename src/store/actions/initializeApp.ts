@@ -1,6 +1,6 @@
 import { ActionContext } from "vuex";
 import { FSXAApi, FSXAApiErrors } from "fsxa-api";
-import { FSXAAppState, FSXAVuexState, RootState } from "../";
+import { FSXAVuexState, RootState } from "../";
 
 export interface InitializeAppPayload {
   defaultLocale: string;
@@ -16,7 +16,7 @@ function isNotFoundError(errorLike: unknown) {
 }
 
 export const initializeApp = (fsxaApi: FSXAApi) => async (
-  { commit, state }: ActionContext<FSXAVuexState, RootState>,
+  { commit }: ActionContext<FSXAVuexState, RootState>,
   payload: InitializeAppPayload,
 ): Promise<void> => {
   function fetchNavigationByPath(path: string) {
@@ -24,7 +24,6 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
       .fetchNavigation({
         initialPath: path,
         locale: payload.defaultLocale,
-        authData: state.auth,
       })
       .catch(reason => {
         if (isNotFoundError(reason)) return null;
@@ -61,12 +60,15 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
     });
   } catch (error) {
     if (error instanceof Error) {
-      commit("setAppState", FSXAAppState.error);
       commit("setError", {
         message: error.message,
         stacktrace: error.stack,
       });
+    } else {
+      commit("setError", {
+        message: (error as any)?.message || "Unknown error occurred.",
+      });
     }
-    return;
+    console.error(error);
   }
 };

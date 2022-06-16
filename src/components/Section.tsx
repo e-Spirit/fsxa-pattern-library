@@ -148,7 +148,7 @@ class Section<
 // Usage in Vue SFC:
 <slot name="content" />
 
-// Usage in JSX/TSX: 
+// Usage in JSX/TSX:
 {this.$scopedSlots.content({})}
 `}
                       </Code>

@@ -16,4 +16,5 @@ export { default as FSXADataset } from "./components/Dataset";
 export { default as FSXARichText } from "./components/RichText";
 export { default as FSXAInEdit } from "./components/InEdit";
 export { default as FSXAPage } from "./components/Page";
+export { default as FSXARenderContentElement } from "./components/RenderContentElement";
 export { getFSXAModule, FSXAActions, FSXAGetters } from "./store";

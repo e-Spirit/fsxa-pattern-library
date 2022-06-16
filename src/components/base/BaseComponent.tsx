@@ -3,11 +3,11 @@ import { Component, Inject, InjectReactive } from "vue-property-decorator";
 import { FSXAGetters } from "@/store";
 import {
   FSXAApiSingleton,
-  GCAPage,
   NavigationData,
   NavigationItem,
   FSXAApi,
   Dataset,
+  ProjectProperties,
 } from "fsxa-api";
 import {
   findNavigationItemInNavigationData,
@@ -149,7 +149,7 @@ class BaseComponent<
    *
    * This will be null if no globalSettingsKey was passed to the FSXAApp or no corresponding GCAPage could be found
    */
-  get globalSettings(): GCAPage | null {
+  get globalSettings(): ProjectProperties | null {
     return this.$store.state.fsxa.settings || null;
   }
 

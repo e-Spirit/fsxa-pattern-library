@@ -3,10 +3,10 @@ import Vuex, { Module } from "vuex";
 import {
   NavigationData,
   FSXAContentMode,
-  GCAPage,
   FSXAProxyApiConfig,
   FSXARemoteApiConfig,
   FSXAApiSingleton,
+  ProjectProperties,
 } from "fsxa-api";
 import {
   CreateStoreProxyOptions,
@@ -30,7 +30,7 @@ export interface FSXAVuexState {
   configuration: FSXAProxyApiConfig | FSXARemoteApiConfig;
   appState: FSXAAppState;
   navigation: NavigationData | null;
-  settings: any | null;
+  settings: ProjectProperties | null;
   error: FSXAAppError | null;
   stored: {
     [key: string]: {
@@ -40,7 +40,6 @@ export interface FSXAVuexState {
     };
   };
   mode: "release" | "preview";
-  auth: any;
 }
 export interface RootState {
   fsxa: FSXAVuexState;
@@ -103,7 +102,6 @@ export function getFSXAModule<R extends RootState>(
       fsxaApiMode: options.mode,
       mode: options.config.contentMode,
       configuration: options.config,
-      auth: null,
     }),
     actions: {
       [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
@@ -118,9 +116,6 @@ export function getFSXAModule<R extends RootState>(
       setNavigation(state, payload) {
         state.navigation = payload;
       },
-      setAuth(state, payload) {
-        state.auth = payload;
-      },
       setAppAsInitializing(state) {
         state.appState = FSXAAppState.initializing;
         state.navigation = null;
@@ -133,7 +128,7 @@ export function getFSXAModule<R extends RootState>(
         payload: {
           locale: string;
           navigationData: NavigationData;
-          settings: GCAPage | null;
+          settings: ProjectProperties | null;
         },
       ) {
         state.appState = FSXAAppState.ready;

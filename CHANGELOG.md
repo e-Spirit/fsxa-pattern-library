@@ -1,3 +1,51 @@
+## [8.2.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.2.0...v8.2.1) (2022-06-10)
+
+
+### Bug Fixes
+
+* **fsxa-api:** update to latest version ([#69](https://github.com/e-Spirit/fsxa-pattern-library/issues/69)) ([3e14105](https://github.com/e-Spirit/fsxa-pattern-library/commit/3e1410590b1ff52234f90fd2ea0d902a9e167002))
+
+# [8.2.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.1.0...v8.2.0) (2022-06-01)
+
+
+### Features
+
+* **component:** add RenderContentElement component ([#57](https://github.com/e-Spirit/fsxa-pattern-library/issues/57)) ([ada65ae](https://github.com/e-Spirit/fsxa-pattern-library/commit/ada65aeb1d456dceb042081bf7a95d2722ee5dfe))
+
+# [8.1.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.0.0...v8.1.0) (2022-05-23)
+
+
+### Features
+
+* **dependency-update:** update fsxa-api dependency to latest version ([#62](https://github.com/e-Spirit/fsxa-pattern-library/issues/62)) ([051e935](https://github.com/e-Spirit/fsxa-pattern-library/commit/051e9356f43d4757085ea59201457b5bc7555e5f))
+
+# [8.0.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v7.0.2...v8.0.0) (2022-05-17)
+
+
+### Features
+
+* **package.json & package-lock.json:** update fsxa-api ([#65](https://github.com/e-Spirit/fsxa-pattern-library/issues/65)) ([727a76c](https://github.com/e-Spirit/fsxa-pattern-library/commit/727a76c94064f9c1c825524fe3ef6d1605588f15))
+
+
+### BREAKING CHANGES
+
+* **package.json & package-lock.json:** Links inside of RichtTextElements will now be mapped in the same way as the value
+of CMS_INPUT_LINK. Refer to FSXA-API changelog for more details.
+
+## [7.0.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v7.0.1...v7.0.2) (2022-05-06)
+
+
+### Bug Fixes
+
+* **fsxa-api:** update to latest fsxa-api ([#64](https://github.com/e-Spirit/fsxa-pattern-library/issues/64)) ([553c9d7](https://github.com/e-Spirit/fsxa-pattern-library/commit/553c9d73a126010c2144043c6374ab69e2e282c3))
+
+## [7.0.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v7.0.0...v7.0.1) (2022-04-25)
+
+
+### Bug Fixes
+
+* **projectporperties:** fix projectProperties typing  ([#60](https://github.com/e-Spirit/fsxa-pattern-library/issues/60)) ([ff52a0c](https://github.com/e-Spirit/fsxa-pattern-library/commit/ff52a0c6166b9ae5a2e19bd9fa294f35d450a4c5))
+
 # [7.0.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v6.3.0...v7.0.0) (2022-04-21)
 
 
