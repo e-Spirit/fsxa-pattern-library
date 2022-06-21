@@ -9,6 +9,7 @@ import {
   FSXAProxyApi,
   LogLevel,
   ComparisonQueryOperatorEnum,
+  LogicalQueryOperatorEnum,
 } from "fsxa-api";
 import { DatasetProps } from "@/types/components";
 import { VueConstructor } from "vue";
@@ -116,9 +117,19 @@ describe("Dataset", () => {
     expect(api.fetchByFilter).toHaveBeenCalledWith({
       filters: expect.arrayContaining([
         expect.objectContaining({
-          field: "route",
-          operator: ComparisonQueryOperatorEnum.EQUALS,
-          value: route,
+          operator: LogicalQueryOperatorEnum.OR,
+          filters: expect.arrayContaining([
+            {
+              field: "route",
+              operator: ComparisonQueryOperatorEnum.EQUALS,
+              value: route,
+            },
+            {
+              field: "routes.route",
+              operator: ComparisonQueryOperatorEnum.EQUALS,
+              value: route,
+            },
+          ]),
         }),
       ]),
       locale: store.state.fsxa.locale,
