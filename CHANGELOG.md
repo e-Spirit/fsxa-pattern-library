@@ -1,3 +1,10 @@
+# [8.3.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.2.1...v8.3.0) (2022-06-21)
+
+
+### Features
+
+* **dataset.tsx:** extend route query to also search "routes" ([#59](https://github.com/e-Spirit/fsxa-pattern-library/issues/59)) ([83ed1e3](https://github.com/e-Spirit/fsxa-pattern-library/commit/83ed1e322319d551ed28cc716c283d1611c36699))
+
 ## [8.2.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.2.0...v8.2.1) (2022-06-10)
 
 
