@@ -6,6 +6,7 @@ import Component from "vue-class-component";
 import { Inject, InjectReactive, Prop } from "vue-property-decorator";
 import BaseComponent from "./base/BaseComponent";
 import ErrorBoundary from "./internal/ErrorBoundary";
+import InfoToolTip from "./internal/InfoToolTip";
 import Code from "./internal/Code";
 import InfoBox from "./internal/InfoBox";
 import TabbedContent, { TabbedContentItem } from "./internal/TabbedContent";
@@ -191,23 +192,21 @@ class Section<
       return (
         <ErrorBoundary
           class="pl-group"
+          previewId={this.isEditMode ? this.previewId : undefined}
           title={`Error rendering Section: ${MappedSection &&
             MappedSection.name}`}
         >
-          {content}
           {this.isDevMode ? (
-            <a
-              href="#"
-              title={`Section: ${this.type}`}
-              onClick={event => {
-                event.preventDefault();
+            <InfoToolTip
+              onClicked={() => {
                 this.renderDevInfoPortal();
               }}
-              class="pl-hidden group-hover:pl-flex pl-pointer-events-auto pl-w-6 pl-h-6 pl-items-center pl-justify-center pl-bg-gray-900 pl-text-gray-100 pl-rounded-full pl-absolute pl-top-0 pl-right-0 pl-mr-5 pl-mt-5 hover:pl-bg-gray-700"
             >
-              ?
-            </a>
-          ) : null}
+              {content}
+            </InfoToolTip>
+          ) : (
+            content
+          )}
         </ErrorBoundary>
       );
     }

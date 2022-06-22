@@ -123,6 +123,7 @@ Next, the FSXAApp can be used in the template, passing different parameters ther
 |---|---|
 | defaultLocale  |  Provide the locale your content should be displayed in, if no initial path is passed |
 | devMode  | When activated, you will be shown useful information with which you can start developing your ui.  |
+| useErrorBoundaryWrapper  | For new projects set to false is recommended. When set to true, adds a div around error boundary. |
 | handleRouteChange  | Required callback that will be triggered, when the route should be changed  |
 | currentPath  | You can specify the path of the page that should be displayed  |
 | components  |  Mapping of the FirstSpirit components |
@@ -134,6 +135,7 @@ This is what the component looks like:
   <fsxa-app
       defaultLocale="de_DE"
       devMode="true"
+      useErrorBoundaryWrapper="false"
       :handleRouteChange="changeRoute"
       :currentPath="route"
       :components="components"
@@ -215,6 +217,7 @@ export default {
 
 In this file multiple settings can be specified
 - devMode: boolean if the development mode is active or not
+- useErrorBoundaryWrapper: boolean if the extra div is added or not
 - defaultLocale: provided default language i.e. `'en_EN'`
 - customRoutes: path to folder to define your own api
 - component: object to define the paths to your components

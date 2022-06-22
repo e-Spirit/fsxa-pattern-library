@@ -269,6 +269,7 @@ export interface AppComponents {
   layouts?: Record<string, any>;
   richtext?: Record<string, any>;
   devModeInfo?: any;
+  useErrorBoundaryWrapper?: boolean;
 }
 
 export interface AppProps {
@@ -320,6 +321,16 @@ export interface AppProps {
    * *Note*: This is an experimental feature and must be explicit turned on.
    */
   enableEventStream?: boolean;
+
+  /* When enabled a EXTRA <div class="pl-relative pl-group"> wrapper with css properties like group (for group hover effects) and position: relative is added.
+   *
+   * For new projects recommended to disable useErrorBoundaryWrapper for not displaying extra div with relative class.
+   *
+   * Disabling removes this extra div with the classes.
+   *
+   * Error boundary to catch component errors is injected no matter if the flag is set or not.
+   */
+  useErrorBoundaryWrapper?: boolean;
 }
 export class FSXAApp extends Component<AppProps> {}
 
