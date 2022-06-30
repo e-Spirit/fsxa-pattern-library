@@ -2,7 +2,7 @@ import { Component, Prop } from "vue-property-decorator";
 import { Component as TsxComponent } from "vue-tsx-support";
 
 @Component
-export class InfoIconBox extends TsxComponent<{}> {
+export class InfoIcon extends TsxComponent<{}> {
   @Prop({ required: true }) left!: string;
   @Prop({ required: true }) top!: string;
 
@@ -19,4 +19,4 @@ export class InfoIconBox extends TsxComponent<{}> {
   }
 }
 
-export default InfoIconBox;
+export default InfoIcon;
