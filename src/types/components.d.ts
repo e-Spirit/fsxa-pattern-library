@@ -322,7 +322,7 @@ export interface AppProps {
    */
   enableEventStream?: boolean;
 
-  /* When enabled a EXTRA <div class="pl-relative pl-group"> wrapper with css properties like group (for group hover effects) and position: relative is added.
+  /* When enabled an EXTRA <div class="pl-relative pl-group"> wrapper with css properties like group (for group hover effects) and position: relative is added.
    *
    * For new projects recommended to disable useErrorBoundaryWrapper for not displaying extra div with relative class.
    *
