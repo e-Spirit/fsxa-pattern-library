@@ -30,6 +30,9 @@ export const importTPPSnapAPI = async (
       document.head.appendChild(script);
     });
   }
+  return new Promise(resolve => {
+    resolve(getTPPSnap());
+  });
 };
 
 export function initializeApi(
