@@ -13,17 +13,25 @@ export const getTPPSnap = (): any | null => {
 export const importTPPSnapAPI = async (
   version: string,
 ): Promise<any | null> => {
-  return new Promise((resolve, reject) => {
-    const script = document.createElement("script");
-    // We will wait for tpp to load until we resolve this promise
-    script.onload = () => {
-      resolve(getTPPSnap());
-    };
-    script.onerror = () => {
-      reject();
-    };
-    script.src = `https://cdn.jsdelivr.net/npm/fs-tpp-api@${version}/snap.js`;
-    document.head.appendChild(script);
+  const scriptTagId = "fsxa-tpp-snap-import";
+  // Ensure we only add the script Tag once and also only add it, if TPP_SNAP was not added by some other source
+  if (!document.getElementById(scriptTagId) && !getTPPSnap()) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement("script");
+      script.id = scriptTagId;
+      // We will wait for tpp to load until we resolve this promise
+      script.onload = () => {
+        resolve(getTPPSnap());
+      };
+      script.onerror = () => {
+        reject();
+      };
+      script.src = `https://cdn.jsdelivr.net/npm/fs-tpp-api@${version}/snap.js`;
+      document.head.appendChild(script);
+    });
+  }
+  return new Promise(resolve => {
+    resolve(getTPPSnap());
   });
 };
 
