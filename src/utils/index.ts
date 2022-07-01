@@ -15,7 +15,7 @@ export const importTPPSnapAPI = async (
 ): Promise<any | null> => {
   const scriptTagId = "fsxa-tpp-snap-import";
   // Ensure we only add the script Tag once and also only add it, if TPP_SNAP was not added by some other source
-  if (!document.querySelector(`#${scriptTagId}`) && !getTPPSnap()) {
+  if (!document.getElementById(scriptTagId) && !getTPPSnap()) {
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.id = scriptTagId;
