@@ -1,3 +1,10 @@
+## [8.3.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.3.0...v8.3.1) (2022-07-01)
+
+
+### Bug Fixes
+
+* **tpp-snap:** only import tpp-snap once ([#73](https://github.com/e-Spirit/fsxa-pattern-library/issues/73)) ([132a1c3](https://github.com/e-Spirit/fsxa-pattern-library/commit/132a1c3e010d3b1742bd38a3896bd7d54caaf71c))
+
 # [8.3.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.2.1...v8.3.0) (2022-06-21)
 
 
