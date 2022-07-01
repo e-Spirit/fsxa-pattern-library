@@ -29,6 +29,7 @@ import {
   connectCaasEvents,
   DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
 } from "@/utils/caas-events";
+import { triggerRouteChange } from "@/utils/getters";
 
 const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 @Component({
@@ -91,15 +92,29 @@ class App extends TsxComponent<AppProps> {
     return this.fsTppVersion || DEFAULT_TPP_SNAP_VERSION;
   }
 
-  mounted() {
-    if (this.appState === FSXAAppState.not_initialized) this.initialize();
+  async mounted() {
+    if (this.appState === FSXAAppState.not_initialized) await this.initialize();
+
     if (this.isEditMode) {
       const caasEvents = connectCaasEvents(this.fsxaApi);
 
-      const routeToPreviewId = (previewId: string) => {
-        const [pageId] = previewId.split(".");
-        const nextPage = this.navigationData?.idMap[pageId];
-        if (nextPage) this.requestRouteChange(nextPage.seoRoute);
+      const routeToPreviewId = async (previewId: string) => {
+        const [pageId, locale] = previewId.split(".");
+        const newRoute = await triggerRouteChange(
+          this.$store,
+          this.fsxaApi,
+          {
+            locale,
+            pageId,
+          },
+          this.locale,
+          this.$store.getters[FSXAGetters.getGlobalSettingsKey],
+        );
+        if (newRoute != null) {
+          this.handleRouteChange(newRoute);
+        } else {
+          console.warn("Unable to route to ", newRoute);
+        }
       };
 
       // we will load tpp-snap, if we are in devMode
@@ -112,11 +127,13 @@ class App extends TsxComponent<AppProps> {
           TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
             // This event handles the initial loading of the pwa in the ocm or after a site was created or section changed
             // Here we need to wait a few moments, so that the CaaS/Navigation-Service could be filled with the new information, before we initialize the app to get the new data.
+            // TODO: There may be multiple calls to this function in rapid succession, hence we should debounce those calls.
+            console.log("onRequestPreviewElement triggered with ", previewId);
+
             await caasEvents.waitFor(previewId, {
               timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
             });
-            await this.initialize();
-            routeToPreviewId(previewId);
+            await routeToPreviewId(previewId);
           });
           TPP_SNAP.onRerenderView(() => {
             TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
@@ -148,7 +165,7 @@ class App extends TsxComponent<AppProps> {
                 );
               }
               await this.initialize();
-              if (previewId) routeToPreviewId(previewId);
+              if (previewId) await routeToPreviewId(previewId);
             });
           });
         })
