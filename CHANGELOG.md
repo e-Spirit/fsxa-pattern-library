@@ -1,3 +1,10 @@
+# [8.4.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.3.1...v8.4.0) (2022-07-04)
+
+
+### Features
+
+* **errorboundary:** refactor error boundary to remove extra div wrapper ([#72](https://github.com/e-Spirit/fsxa-pattern-library/issues/72)) ([f8322f1](https://github.com/e-Spirit/fsxa-pattern-library/commit/f8322f16d03868e15d8c497839b2a8243c78905a))
+
 ## [8.3.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.3.0...v8.3.1) (2022-07-01)
 
 
