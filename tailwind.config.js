@@ -26,7 +26,11 @@ module.exports = {
   ],
   prefix: "pl-",
   theme: {
-    extend: {},
+    extend: {
+      zIndex: {
+        info: "99999",
+      },
+    },
     namedGroupHover: {
       groups: ["l", "s", "r"],
     },

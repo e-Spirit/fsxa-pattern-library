@@ -13,6 +13,7 @@ import InfoBox from "./internal/InfoBox";
 import TabbedContent from "./internal/TabbedContent";
 import RenderUtils from "./base/RenderUtils";
 import { AppComponents } from "@/types/components";
+import InfoToolTip from "./internal/InfoToolTip";
 
 export interface LayoutProps<Data, Meta> {
   pageId: string;
@@ -213,25 +214,21 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
     }
     return (
       <ErrorBoundary
-        class="group-l"
-        data-preview-id={this.isEditMode ? this.previewId : undefined}
+        previewId={this.isEditMode ? this.previewId : undefined}
         title={`Error rendering Layout: ${this.mappedLayout &&
           this.mappedLayout.name}`}
       >
-        {content}
         {this.isDevMode ? (
-          <a
-            href="#"
-            title={`Layout: ${this.type}`}
-            onClick={event => {
-              event.preventDefault();
+          <InfoToolTip
+            onClicked={() => {
               this.renderDevInfoPortal();
             }}
-            class="pl-hidden group-l-hover:pl-flex pl-pointer-events-auto pl-w-6 pl-h-6 pl-items-center pl-justify-center pl-bg-gray-600 pl-text-gray-100 pl-rounded-full pl-absolute pl-top-0 pl-right-0 pl-mr-12 pl-mt-5 hover:pl-bg-gray-500"
           >
-            ?
-          </a>
-        ) : null}
+            {content}
+          </InfoToolTip>
+        ) : (
+          content
+        )}
       </ErrorBoundary>
     );
   }

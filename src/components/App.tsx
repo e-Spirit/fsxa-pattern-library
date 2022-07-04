@@ -15,6 +15,7 @@ import {
   FSXA_INJECT_KEY_COMPONENTS,
   FSXA_INJECT_KEY_TPP_VERSION,
   FSXA_INJECT_DEV_MODE_INFO,
+  FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER,
 } from "@/constants";
 import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
@@ -40,6 +41,8 @@ class App extends TsxComponent<AppProps> {
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
+  @Prop({ default: true })
+  useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
   @ProvideReactive("currentPath") path = this.currentPath;
   @ProvideReactive(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
   @ProvideReactive(FSXA_INJECT_KEY_COMPONENTS) injectedComponents = this
@@ -53,6 +56,10 @@ class App extends TsxComponent<AppProps> {
     this.components?.loader || null;
   @ProvideReactive(FSXA_INJECT_DEV_MODE_INFO) injectedInfoError =
     this.components?.devModeInfo || null;
+
+  @ProvideReactive(FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER)
+  injectedUseErrorBoundaryWrapper = this.useErrorBoundaryWrapper;
+
   @Watch("currentPath")
   onCurrentPathChange(nextPath: string) {
     this.path = nextPath;
@@ -61,6 +68,11 @@ class App extends TsxComponent<AppProps> {
   @Watch("devMode")
   onDevModeChange(nextDevMode: boolean) {
     this.injectedDevMode = nextDevMode;
+  }
+
+  @Watch("useErrorBoundaryWrapper")
+  onUseErrorBoundaryWrapperChange(nextUseErrorBoundaryWrapper: boolean) {
+    this.injectedUseErrorBoundaryWrapper = nextUseErrorBoundaryWrapper;
   }
 
   @Watch("components")
