@@ -43,10 +43,10 @@ const getPageRectanglePosition = (element: HTMLElement): RectanglePosition => {
   }
   const clientRect = element.getBoundingClientRect();
   return {
-    top: clientRect.top,
-    left: clientRect.left,
-    right: clientRect.right,
-    bottom: clientRect.bottom,
+    top: clientRect.top + window.scrollY,
+    left: clientRect.left + window.scrollX,
+    right: clientRect.right + window.scrollX,
+    bottom: clientRect.bottom + window.scrollY,
   };
 };
 
