@@ -5,7 +5,8 @@ import BaseComponent from "@/components/base/BaseComponent";
 import { FSXA_INJECT_KEY_LOADER } from "@/constants";
 
 import Layout from "./Layout";
-import { getTPPSnap } from "@/utils";
+import { getTPPSnap, isClient } from "@/utils";
+import { FSXAAppState } from "@/store";
 
 export interface PageProps {
   id?: string;
@@ -33,17 +34,6 @@ class Page extends BaseComponent<PageProps> {
   mounted() {
     if (!this.pageData && !this.loadedPage) {
       this.fetchPage();
-    }
-    const TPP_SNAP = getTPPSnap();
-    if (this.isEditMode && this.page && TPP_SNAP) {
-      TPP_SNAP.setPreviewElement(this.page.previewId);
-    }
-  }
-
-  updated() {
-    const TPP_SNAP = getTPPSnap();
-    if (this.isEditMode && this.page && TPP_SNAP) {
-      TPP_SNAP.setPreviewElement(this.page.previewId);
     }
   }
 
@@ -74,7 +64,10 @@ class Page extends BaseComponent<PageProps> {
   }
 
   render() {
-    if (typeof this.page === "undefined") {
+    if (
+      typeof this.page === "undefined" ||
+      this.$store.state.fsxa.appState !== FSXAAppState.ready
+    ) {
       const LoaderComponent = this.loaderComponent || "div";
       return <LoaderComponent />;
     }
@@ -82,7 +75,22 @@ class Page extends BaseComponent<PageProps> {
       throw new Error("Could not load page");
     }
 
-    return this.page ? (
+    if (this.isEditMode && isClient()) {
+      const TPP_SNAP = getTPPSnap();
+      if (TPP_SNAP) {
+        TPP_SNAP.isConnected
+          .then((connected: boolean) => {
+            if (connected && typeof this.page !== "undefined" && this.page) {
+              TPP_SNAP.setPreviewElement(this.page.previewId);
+            }
+          })
+          .catch((e: any) => {
+            console.error("Could not set preview element: " + e);
+          });
+      }
+    }
+
+    return (
       <Layout
         pageId={this.id!}
         previewId={this.page.previewId}
@@ -93,7 +101,7 @@ class Page extends BaseComponent<PageProps> {
       >
         {this.$slots.default}
       </Layout>
-    ) : null;
+    );
   }
 }
 export default Page;

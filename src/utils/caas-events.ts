@@ -30,7 +30,7 @@ const waitFor = (
   documentId: string,
   { allowedEventTypes, timeout }: WaitForOptions = {},
 ): Promise<void> => {
-  console.log("waitFor", documentId);
+  console.debug("Waiting for CaaS event for document", documentId);
   const promises: Promise<void>[] = [
     new Promise(resolve => {
       const resolver = { documentId, allowedEventTypes, resolve };

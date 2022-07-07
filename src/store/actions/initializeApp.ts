@@ -30,6 +30,7 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
         throw reason;
       });
   }
+  console.debug("Initializing app", { payload });
   const path = payload.initialPath ? decodeURI(payload.initialPath) : "/";
 
   commit("setAppAsInitializing");

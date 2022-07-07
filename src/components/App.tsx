@@ -24,7 +24,7 @@ import Code from "./internal/Code";
 import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
-import { getTPPSnap, importTPPSnapAPI } from "@/utils";
+import { importTPPSnapAPI } from "@/utils";
 import {
   connectCaasEvents,
   DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
@@ -32,6 +32,8 @@ import {
 import { triggerRouteChange } from "@/utils/getters";
 
 const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
+const CAAS_CHANGE_DELAY_MS = 300;
+
 @Component({
   name: "FSXAApp",
 })
@@ -100,6 +102,13 @@ class App extends TsxComponent<AppProps> {
 
       const routeToPreviewId = async (previewId: string) => {
         const [pageId, locale] = previewId.split(".");
+        console.debug("Triggering route change", {
+          params: {
+            locale,
+            pageId,
+          },
+          currentLocale: this.$store.getters[FSXAGetters.locale],
+        });
         const newRoute = await triggerRouteChange(
           this.$store,
           this.fsxaApi,
@@ -107,7 +116,7 @@ class App extends TsxComponent<AppProps> {
             locale,
             pageId,
           },
-          this.locale,
+          this.$store.getters[FSXAGetters.locale],
           this.$store.getters[FSXAGetters.getGlobalSettingsKey],
         );
         if (newRoute != null) {
@@ -117,108 +126,78 @@ class App extends TsxComponent<AppProps> {
         }
       };
 
-      // we will load tpp-snap, if we are in devMode
       importTPPSnapAPI(this.tppVersion)
         .then(TPP_SNAP => {
-          const defaultWaitingTimeoutInMs = 300;
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");
           }
-          TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
-            // This event handles the initial loading of the pwa in the ocm or after a site was created or section changed
-            // Here we need to wait a few moments, so that the CaaS/Navigation-Service could be filled with the new information, before we initialize the app to get the new data.
-            // TODO: There may be multiple calls to this function in rapid succession, hence we should debounce those calls.
-            console.log("onRequestPreviewElement triggered with ", previewId);
+          TPP_SNAP.onInit(async (success: boolean) => {
+            if (!success) throw new Error("Could not initialize TPP");
 
-            await caasEvents.waitFor(previewId, {
-              timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+            if (TPP_SNAP.fsxaHooksRegistered) {
+              console.debug(
+                "Hooks already registered, skipping registrations.",
+              );
+              return;
+            }
+
+            console.debug("Registering FSXA hooks");
+            TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
+              console.debug("onRequestPreviewElement triggered", previewId);
+              await caasEvents.waitFor(previewId, {
+                timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+              });
+              await routeToPreviewId(previewId);
             });
-            await routeToPreviewId(previewId);
-          });
-          TPP_SNAP.onRerenderView(() => {
-            TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-              if (caasEvents.isConnected()) {
-                await caasEvents.waitFor(previewId, {
-                  timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-                  allowedEventTypes: ["replace"],
-                });
-              } else {
-                // no realtime events, so just wait
-                await new Promise(resolve =>
-                  setTimeout(resolve, defaultWaitingTimeoutInMs),
-                );
-              }
-              await this.initialize();
+            TPP_SNAP.onRerenderView(() => {
+              console.debug("onRerenderView triggered");
+              TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
+                if (caasEvents.isConnected()) {
+                  await caasEvents.waitFor(previewId, {
+                    timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+                    allowedEventTypes: ["replace"],
+                  });
+                } else {
+                  // no realtime events, so just wait
+                  await new Promise(resolve =>
+                    setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
+                  );
+                }
+                await this.initialize(this.$store.getters[FSXAGetters.locale]);
+              });
+              return false;
             });
-            return false;
-          });
-          TPP_SNAP.onNavigationChange(async () => {
-            TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-              if (caasEvents.isConnected()) {
-                await caasEvents.waitFor(previewId, {
-                  timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-                });
-              } else {
-                // no realtime events, so just wait
-                await new Promise(resolve =>
-                  setTimeout(resolve, defaultWaitingTimeoutInMs),
-                );
-              }
-              await this.initialize();
-              if (previewId) await routeToPreviewId(previewId);
+            TPP_SNAP.onNavigationChange(async () => {
+              console.debug("onNavigationChange triggered");
+              TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
+                if (caasEvents.isConnected()) {
+                  await caasEvents.waitFor(previewId, {
+                    timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+                  });
+                } else {
+                  // no realtime events, so just wait
+                  await new Promise(resolve =>
+                    setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
+                  );
+                }
+                await this.initialize(this.$store.getters[FSXAGetters.locale]);
+                if (previewId) await routeToPreviewId(previewId);
+              });
             });
+            TPP_SNAP.fsxaHooksRegistered = true;
           });
         })
-        .catch(() => {
+        .catch(e => {
           console.error(
-            `Could not load correct fs-tpp-api version: ${this.tppVersion}. Please make sure that it exists.`,
+            `Could not load snap.js with version '${this.tppVersion}': ` + e,
           );
         });
     }
   }
 
-  /**
-   * We will watch the appState and set the preview-element in the OCM
-   * if we are in editMode and we are on the client
-   */
-  @Watch("appState")
-  onAppStateChange(nextAppState: FSXAAppState) {
-    if (
-      this.isEditMode &&
-      nextAppState === FSXAAppState.ready &&
-      typeof window !== "undefined"
-    ) {
-      try {
-        const currentRoute = determineCurrentRoute(
-          this.navigationData,
-          this.currentPath,
-        );
-        if (currentRoute) {
-          getTPPSnap()?.setPreviewElement(`${currentRoute.id}.${this.locale}`);
-        }
-        // eslint-disable-next-line
-      } catch (err) {}
-    }
-  }
-
-  beforeDestroy() {
-    window.removeEventListener("click", this.handleInternalClick);
-  }
-
-  handleInternalClick(event: MouseEvent) {
-    if (
-      "linkInternal" in (event.target as HTMLElement).dataset &&
-      (event.target as HTMLElement).dataset.linkInternal === "true"
-    ) {
-      event.preventDefault();
-      event.stopImmediatePropagation();
-      this.requestRouteChange((event.target as any).pathname);
-    }
-  }
-
-  initialize() {
+  initialize(locale?: string) {
     return this.$store.dispatch(FSXAActions.initializeApp, {
-      defaultLocale: this.defaultLocale,
+      defaultLocale: locale ? locale : this.defaultLocale,
       initialPath: this.currentPath,
     });
   }
