@@ -1,3 +1,10 @@
+## [8.4.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.4.0...v8.4.1) (2022-07-11)
+
+
+### Bug Fixes
+
+* **requestPreviewElement:** fix language handling ([#74](https://github.com/e-Spirit/fsxa-pattern-library/issues/74)) ([1babe3e](https://github.com/e-Spirit/fsxa-pattern-library/commit/1babe3e4004c5c5f13490d17094003e952853a65))
+
 # [8.4.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.3.1...v8.4.0) (2022-07-04)
 
 
