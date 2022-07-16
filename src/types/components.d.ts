@@ -114,6 +114,12 @@ export interface BaseLayoutProps<Data = {}, Meta = {}> {
    */
   meta: Meta;
 }
+export interface RenderingOptions {
+  /**
+   * Renders an "+ add section" button at the bottom of this slot (only in preview mode)
+   */
+  showAddSectionButtonInPreview?: boolean;
+}
 export class FSXABaseLayout<Data = {}, Meta = {}> extends FSXABaseComponent<
   BaseLayoutProps<Data, Meta>,
   {},
@@ -135,8 +141,9 @@ export class FSXABaseLayout<Data = {}, Meta = {}> extends FSXABaseComponent<
    * The prerendered sections are injected as slots into the component. You can access the slot directly through `this.$scopedSlots.contentName`
    * or by calling this method and passing in the name of the content section
    * @param name string
+   * @param options RenderingOptions
    */
-  renderContentByName(name: string): any;
+  renderContentByName(name: string, options?: RenderingOptions): any;
   /**
    * You can render any PageBodyContent through that method
    */
@@ -418,6 +425,16 @@ export interface InEditProps extends InEditEditorProps {
   content: string;
 }
 export class FSXAInEdit extends FSXABaseComponent<InEditProps> {}
+
+export interface AddSectionButtonProps {
+  /**
+   * String bodyName `Body` name
+   */
+  bodyName?: string;
+}
+export class AddSectionButton extends FSXABaseComponent<
+  AddSectionButtonProps
+> {}
 
 export interface InEditEditorProps {
   /**

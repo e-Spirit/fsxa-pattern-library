@@ -1,5 +1,5 @@
 import { Component, Prop } from "vue-property-decorator";
-import { BaseLayoutProps } from "@/types/components";
+import { BaseLayoutProps, RenderingOptions } from "@/types/components";
 import RenderUtils from "./RenderUtils";
 
 /**
@@ -37,10 +37,11 @@ class BaseLayout<
    * The prerendered sections are injected as slots into the component. You can access the slot directly through `this.$scopedSlots.contentName`
    * or by calling this method and passing in the name of the content section
    * @param name string
+   * @param renderingOptions RenderingOptions
    */
-  renderContentByName(name: string) {
+  renderContentByName(name: string, renderingOptions: RenderingOptions = {}) {
     const contentRenderer = (this.$scopedSlots as any)[name];
-    return contentRenderer ? contentRenderer({}) : null;
+    return contentRenderer ? contentRenderer(renderingOptions) : null;
   }
 
   render() {

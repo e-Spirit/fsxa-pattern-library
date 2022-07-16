@@ -12,8 +12,9 @@ import Code from "./internal/Code";
 import InfoBox from "./internal/InfoBox";
 import TabbedContent from "./internal/TabbedContent";
 import RenderUtils from "./base/RenderUtils";
-import { AppComponents } from "@/types/components";
+import { AppComponents, RenderingOptions } from "@/types/components";
 import InfoToolTip from "./internal/InfoToolTip";
+import AddSectionButton from "./AddSectionButton";
 
 export interface LayoutProps<Data, Meta> {
   pageId: string;
@@ -47,11 +48,12 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
   renderContentElements = (content: PageBodyContent[]) =>
     content.map(this.renderContentElement);
 
-  renderContent(content: PageBody) {
+  renderContent(content: PageBody, options?: { addSectionButton?: string }) {
     const sections = this.renderContentElements(content.children);
     return this.isDevMode ? (
       <div data-preview-id={content.previewId} class="pl-w-full pl-h-full">
         {sections}
+        <AddSectionButton bodyName={options?.addSectionButton} />
       </div>
     ) : (
       sections
@@ -195,7 +197,12 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
       const slots = this.content.reduce(
         (slots, content) => ({
           ...slots,
-          [content.name]: () => this.renderContent(content),
+          [content.name]: (options?: RenderingOptions) => {
+            const renderingOptions: { addSectionButton?: string } = {};
+            if (options?.showAddSectionButtonInPreview)
+              renderingOptions.addSectionButton = content.name;
+            return this.renderContent(content, renderingOptions);
+          },
         }),
         {},
       );
