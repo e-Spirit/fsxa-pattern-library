@@ -1,3 +1,10 @@
+# [8.5.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.4.2...v8.5.0) (2022-07-25)
+
+
+### Features
+
+* **add-section-button:** add an "Add Section" button in preview ([#75](https://github.com/e-Spirit/fsxa-pattern-library/issues/75)) ([d113d39](https://github.com/e-Spirit/fsxa-pattern-library/commit/d113d3996521e44b18d4196bb319c56d76047934))
+
 ## [8.4.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.4.1...v8.4.2) (2022-07-19)
 
 
