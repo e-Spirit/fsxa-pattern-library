@@ -9,7 +9,11 @@ class StandardLayout extends FSXABaseLayout {
     return (
       <div class="pl-w-full pl-h-full pl-flex pl-flex-col">
         <div class="pl-my-10">{this.renderContentByName("default")}</div>
-        <div class="pl-my-10">{this.renderContentByName("content")}</div>
+        <div class="pl-my-10">
+          {this.renderContentByName("content", {
+            showAddSectionButtonInPreview: true,
+          })}
+        </div>
       </div>
     );
   }
