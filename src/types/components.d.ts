@@ -32,6 +32,13 @@ export class FSXABaseComponent<
   fsTppVersion: string;
 
   /**
+   * The currently used ts-tpp-api CDN URL.
+   *
+   * *Hint:* The fs-tpp-api will only be injected, when isEditMode = true
+   */
+  fsTppCdnUrl: string;
+
+  /**
    * This method will trigger a route change request
    *
    * You can pass in a pageId, route or locale
@@ -318,6 +325,12 @@ export interface AppProps {
    * The TPP-API is used for enabling the editing experience in the OCM
    */
   fsTppVersion?: string;
+  /**
+   * You can specify which CDN URL for fs-tpp-api should be used in preview-mode
+   *
+   * The TPP-API is used for enabling the editing experience in the OCM
+   */
+  fsTppCdnUrl?: string;
   /**
    * When enabled, events for `insert`, `replace` and `delete` CaaS documents can be observed and handled.
    *

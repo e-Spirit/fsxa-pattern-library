@@ -14,6 +14,7 @@ import {
   FSXA_INJECT_KEY_LOADER,
   FSXA_INJECT_KEY_COMPONENTS,
   FSXA_INJECT_KEY_TPP_VERSION,
+  FSXA_INJECT_KEY_TPP_CDN_URL,
   FSXA_INJECT_DEV_MODE_INFO,
   FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER,
 } from "@/constants";
@@ -44,6 +45,7 @@ class App extends TsxComponent<AppProps> {
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
+  @Prop() fsTppCdnUrl: AppProps["fsTppCdnUrl"];
   @Prop({ default: true })
   useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
   @ProvideReactive("currentPath") path = this.currentPath;
@@ -94,6 +96,11 @@ class App extends TsxComponent<AppProps> {
     return this.fsTppVersion || DEFAULT_TPP_SNAP_VERSION;
   }
 
+  @ProvideReactive(FSXA_INJECT_KEY_TPP_CDN_URL)
+  get tppCdnUrl() {
+    return this.fsTppCdnUrl;
+  }
+
   async mounted() {
     if (this.appState === FSXAAppState.not_initialized) await this.initialize();
 
@@ -126,7 +133,7 @@ class App extends TsxComponent<AppProps> {
         }
       };
 
-      importTPPSnapAPI(this.tppVersion)
+      importTPPSnapAPI({ version: this.tppVersion, url: this.tppCdnUrl })
         .then(TPP_SNAP => {
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");
