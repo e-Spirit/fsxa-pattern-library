@@ -1,6 +1,5 @@
-import { render } from "@testing-library/vue";
 import Dataset from "./Dataset";
-import { createLocalVue } from "@vue/test-utils";
+import { createLocalVue, mount } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import createStore from "@/store";
 import {
@@ -51,22 +50,29 @@ const setup = () => {
 };
 
 describe("Dataset", () => {
+  const provide = {
+    __reactiveInject__: {
+      currentPath: "/some/path",
+    },
+  };
+
   const renderDataset = (cfg: {
     api: FSXAApi;
     localVue: VueConstructor;
     store: Store<RootState>;
     props: DatasetProps;
   }) =>
-    render(Dataset, {
+    mount(Dataset, {
       localVue: cfg.localVue,
       store: cfg.store,
-      props: cfg.props,
+      propsData: cfg.props,
       beforeCreate() {
         Object.defineProperty(this, "fsxaApi", {
           writable: false,
           value: cfg.api,
         });
       },
+      provide,
     });
 
   it("fetches page data when mounted and a pageId is given", async () => {
