@@ -14,7 +14,9 @@ export type ImportTPPSnapAPIOptions = {
 const DEFAULT_CDN_FALLBACK =
   "https://cdn.jsdelivr.net/npm/fs-tpp-api@{version}/snap.js";
 
-export const importTPPSnapAPI = (options: ImportTPPSnapAPIOptions = {}) =>
+export const importTPPSnapAPI = (
+  options: ImportTPPSnapAPIOptions = {},
+): Promise<any> =>
   new Promise(resolve => {
     if (isClient()) {
       // util: resolve the promise when `TPP_SNAP` is assigned to window and the message bus is connected
