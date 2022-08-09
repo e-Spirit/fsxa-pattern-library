@@ -1,5 +1,5 @@
 import Dataset from "./Dataset";
-import { createLocalVue, mount } from "@vue/test-utils";
+import { createLocalVue } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
 import createStore from "@/store";
 import {
@@ -17,6 +17,7 @@ import {
   RootState,
 } from "@/types/fsxa-pattern-library";
 import { initializeApi } from "@/utils";
+import { render } from "@testing-library/vue";
 
 jest.mock("fsxa-api");
 
@@ -62,10 +63,10 @@ describe("Dataset", () => {
     store: Store<RootState>;
     props: DatasetProps;
   }) =>
-    mount(Dataset, {
+    render(Dataset, {
       localVue: cfg.localVue,
       store: cfg.store,
-      propsData: cfg.props,
+      props: cfg.props,
       beforeCreate() {
         Object.defineProperty(this, "fsxaApi", {
           writable: false,
