@@ -1,3 +1,10 @@
+## [8.6.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.6.0...v8.6.1) (2022-08-09)
+
+
+### Bug Fixes
+
+* **dataset.spec.ts:** reactiveInject variable in test ([#81](https://github.com/e-Spirit/fsxa-pattern-library/issues/81)) ([4c1e874](https://github.com/e-Spirit/fsxa-pattern-library/commit/4c1e874845b4a61643dc78bcdcce6acd761c5756))
+
 # [8.6.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.5.0...v8.6.0) (2022-08-02)
 
 
