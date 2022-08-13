@@ -1,4 +1,3 @@
-import { render } from "@testing-library/vue";
 import Dataset from "./Dataset";
 import { createLocalVue } from "@vue/test-utils";
 import Vuex, { Store } from "vuex";
@@ -18,6 +17,7 @@ import {
   RootState,
 } from "@/types/fsxa-pattern-library";
 import { initializeApi } from "@/utils";
+import { render } from "@testing-library/vue";
 
 jest.mock("fsxa-api");
 
@@ -51,6 +51,12 @@ const setup = () => {
 };
 
 describe("Dataset", () => {
+  const provide = {
+    __reactiveInject__: {
+      currentPath: "/some/path",
+    },
+  };
+
   const renderDataset = (cfg: {
     api: FSXAApi;
     localVue: VueConstructor;
@@ -67,6 +73,7 @@ describe("Dataset", () => {
           value: cfg.api,
         });
       },
+      provide,
     });
 
   it("fetches page data when mounted and a pageId is given", async () => {
