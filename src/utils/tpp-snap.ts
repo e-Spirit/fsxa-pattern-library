@@ -20,10 +20,6 @@ const hasBeenLoaded = (resolve?: (tppSnap: any) => void) => {
     tppSnap.isConnected.then(() => resolve?.(tppSnap));
     return true;
   }
-  if (document.querySelector('script[src$="/snap.js"]')) {
-    waitUntilLoaded(resolve);
-    return true;
-  }
   return false;
 };
 
@@ -32,6 +28,16 @@ const waitUntilLoaded = (resolve?: (tppSnap: any) => void) => {
   if (!hasBeenLoaded(resolve)) {
     setTimeout(waitUntilLoaded, 100);
   }
+};
+
+// util: has been loaded or injected
+const hasBeenLoadedOrInjected = (resolve?: (tppSnap: any) => void) => {
+  const loaded = hasBeenLoaded(resolve);
+  if (!loaded && document.querySelector('script[src$="/snap.js"]')) {
+    waitUntilLoaded(resolve);
+    return true;
+  }
+  return loaded;
 };
 
 // util: inject <script> and handle load events as a `Promise`
@@ -74,7 +80,7 @@ export const importTPPSnapAPI = (
   new Promise(resolve => {
     if (isClient()) {
       // check if already loaded (on any async step)
-      if (!hasBeenLoaded(resolve)) {
+      if (!hasBeenLoadedOrInjected(resolve)) {
         // convert deprecated `version` to an URL
         if (!options.url && options.version) {
           options.url = `https://cdn.jsdelivr.net/npm/fs-tpp-api@${options.version}/snap.js`;
@@ -94,7 +100,7 @@ export const importTPPSnapAPI = (
         } else {
           // detect top frame origin and snap version
           detectSnap(options.detectionTimeout).then(detectionResult => {
-            if (!hasBeenLoaded(resolve)) {
+            if (!hasBeenLoadedOrInjected(resolve)) {
               if (detectionResult === null) {
                 console.error(
                   "Unable to load snap.js. The InEdit features are disabled. You may add `fsTppApiUrl` to the fsxa.config.ts to resolve this issue. A valid value could be %o.",
