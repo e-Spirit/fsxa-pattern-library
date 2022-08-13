@@ -25,18 +25,18 @@ export class FSXABaseComponent<
   isDevMode: boolean;
 
   /**
+   * Set or override the used URL to a specific `snap.js`.
+   *
+   * *Hint:* The fs-tpp-api will only be injected, when isEditMode = true
+   */
+  fsTppApiUrl: string;
+
+  /**
    * The currently used ts-tpp-api version.
    *
    * *Hint:* If you want to work with specific features make sure that the current version supports them. The fs-tpp-api will only be injected, when isEditMode = true
    */
   fsTppVersion: string;
-
-  /**
-   * The currently used ts-tpp-api CDN URL.
-   *
-   * *Hint:* The fs-tpp-api will only be injected, when isEditMode = true
-   */
-  fsTppCdnUrl: string;
 
   /**
    * This method will trigger a route change request
@@ -320,17 +320,19 @@ export interface AppProps {
    */
   handleRouteChange: (nextRoute: string) => void;
   /**
+   * Use the `fsTppApiUrl`, if you need to set or override the used URL to a specific `snap.js`.
+   *
+   * This is an external dependency (JavaScript-file) which is used to enable the content editing features (InEdit) when the PWA is opened in FirstSpirit ContentCreator.
+   */
+  fsTppApiUrl?: string;
+  /**
    * You can specify which fs-tpp-api version should be loaded in preview-mode
    *
    * The TPP-API is used for enabling the editing experience in the OCM
+   *
+   * @deprecated use `fsTppApiUrl` instead
    */
   fsTppVersion?: string;
-  /**
-   * You can specify which CDN URL for fs-tpp-api should be used in preview-mode
-   *
-   * The TPP-API is used for enabling the editing experience in the OCM
-   */
-  fsTppCdnUrl?: string;
   /**
    * When enabled, events for `insert`, `replace` and `delete` CaaS documents can be observed and handled.
    *

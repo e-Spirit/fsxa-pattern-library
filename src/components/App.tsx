@@ -13,8 +13,8 @@ import {
   FSXA_INJECT_KEY_SECTIONS,
   FSXA_INJECT_KEY_LOADER,
   FSXA_INJECT_KEY_COMPONENTS,
+  FSXA_INJECT_KEY_TPP_API_URL,
   FSXA_INJECT_KEY_TPP_VERSION,
-  FSXA_INJECT_KEY_TPP_CDN_URL,
   FSXA_INJECT_DEV_MODE_INFO,
   FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER,
 } from "@/constants";
@@ -32,7 +32,6 @@ import {
 } from "@/utils/caas-events";
 import { triggerRouteChange } from "@/utils/getters";
 
-const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 const CAAS_CHANGE_DELAY_MS = 300;
 
 @Component({
@@ -44,8 +43,8 @@ class App extends TsxComponent<AppProps> {
   @Prop({ default: false }) devMode!: AppProps["devMode"];
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
+  @Prop() fsTppApiUrl: AppProps["fsTppApiUrl"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
-  @Prop() fsTppCdnUrl: AppProps["fsTppCdnUrl"];
   @Prop({ default: true })
   useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
   @ProvideReactive("currentPath") path = this.currentPath;
@@ -91,14 +90,14 @@ class App extends TsxComponent<AppProps> {
     return this.initialize();
   }
 
-  @ProvideReactive(FSXA_INJECT_KEY_TPP_VERSION)
-  get tppVersion() {
-    return this.fsTppVersion || DEFAULT_TPP_SNAP_VERSION;
+  @ProvideReactive(FSXA_INJECT_KEY_TPP_API_URL)
+  get tppApiUrl() {
+    return this.fsTppApiUrl;
   }
 
-  @ProvideReactive(FSXA_INJECT_KEY_TPP_CDN_URL)
-  get tppCdnUrl() {
-    return this.fsTppCdnUrl;
+  @ProvideReactive(FSXA_INJECT_KEY_TPP_VERSION)
+  get tppVersion() {
+    return this.fsTppVersion;
   }
 
   async mounted() {
@@ -133,7 +132,7 @@ class App extends TsxComponent<AppProps> {
         }
       };
 
-      importTPPSnapAPI({ version: this.tppVersion, url: this.tppCdnUrl })
+      importTPPSnapAPI({ version: this.tppVersion, url: this.tppApiUrl })
         .then(TPP_SNAP => {
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");
@@ -195,9 +194,7 @@ class App extends TsxComponent<AppProps> {
           });
         })
         .catch(e => {
-          console.error(
-            `Could not load snap.js with version '${this.tppVersion}': ` + e,
-          );
+          console.error(e);
         });
     }
   }
