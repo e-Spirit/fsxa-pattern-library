@@ -18,8 +18,8 @@ import {
 import { RequestRouteChangeParams } from "@/types/components";
 import {
   FSXA_INJECT_KEY_DEV_MODE,
+  FSXA_INJECT_KEY_TPP_API_URL,
   FSXA_INJECT_KEY_TPP_VERSION,
-  FSXA_INJECT_KEY_TPP_CDN_URL,
 } from "@/constants";
 import { determineCurrentRoute } from "@/utils/navigation";
 import { getTPPSnap } from "@/utils";
@@ -36,10 +36,10 @@ class BaseComponent<
     from: "currentPath",
   })
   private currentPath!: string;
+  @InjectReactive({ from: FSXA_INJECT_KEY_TPP_API_URL })
+  fsTppApiUrl!: string;
   @InjectReactive({ from: FSXA_INJECT_KEY_TPP_VERSION })
   fsTppVersion!: string;
-  @InjectReactive({ from: FSXA_INJECT_KEY_TPP_CDN_URL })
-  fsTppCdnUrl!: string;
   @Inject({ from: FSXA_INJECT_KEY_DEV_MODE, default: false })
   isDevMode!: boolean;
   @Inject({

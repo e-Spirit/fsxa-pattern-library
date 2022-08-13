@@ -5,8 +5,8 @@ export const FSXA_INJECT_KEY_LAYOUTS = "fsxa.layouts";
 export const FSXA_INJECT_KEY_SECTIONS = "fsxa.sections";
 export const FSXA_INJECT_KEY_LOADER = "fsxa.loader";
 export const FSXA_INJECT_KEY_SET_PORTAL_CONTENT = "fsxa.setPortalContent";
+export const FSXA_INJECT_KEY_TPP_API_URL = "fsxa.tppApiUrl";
 export const FSXA_INJECT_KEY_TPP_VERSION = "fsxa.tppVersion";
-export const FSXA_INJECT_KEY_TPP_CDN_URL = "fsxa.tppCdnUrl";
 export const FSXA_INJECT_DEV_MODE_INFO = "fsxa.devModeInfo";
 export const FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER =
   "fsxa.useErrorBoundaryWrapper";
