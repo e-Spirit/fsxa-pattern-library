@@ -25,16 +25,17 @@ export class FSXABaseComponent<
   isDevMode: boolean;
 
   /**
-   * Set or override the used URL to a specific `snap.js`.
-   *
-   * *Hint:* The fs-tpp-api will only be injected, when isEditMode = true
+   * Set an URL to a LiveEdit implementation
+   * @see https://github.com/e-Spirit/fsxa-pattern-library#liveedit
    */
-  fsTppApiUrl: string;
+  liveEditUrl: string;
 
   /**
    * The currently used ts-tpp-api version.
    *
    * *Hint:* If you want to work with specific features make sure that the current version supports them. The fs-tpp-api will only be injected, when isEditMode = true
+   *
+   * @deprecated use `liveEditUrl` instead
    */
   fsTppVersion: string;
 
@@ -320,17 +321,16 @@ export interface AppProps {
    */
   handleRouteChange: (nextRoute: string) => void;
   /**
-   * Use the `fsTppApiUrl`, if you need to set or override the used URL to a specific `snap.js`.
-   *
-   * This is an external dependency (JavaScript-file) which is used to enable the content editing features (InEdit) when the PWA is opened in FirstSpirit ContentCreator.
+   * Set an URL to a LiveEdit implementation
+   * @see https://github.com/e-Spirit/fsxa-pattern-library#liveedit
    */
-  fsTppApiUrl?: string;
+  liveEditUrl: string;
   /**
    * You can specify which fs-tpp-api version should be loaded in preview-mode
    *
    * The TPP-API is used for enabling the editing experience in the OCM
    *
-   * @deprecated use `fsTppApiUrl` instead
+   * @deprecated use `liveEditUrl` instead
    */
   fsTppVersion?: string;
   /**

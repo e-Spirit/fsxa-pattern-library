@@ -40,6 +40,7 @@ class App extends TsxComponent<{}> {
     return (
       <FSXAApp
         defaultLocale="de_DE"
+        liveEditUrl="https://company.e-spirit.hosting/fs5webedit/snap.js"
         currentPath={this.route}
         devMode
         handleRouteChange={this.changeRoute}

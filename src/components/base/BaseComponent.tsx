@@ -18,7 +18,7 @@ import {
 import { RequestRouteChangeParams } from "@/types/components";
 import {
   FSXA_INJECT_KEY_DEV_MODE,
-  FSXA_INJECT_KEY_TPP_API_URL,
+  FSXA_INJECT_KEY_LIVE_EDIT_URL,
   FSXA_INJECT_KEY_TPP_VERSION,
 } from "@/constants";
 import { determineCurrentRoute } from "@/utils/navigation";
@@ -36,8 +36,8 @@ class BaseComponent<
     from: "currentPath",
   })
   private currentPath!: string;
-  @InjectReactive({ from: FSXA_INJECT_KEY_TPP_API_URL })
-  fsTppApiUrl!: string;
+  @InjectReactive({ from: FSXA_INJECT_KEY_LIVE_EDIT_URL })
+  liveEditUrl!: string;
   @InjectReactive({ from: FSXA_INJECT_KEY_TPP_VERSION })
   fsTppVersion!: string;
   @Inject({ from: FSXA_INJECT_KEY_DEV_MODE, default: false })

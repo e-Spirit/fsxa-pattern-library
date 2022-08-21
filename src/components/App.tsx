@@ -13,7 +13,6 @@ import {
   FSXA_INJECT_KEY_SECTIONS,
   FSXA_INJECT_KEY_LOADER,
   FSXA_INJECT_KEY_COMPONENTS,
-  FSXA_INJECT_KEY_TPP_API_URL,
   FSXA_INJECT_KEY_TPP_VERSION,
   FSXA_INJECT_DEV_MODE_INFO,
   FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER,
@@ -43,7 +42,7 @@ class App extends TsxComponent<AppProps> {
   @Prop({ default: false }) devMode!: AppProps["devMode"];
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
-  @Prop() fsTppApiUrl: AppProps["fsTppApiUrl"];
+  @Prop({ required: true }) liveEditUrl!: AppProps["liveEditUrl"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
   @Prop({ default: true })
   useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
@@ -88,11 +87,6 @@ class App extends TsxComponent<AppProps> {
 
   serverPrefetch() {
     return this.initialize();
-  }
-
-  @ProvideReactive(FSXA_INJECT_KEY_TPP_API_URL)
-  get tppApiUrl() {
-    return this.fsTppApiUrl;
   }
 
   @ProvideReactive(FSXA_INJECT_KEY_TPP_VERSION)
