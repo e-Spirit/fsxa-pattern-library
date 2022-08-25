@@ -94,7 +94,7 @@ available at [http://contributor-covenant.org/version/1/4/][version-covenant].
 [version-covenant]: http://contributor-covenant.org/version/1/4/
 
 ## Legal Notices
-FSXA-Pattern-library is a product of [e-Spirit AG](http://www.e-spirit.com), Dortmund, Germany.
+FSXA-Pattern-library is a product of [Crownpeak Technology GmbH](http://www.e-spirit.com), Dortmund, Germany.
 The FSXA-Pattern-library is subject to the Apache-2.0 license.
 
 ## Disclaimer
