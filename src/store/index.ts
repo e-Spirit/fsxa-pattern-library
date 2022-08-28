@@ -27,9 +27,7 @@ export enum FSXAAppState {
 export interface FSXAVuexState {
   locale: string | null;
   fsxaApiMode: "proxy" | "remote";
-  configuration: (FSXAProxyApiConfig | FSXARemoteApiConfig) & {
-    snapUrl?: string;
-  };
+  configuration: FSXAProxyApiConfig | FSXARemoteApiConfig;
   appState: FSXAAppState;
   navigation: NavigationData | null;
   settings: ProjectProperties | null;
@@ -42,6 +40,7 @@ export interface FSXAVuexState {
     };
   };
   mode: "release" | "preview";
+  snapUrl: string | null;
 }
 export interface RootState {
   fsxa: FSXAVuexState;
@@ -92,7 +91,9 @@ export const FSXAGetters = {
 };
 
 export function getFSXAModule<R extends RootState>(
-  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
+  options: (CreateStoreProxyOptions | CreateStoreRemoteOptions) & {
+    snapUrl?: string;
+  },
 ): Module<FSXAVuexState, R> {
   return {
     namespaced: true,
@@ -106,6 +107,7 @@ export function getFSXAModule<R extends RootState>(
       fsxaApiMode: options.mode,
       mode: options.config.contentMode,
       configuration: options.config,
+      snapUrl: options.snapUrl ?? null,
     }),
     actions: {
       [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
@@ -217,9 +219,7 @@ export function getFSXAModule<R extends RootState>(
             : null;
         return page ? page.seoRoute : null;
       },
-      [GETTER_SNAP_URL]: (state): string | null => {
-        return state.configuration.snapUrl ?? null;
-      },
+      [GETTER_SNAP_URL]: state => state.snapUrl,
     },
   };
 }
