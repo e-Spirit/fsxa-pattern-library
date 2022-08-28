@@ -27,7 +27,9 @@ export enum FSXAAppState {
 export interface FSXAVuexState {
   locale: string | null;
   fsxaApiMode: "proxy" | "remote";
-  configuration: FSXAProxyApiConfig | FSXARemoteApiConfig;
+  configuration: (FSXAProxyApiConfig | FSXARemoteApiConfig) & {
+    snapUrl?: string;
+  };
   appState: FSXAAppState;
   navigation: NavigationData | null;
   settings: ProjectProperties | null;
@@ -74,6 +76,7 @@ const GETTER_ITEM = "item";
 const GETTER_PAGE_BY_URL = "getPageIdByUrl";
 const GETTER_MODE = "mode";
 const GETTER_REFERENCE_URL = "getReferenceUrl";
+const GETTER_SNAP_URL = "getSnapUrl";
 
 export const FSXAGetters = {
   [Getters.appState]: `${prefix}/${Getters.appState}`,
@@ -85,6 +88,7 @@ export const FSXAGetters = {
   [GETTER_PAGE_BY_URL]: `${prefix}/${GETTER_PAGE_BY_URL}`,
   [GETTER_MODE]: `${prefix}/${GETTER_MODE}`,
   [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
+  [GETTER_SNAP_URL]: `${prefix}/${GETTER_SNAP_URL}`,
 };
 
 export function getFSXAModule<R extends RootState>(
@@ -212,6 +216,9 @@ export function getFSXAModule<R extends RootState>(
             ? state.navigation?.idMap[referenceId]
             : null;
         return page ? page.seoRoute : null;
+      },
+      [GETTER_SNAP_URL]: (state): string | null => {
+        return state.configuration.snapUrl ?? null;
       },
     },
   };

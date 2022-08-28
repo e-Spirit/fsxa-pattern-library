@@ -25,17 +25,11 @@ export class FSXABaseComponent<
   isDevMode: boolean;
 
   /**
-   * Set an URL to a LiveEdit implementation
-   * @see https://github.com/e-Spirit/fsxa-pattern-library#liveedit
-   */
-  liveEditUrl: string;
-
-  /**
    * The currently used ts-tpp-api version.
    *
    * *Hint:* If you want to work with specific features make sure that the current version supports them. The fs-tpp-api will only be injected, when isEditMode = true
    *
-   * @deprecated use `liveEditUrl` instead
+   * @deprecated use `FSXA_SNAP_URL` instead {@link https://github.com/e-Spirit/fsxa-pattern-library/#snap-url}
    */
   fsTppVersion: string;
 
@@ -321,16 +315,11 @@ export interface AppProps {
    */
   handleRouteChange: (nextRoute: string) => void;
   /**
-   * Set an URL to a LiveEdit implementation
-   * @see https://github.com/e-Spirit/fsxa-pattern-library#liveedit
-   */
-  liveEditUrl: string;
-  /**
    * You can specify which fs-tpp-api version should be loaded in preview-mode
    *
    * The TPP-API is used for enabling the editing experience in the OCM
    *
-   * @deprecated use `liveEditUrl` instead
+   * @deprecated use `FSXA_SNAP_URL` instead {@link https://github.com/e-Spirit/fsxa-pattern-library/#snap-url}
    */
   fsTppVersion?: string;
   /**

@@ -18,7 +18,7 @@ import "setimmediate";
 import { initializeApi } from "./utils";
 import { CreateStoreRemoteOptions } from "./types/fsxa-pattern-library";
 
-const remoteApiConfig: FSXARemoteApiConfig = {
+const remoteApiConfig: FSXARemoteApiConfig & { snapUrl?: string } = {
   apikey: getFSXAConfigFromEnvFile().apiKey,
   caasURL: getFSXAConfigFromEnvFile().caas,
   contentMode: FSXAContentMode.PREVIEW,
@@ -26,6 +26,7 @@ const remoteApiConfig: FSXARemoteApiConfig = {
   projectID: getFSXAConfigFromEnvFile().projectId,
   tenantID: getFSXAConfigFromEnvFile().tenantId,
   logLevel: LogLevel.INFO,
+  snapUrl: getFSXAConfigFromEnvFile().snapUrl,
 };
 
 const options: CreateStoreRemoteOptions = {

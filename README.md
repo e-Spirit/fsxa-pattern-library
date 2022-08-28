@@ -126,7 +126,6 @@ Next, the FSXAApp can be used in the template, passing different parameters ther
 | ----------------------- | ------------------------------------------------------------------------------------------------- |
 | defaultLocale           | Provide the locale your content should be displayed in, if no initial path is passed              |
 | devMode                 | When activated, you will be shown useful information with which you can start developing your ui. |
-| liveEditUrl             | Path to LiveEdit implementation, s. https://github.com/e-Spirit/fsxa-pattern-library#liveedit     |
 | useErrorBoundaryWrapper | For new projects set to false is recommended. When set to true, adds a div around error boundary. |
 | handleRouteChange       | Required callback that will be triggered, when the route should be changed                        |
 | currentPath             | You can specify the path of the page that should be displayed                                     |
@@ -143,7 +142,6 @@ This is what the component looks like:
     :handleRouteChange="changeRoute"
     :currentPath="route"
     :components="components"
-    liveEditUrl="https://company.e-spirit.hosting/fs5webedit/snap.js"
   />
 </template>
 
@@ -213,6 +211,8 @@ FSXA_MODE=preview
 FSXA_REMOTES=en_EN
 # This tenantId is required, when using caas-connect module 3.0.9 and above
 FSXA_TENANT_ID=xxxxxxxxxxxxxxx
+# URL pointing to the external SNAP library
+FSXA_SNAP_URL=https://xxxxxxxxxxxx.e-spirit.hosting/fs5webedit/snap.js
 ```
 
 Next, the `fsxa.config.ts` must be created:
@@ -221,7 +221,6 @@ Next, the `fsxa.config.ts` must be created:
 export default {
   devMode: false,
   defaultLocale: "de_DE",
-  liveEditUrl: "https://company.e-spirit.hosting/fs5webedit/snap.js",
 };
 ```
 
@@ -230,7 +229,6 @@ In this file multiple settings can be specified
 - devMode: boolean if the development mode is active or not
 - useErrorBoundaryWrapper: boolean if the extra div is added or not
 - defaultLocale: provided default language i.e. `'en_EN'`
-- liveEditUrl: url to [LiveEdit](https://github.com/e-Spirit/fsxa-pattern-library#liveedit) implementation
 - customRoutes: path to folder to define your own api
 - component: object to define the paths to your components
 
@@ -270,7 +268,6 @@ A complete `fsxa.config.ts` file can look like this:
 export default {
   devMode: false,
   defaultLocale: "de_DE",
-  liveEditUrl: "https://company.e-spirit.hosting/fs5webedit/snap.js",
   components: {
     sections: "~/components/fsxa/sections",
     layouts: "~/components/fsxa/layouts",
@@ -300,16 +297,18 @@ export const actions: ActionTree<State, State> = {
 
 To get started with the development of the individual components, we recommend following the [Getting-Started Guide](https://github.com/e-Spirit/fsxa-pwa#getting-started) of the FSXA-PWA.
 
-### LiveEdit
+#### Snap URL
 
-In Preview (`FSXA_MODE=preview`) the FSXA offers a lot of _LiveEdit_ features to edit sections, images, datasets, ... in place(!), to make this possible an external script has to been loaded.
+In Preview (`FSXA_MODE=preview`) the FSXA offers a lot of _LiveEdit_ features to edit sections, images, datasets, ... in place(!) and this needs an external dependency called _Snap Library_.
 
-The current implementation is [TPP Snap](https://docs.e-spirit.com/tpp/snap/) and the URL to this script has the looks like:
+The current implementation is [TPP Snap](https://docs.e-spirit.com/tpp/snap/) and the URL to this script has to look like:
 
 `https://[your-firstspirit-server]/fs5webedit/snap.js` or `https://[your-firstspirit-server]/fs5webedit[_project-id]/snap.js`
 
 where `[your-firstspirit-server]` is the hostname of your firstspirit server, e.g. https://company.e-spirit.hosting and `fs5webedit[_project-id]` the path of the ContentCreator WebApp
-(just login to your project in ContentCreator to get this path).
+(just log in to your project in ContentCreator to see the path in your browser).
+
+This path should be set as `FSXA_SNAP_URL` in your `.env` file. A fallback is the _latest_ [CDN version](https://cdn.jsdelivr.net/npm/fs-tpp-api/snap.js) of this dependency, which may cause a version mismatch and is not recommended.
 
 ## Project setup
 

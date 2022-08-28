@@ -42,7 +42,6 @@ class App extends TsxComponent<AppProps> {
   @Prop({ default: false }) devMode!: AppProps["devMode"];
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
-  @Prop({ required: true }) liveEditUrl!: AppProps["liveEditUrl"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
   @Prop({ default: true })
   useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
@@ -126,7 +125,10 @@ class App extends TsxComponent<AppProps> {
         }
       };
 
-      importTPPSnapAPI({ version: this.tppVersion, url: this.tppApiUrl })
+      importTPPSnapAPI({
+        version: this.tppVersion,
+        url: this.$store.getters[FSXAGetters.getSnapUrl],
+      })
         .then(TPP_SNAP => {
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");

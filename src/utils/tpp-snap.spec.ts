@@ -50,4 +50,12 @@ describe("tpp snap lib", () => {
 
     expect(document.getElementsByTagName("script")).toHaveLength(1);
   });
+
+  it("inject script tag with fallback", async () => {
+    importTPPSnapAPI({ url: null });
+
+    expect(document.body.innerHTML).toEqual(
+      '<script defer="" src="https://cdn.jsdelivr.net/npm/fs-tpp-api/snap.js"></script>',
+    );
+  });
 });

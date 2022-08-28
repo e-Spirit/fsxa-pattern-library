@@ -50,7 +50,6 @@ describe("App", () => {
       store: cfg.store,
       props: {
         defaultLocale: "de",
-        liveEditUrl: "https://company.e-spirit.hosting/fs5webedit/snap.js",
         handleRouteChange: () => undefined,
         currentPath: "/some/path",
       } as AppProps,
@@ -64,7 +63,6 @@ describe("App", () => {
 
     expect(store.dispatch).toHaveBeenCalledWith(FSXAActions.initializeApp, {
       defaultLocale: "de",
-      liveEditUrl: "https://company.e-spirit.hosting/fs5webedit/snap.js",
       initialPath: "/some/path",
     });
   });

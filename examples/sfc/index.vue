@@ -2,7 +2,6 @@
   <fsxa-app
     defaultLocale="de_DE"
     devMode="true"
-    liveEditUrl="https://company.e-spirit.hosting/fs5webedit/snap.js"
     :handleRouteChange="changeRoute"
     :currentPath="route"
     :components="components"
