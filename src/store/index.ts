@@ -91,9 +91,7 @@ export const FSXAGetters = {
 };
 
 export function getFSXAModule<R extends RootState>(
-  options: (CreateStoreProxyOptions | CreateStoreRemoteOptions) & {
-    snapUrl?: string;
-  },
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R> {
   return {
     namespaced: true,

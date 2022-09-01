@@ -299,14 +299,13 @@ To get started with the development of the individual components, we recommend f
 
 #### Snap URL
 
-In Preview (`FSXA_MODE=preview`) the FSXA offers a lot of _LiveEdit_ features to edit sections, images, datasets, ... in place(!) and this needs an external dependency called _Snap Library_.
+FSXA offers a lot of _LiveEdit_ features in the authoring environment to edit sections, images, datasets, etc. in place and this needs an external dependency called _Snap Library_.
 
 The current implementation is [TPP Snap](https://docs.e-spirit.com/tpp/snap/) and the URL to this script has to look like:
 
 `https://[your-firstspirit-server]/fs5webedit/snap.js` or `https://[your-firstspirit-server]/fs5webedit[_project-id]/snap.js`
 
-where `[your-firstspirit-server]` is the hostname of your firstspirit server, e.g. https://company.e-spirit.hosting and `fs5webedit[_project-id]` the path of the ContentCreator WebApp
-(just log in to your project in ContentCreator to see the path in your browser).
+where `[your-firstspirit-server]` is the hostname of your FirstSpirit server, e.g. https://company.e-spirit.hosting and `fs5webedit[_project-id]` the path of the ContentCreator WebApp (just log in to your project in ContentCreator to see the path in your browser).
 
 This path should be set as `FSXA_SNAP_URL` in your `.env` file. A fallback is the _latest_ [CDN version](https://cdn.jsdelivr.net/npm/fs-tpp-api/snap.js) of this dependency, which may cause a version mismatch and is not recommended.
 

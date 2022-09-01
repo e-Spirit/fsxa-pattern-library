@@ -415,11 +415,13 @@ export interface RequestRouteChangeParams {
 export type CreateStoreProxyOptions = {
   mode: "proxy";
   config: FSXAProxyApiConfig;
+  snapUrl?: string;
 };
 
 export type CreateStoreRemoteOptions = {
   mode: "remote";
   config: FSXARemoteApiConfig;
+  snapUrl?: string;
 };
 
 export interface InEditProps extends InEditEditorProps {

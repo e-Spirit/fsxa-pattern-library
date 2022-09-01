@@ -7,9 +7,7 @@ import {
 } from "./components";
 
 export function getFSXAModule<R extends RootState>(
-  options: (CreateStoreProxyOptions | CreateStoreRemoteOptions) & {
-    snapUrl?: string;
-  },
+  options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ): Module<FSXAVuexState, R>;
 
 export {
