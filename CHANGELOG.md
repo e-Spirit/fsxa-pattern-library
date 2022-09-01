@@ -1,3 +1,10 @@
+# [8.9.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.8.0...v8.9.0) (2022-09-01)
+
+
+### Features
+
+* **fs-tpp-api:** add FSXA_SNAP_URL env variable and deprecate fsTppVersion config param ([#83](https://github.com/e-Spirit/fsxa-pattern-library/issues/83)) ([6e8a99b](https://github.com/e-Spirit/fsxa-pattern-library/commit/6e8a99bfe19f61e4d7bbef6172f6adb872362f63))
+
 # [8.8.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.7.1...v8.8.0) (2022-08-26)
 
 
