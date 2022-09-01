@@ -40,6 +40,7 @@ export interface FSXAVuexState {
     };
   };
   mode: "release" | "preview";
+  snapUrl: string | null;
 }
 export interface RootState {
   fsxa: FSXAVuexState;
@@ -74,6 +75,7 @@ const GETTER_ITEM = "item";
 const GETTER_PAGE_BY_URL = "getPageIdByUrl";
 const GETTER_MODE = "mode";
 const GETTER_REFERENCE_URL = "getReferenceUrl";
+const GETTER_SNAP_URL = "getSnapUrl";
 
 export const FSXAGetters = {
   [Getters.appState]: `${prefix}/${Getters.appState}`,
@@ -85,6 +87,7 @@ export const FSXAGetters = {
   [GETTER_PAGE_BY_URL]: `${prefix}/${GETTER_PAGE_BY_URL}`,
   [GETTER_MODE]: `${prefix}/${GETTER_MODE}`,
   [GETTER_REFERENCE_URL]: `${prefix}/${GETTER_REFERENCE_URL}`,
+  [GETTER_SNAP_URL]: `${prefix}/${GETTER_SNAP_URL}`,
 };
 
 export function getFSXAModule<R extends RootState>(
@@ -102,6 +105,7 @@ export function getFSXAModule<R extends RootState>(
       fsxaApiMode: options.mode,
       mode: options.config.contentMode,
       configuration: options.config,
+      snapUrl: options.snapUrl ?? null,
     }),
     actions: {
       [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
@@ -213,6 +217,7 @@ export function getFSXAModule<R extends RootState>(
             : null;
         return page ? page.seoRoute : null;
       },
+      [GETTER_SNAP_URL]: state => state.snapUrl,
     },
   };
 }

@@ -28,6 +28,8 @@ export class FSXABaseComponent<
    * The currently used ts-tpp-api version.
    *
    * *Hint:* If you want to work with specific features make sure that the current version supports them. The fs-tpp-api will only be injected, when isEditMode = true
+   *
+   * @deprecated use `FSXA_SNAP_URL` instead {@link https://github.com/e-Spirit/fsxa-pattern-library/#snap-url}
    */
   fsTppVersion: string;
 
@@ -316,6 +318,8 @@ export interface AppProps {
    * You can specify which fs-tpp-api version should be loaded in preview-mode
    *
    * The TPP-API is used for enabling the editing experience in the OCM
+   *
+   * @deprecated use `FSXA_SNAP_URL` instead {@link https://github.com/e-Spirit/fsxa-pattern-library/#snap-url}
    */
   fsTppVersion?: string;
   /**
@@ -411,11 +415,13 @@ export interface RequestRouteChangeParams {
 export type CreateStoreProxyOptions = {
   mode: "proxy";
   config: FSXAProxyApiConfig;
+  snapUrl?: string;
 };
 
 export type CreateStoreRemoteOptions = {
   mode: "remote";
   config: FSXARemoteApiConfig;
+  snapUrl?: string;
 };
 
 export interface InEditProps extends InEditEditorProps {

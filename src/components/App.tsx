@@ -31,7 +31,6 @@ import {
 } from "@/utils/caas-events";
 import { triggerRouteChange } from "@/utils/getters";
 
-const DEFAULT_TPP_SNAP_VERSION = "2.4.1";
 const CAAS_CHANGE_DELAY_MS = 300;
 
 @Component({
@@ -91,7 +90,7 @@ class App extends TsxComponent<AppProps> {
 
   @ProvideReactive(FSXA_INJECT_KEY_TPP_VERSION)
   get tppVersion() {
-    return this.fsTppVersion || DEFAULT_TPP_SNAP_VERSION;
+    return this.fsTppVersion;
   }
 
   async mounted() {
@@ -126,7 +125,10 @@ class App extends TsxComponent<AppProps> {
         }
       };
 
-      importTPPSnapAPI(this.tppVersion)
+      importTPPSnapAPI({
+        version: this.tppVersion,
+        url: this.$store.getters[FSXAGetters.getSnapUrl],
+      })
         .then(TPP_SNAP => {
           if (!TPP_SNAP) {
             throw new Error("Could not find global TPP_SNAP object.");
@@ -188,9 +190,7 @@ class App extends TsxComponent<AppProps> {
           });
         })
         .catch(e => {
-          console.error(
-            `Could not load snap.js with version '${this.tppVersion}': ` + e,
-          );
+          console.error(e);
         });
     }
   }

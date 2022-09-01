@@ -4,36 +4,9 @@ import {
 } from "@/types/fsxa-pattern-library";
 import { FSXAApiSingleton, FSXAProxyApi, FSXARemoteApi } from "fsxa-api";
 
+export * from "./tpp-snap";
+
 export const isClient = () => typeof window !== "undefined";
-
-export const getTPPSnap = (): any | null => {
-  return (window && (window as any).TPP_SNAP) || null;
-};
-
-export const importTPPSnapAPI = async (
-  version: string,
-): Promise<any | null> => {
-  const scriptTagId = "fsxa-tpp-snap-import";
-  // Ensure we only add the script Tag once and also only add it, if TPP_SNAP was not added by some other source
-  if (!document.getElementById(scriptTagId) && !getTPPSnap()) {
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.id = scriptTagId;
-      // We will wait for tpp to load until we resolve this promise
-      script.onload = () => {
-        resolve(getTPPSnap());
-      };
-      script.onerror = () => {
-        reject();
-      };
-      script.src = `https://cdn.jsdelivr.net/npm/fs-tpp-api@${version}/snap.js`;
-      document.head.appendChild(script);
-    });
-  }
-  return new Promise(resolve => {
-    resolve(getTPPSnap());
-  });
-};
 
 export function initializeApi(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,

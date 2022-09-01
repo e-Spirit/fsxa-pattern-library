@@ -31,6 +31,7 @@ const remoteApiConfig: FSXARemoteApiConfig = {
 const options: CreateStoreRemoteOptions = {
   mode: "remote",
   config: remoteApiConfig,
+  snapUrl: getFSXAConfigFromEnvFile().snapUrl,
 };
 
 initializeApi(options);
