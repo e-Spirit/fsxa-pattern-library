@@ -81,18 +81,22 @@ export async function triggerRouteChange(
       );
   }
   if (params.locale && params.locale !== currentLocale) {
-    // we will store the possible old datasetId, so that we can fetch the translated one as well and redirect to the new seoRoute
-    const currentDatasetId =
-      (params.route
-        ? ($store.state.fsxa.stored[params.route]?.value as Dataset) || null
-        : null
-      )?.id || null;
+    const currentDataset = params.route
+      ? ($store.state.fsxa.stored[params.route]?.value as Dataset) || null
+      : null;
+
+    // we will store the possible old datasetId and pageRef, so that we can fetch the translated one as well and redirect to the new seoRoute
+    const currentDatasetId = currentDataset?.id || null;
     const currentPageId =
       findNavigationItemInNavigationData($store, {
         pageId: params.pageId,
         seoRoute: params.route,
       })?.id || null;
-
+    let pageRef = "";
+    if (currentDataset && params.route) {
+      const routes = currentDataset.routes;
+      pageRef = routes.find(el => el.route === params.route)?.pageRef || "";
+    }
     // We throw away the old state and reinitialize the app with the new locale
     await $store.dispatch(FSXAActions.initializeApp, {
       defaultLocale: params.locale,
@@ -103,7 +107,7 @@ export async function triggerRouteChange(
       // we will load the new dataset from the caas
       const {
         items: [dataset],
-      } = await $fsxaApi.fetchByFilter({
+      } = (await $fsxaApi.fetchByFilter({
         filters: [
           {
             operator: ComparisonQueryOperatorEnum.EQUALS,
@@ -112,9 +116,12 @@ export async function triggerRouteChange(
           },
         ],
         locale: params.locale,
-      });
+      })) as { items: Dataset[] };
       if (dataset) {
-        const route = (dataset as Dataset).route;
+        const route =
+          dataset.route ||
+          dataset.routes.find(el => el.pageRef === pageRef)?.route ||
+          "";
         $store.dispatch(FSXAActions.setStoredItem, {
           key: route,
           value: dataset,
