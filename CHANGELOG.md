@@ -1,3 +1,10 @@
+# [8.10.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.9.0...v8.10.0) (2022-09-22)
+
+
+### Features
+
+* **dependencies:** update to latest fsxa-api version ([#88](https://github.com/e-Spirit/fsxa-pattern-library/issues/88)) ([53ddbc5](https://github.com/e-Spirit/fsxa-pattern-library/commit/53ddbc5e5a1c6d1911f1eddf995c67f8172aea23))
+
 # [8.9.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.8.0...v8.9.0) (2022-09-01)
 
 
