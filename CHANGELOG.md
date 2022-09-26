@@ -1,3 +1,10 @@
+## [8.10.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.10.0...v8.10.1) (2022-09-26)
+
+
+### Bug Fixes
+
+* **getters:** language change when route is empty ([#87](https://github.com/e-Spirit/fsxa-pattern-library/issues/87)) ([2dd6f6f](https://github.com/e-Spirit/fsxa-pattern-library/commit/2dd6f6fdd1eba57517e2d4e351bde257e9a4a71a))
+
 # [8.10.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.9.0...v8.10.0) (2022-09-22)
 
 
