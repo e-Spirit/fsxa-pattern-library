@@ -25,7 +25,7 @@ export const initializeApp = (fsxaApi: FSXAApi) => async (
         initialPath: path,
         locale: payload.defaultLocale,
       })
-      .catch(reason => {
+      ?.catch(reason => {
         if (isNotFoundError(reason)) return null;
         throw reason;
       });
