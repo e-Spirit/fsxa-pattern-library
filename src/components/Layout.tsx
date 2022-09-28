@@ -217,7 +217,7 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
         </MappedLayout>
       );
     } else {
-      content = this.renderDevInfo();
+      content = this.isEditMode && this.isDevMode ? this.renderDevInfo() : null;
     }
     return (
       <ErrorBoundary
