@@ -28,17 +28,21 @@ class ErrorBoundary extends BaseComponent<ErrorBoundaryProps> {
   })
   useErrorBoundaryWrapper!: boolean;
 
-  get defaultSlot() {
-    return this.$slots?.default?.[0];
-  }
-
   mounted() {
-    if (
-      this.defaultSlot?.context !== undefined &&
-      this.previewId &&
-      !this.useErrorBoundaryWrapper
-    ) {
-      this.defaultSlot.context.$attrs["data-preview-id"] = this.previewId;
+    if (this.previewId) {
+      /**
+       * The ErrorBoundary handles the possible missing `[data-preview-id]`.
+       * First, `onMounted` this tries to find the {previewId} on, respectively inside, the current node.
+       * If the {previewId} can't be found, the ErrorBoundary adds the {previewId} to the current element.
+       */
+      const previewIdExists =
+        this.$el?.querySelector(`[data-preview-id="${this.previewId}"]`) ??
+        this.$el?.matches(`[data-preview-id="${this.previewId}"]`);
+
+      if (!previewIdExists) {
+        // It's added directly to the DOM to not pollute the VDOM
+        this.$el?.setAttribute("data-preview-id", this.previewId);
+      }
     }
   }
 
@@ -64,15 +68,12 @@ class ErrorBoundary extends BaseComponent<ErrorBoundaryProps> {
       this.renderError()
     ) : this.useErrorBoundaryWrapper ? (
       // legacy wrapper that can be opted out via useErrorBoundaryWrapper
-      <div
-        class="group-l pl-relative pl-w-full pl-h-full"
-        data-preview-id={this.previewId}
-      >
+      <div class="group-l pl-relative pl-w-full pl-h-full">
         {this.$slots.default}
       </div>
     ) : (
-      this.defaultSlot
-    ); // renderContent of the slot will always return 1 element only.
+      this.$slots.default
+    );
   }
 }
 export default ErrorBoundary;
