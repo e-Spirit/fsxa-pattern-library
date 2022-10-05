@@ -1,3 +1,10 @@
+## [8.11.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.0...v8.11.1) (2022-10-05)
+
+
+### Bug Fixes
+
+* **error-boundary:** resolves the `useErrorBoundaryWrapper` workaround ([#93](https://github.com/e-Spirit/fsxa-pattern-library/issues/93)) ([77693de](https://github.com/e-Spirit/fsxa-pattern-library/commit/77693de3cfded3747675b01ba55fda1b92ed88d0))
+
 # [8.11.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.10.1...v8.11.0) (2022-09-27)
 
 
