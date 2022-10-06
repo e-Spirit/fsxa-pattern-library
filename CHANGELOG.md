@@ -1,3 +1,10 @@
+## [8.11.3](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.2...v8.11.3) (2022-10-06)
+
+
+### Bug Fixes
+
+* **layout:** hide layout component on devMode and editMode to true ([#92](https://github.com/e-Spirit/fsxa-pattern-library/issues/92)) ([b9765a9](https://github.com/e-Spirit/fsxa-pattern-library/commit/b9765a91a49ce6aca18263b76f20cef79c19bdc0))
+
 ## [8.11.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.1...v8.11.2) (2022-10-06)
 
 
