@@ -1,3 +1,10 @@
+## [8.11.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.1...v8.11.2) (2022-10-06)
+
+
+### Bug Fixes
+
+* **tests:** fix the error on the test ([#90](https://github.com/e-Spirit/fsxa-pattern-library/issues/90)) ([81903d0](https://github.com/e-Spirit/fsxa-pattern-library/commit/81903d049c81a328985e19cde1dfe7f68a381a71))
+
 ## [8.11.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.0...v8.11.1) (2022-10-05)
 
 
