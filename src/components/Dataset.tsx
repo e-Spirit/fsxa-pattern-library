@@ -20,11 +20,13 @@ class Dataset extends RenderUtils<DatasetProps> {
   @Prop() route!: DatasetProps["route"];
   @Prop() pageId!: DatasetProps["pageId"];
 
+  // Await nötig??
   serverPrefetch() {
     return this.fetchData();
   }
 
   mounted() {
+    // ist beides nicht da? oder nur eines? 
     if (!this.page || !this.dataset)
       this.fetchData().catch(error => {
         console.error("[Dataset.mounted]", error);

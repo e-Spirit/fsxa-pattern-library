@@ -97,8 +97,13 @@ class BaseComponent<
    * If null is returned, no current route could be matched to the current path
    */
   get currentPage(): NavigationItem | null {
+    // Das hier darf nicht teuer sein. Wird seeehr häufig ausgeführt
     try {
-      return determineCurrentRoute(this.navigationData, this.currentPath);
+      return determineCurrentRoute(
+        this.navigationData,
+        this.currentPath,
+        this.currentDataset,
+      );
     } catch (err) {
       // page could not be found
       return null;

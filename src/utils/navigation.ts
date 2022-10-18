@@ -1,4 +1,4 @@
-import { NavigationData, NavigationItem } from "fsxa-api";
+import { Dataset, NavigationData, NavigationItem } from "fsxa-api";
 
 export const NAVIGATION_ERROR_404 = "Could not find route with given path";
 
@@ -25,19 +25,26 @@ const findPathInSeoRouteMap = (
 export const determineCurrentRoute = (
   navigationData: NavigationData | null,
   currentPath?: string,
+  currentDataset: Dataset?,
 ) => {
   if (!navigationData) return null;
   const path = decodeURIComponent(currentPath || "");
   // we will check if the path is set
   if (path && path !== "/") {
     let node = findPathInSeoRouteMap(path, navigationData);
-    if (!node) {
+    if(!node && !currentDataset) {
+      // fetch das ding & Speichere es im Store
+      currentDataset = ...
+    }
+    
+    if (!node && currentDataset) {
       // the path is not mapped in the seoRouteMap
       // we will check for dynamic routes
-      node =
-        Object.values(navigationData.idMap)
-          .filter((item: any) => item.seoRouteRegex)
-          .find((item: any) => path.match(item.seoRouteRegex)) || null;
+      
+      // caas Call by Route für Dataset --> Daraus PageRefId extrahieren
+      const nodeId = currentDataset.routes.find((route) => route.route === currentPath)?.pageRef
+      node = nodeId ? navigationData.idMap[nodeId] :
+      
     }
     if (node) return node;
     // we will throw an error, when no route was found, so the callee can show an error page
