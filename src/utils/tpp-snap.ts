@@ -16,6 +16,11 @@ export const importTPPSnapAPI = (
   options: ImportTPPSnapAPIOptions = {},
 ): Promise<any> =>
   new Promise(resolve => {
+    // Never resolve the promise, if the PWA is `window.top`,
+    //  to prevent console errors during local development.
+    // No content can be changed outside the ContentCreator!
+    if (window.top === window.self) return;
+
     if (isClient()) {
       const tppSnap = getTPPSnap();
       if (tppSnap !== null) {
