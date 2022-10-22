@@ -19,7 +19,12 @@ export const importTPPSnapAPI = (
     // Never resolve the promise, if the PWA is `window.top`,
     //  to prevent console errors during local development.
     // No content can be changed outside the ContentCreator!
-    if (window.top === window.self) return;
+    if (window.top === window.self) {
+      console.warn(
+        "You are running FSXA in PREVIEW mode outside of the ContentCreator. No InEdit features could be used.",
+      );
+      return;
+    }
 
     if (isClient()) {
       const tppSnap = getTPPSnap();
