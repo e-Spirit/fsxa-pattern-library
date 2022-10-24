@@ -1,3 +1,10 @@
+# [8.12.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.5...v8.12.0) (2022-10-24)
+
+
+### Features
+
+* **snap:** prevent loading snap.js when PWA is the top frame ([#97](https://github.com/e-Spirit/fsxa-pattern-library/issues/97)) ([36c7f4d](https://github.com/e-Spirit/fsxa-pattern-library/commit/36c7f4d23c4da0360483d769d577da8a2d9ef722))
+
 ## [8.11.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.4...v8.11.5) (2022-10-21)
 
 
