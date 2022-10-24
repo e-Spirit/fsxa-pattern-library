@@ -1,4 +1,4 @@
-import { NavigationData, NavigationItem } from "fsxa-api";
+import { Dataset, NavigationData, NavigationItem } from "fsxa-api";
 
 export const NAVIGATION_ERROR_404 = "Could not find route with given path";
 
@@ -9,7 +9,7 @@ const getNavigationItem = (
   return navigationData.idMap[navigationData.seoRouteMap[path]] || null;
 };
 
-const findPathInSeoRouteMap = (
+export const findNodeInSeoRouteMap = (
   path: string,
   navigationData: NavigationData,
 ): NavigationItem | null => {
@@ -25,19 +25,17 @@ const findPathInSeoRouteMap = (
 export const determineCurrentRoute = (
   navigationData: NavigationData | null,
   currentPath?: string,
+  dataset?: Dataset | null,
 ) => {
   if (!navigationData) return null;
   const path = decodeURIComponent(currentPath || "");
   // we will check if the path is set
   if (path && path !== "/") {
-    let node = findPathInSeoRouteMap(path, navigationData);
-    if (!node) {
-      // the path is not mapped in the seoRouteMap
-      // we will check for dynamic routes
-      node =
-        Object.values(navigationData.idMap)
-          .filter((item: any) => item.seoRouteRegex)
-          .find((item: any) => path.match(item.seoRouteRegex)) || null;
+    let node = findNodeInSeoRouteMap(path, navigationData);
+    if (!node && dataset) {
+      const nodeId = dataset.routes.find(route => route.route === currentPath)
+        ?.pageRef;
+      node = nodeId ? navigationData.idMap[nodeId] : null;
     }
     if (node) return node;
     // we will throw an error, when no route was found, so the callee can show an error page

@@ -21,7 +21,12 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
+import {
+  ComparisonQueryOperatorEnum,
+  FSXAApi,
+  FSXAApiSingleton,
+  Dataset as DatasetType,
+} from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { importTPPSnapAPI } from "@/utils";
@@ -29,7 +34,12 @@ import {
   connectCaasEvents,
   DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
 } from "@/utils/caas-events";
-import { triggerRouteChange } from "@/utils/getters";
+import {
+  getStoredItem,
+  setStoredItem,
+  triggerRouteChange,
+} from "@/utils/getters";
+import { findNodeInSeoRouteMap } from "@/utils/navigation";
 
 const CAAS_CHANGE_DELAY_MS = 300;
 
@@ -95,6 +105,19 @@ class App extends TsxComponent<AppProps> {
 
   async mounted() {
     if (this.appState === FSXAAppState.not_initialized) await this.initialize();
+
+    // we try to find the current path in our navigation data
+    // If data is missing we try to fetch it and cache it in the store
+    if (this.navigationData && this.currentPath) {
+      const path = decodeURIComponent(this.currentPath || "");
+      const node = findNodeInSeoRouteMap(path, this.navigationData);
+      if (!node) {
+        const dataset = await this.fetchDatasetByRoute(path);
+        if (dataset) {
+          setStoredItem(this.$store, path, dataset, 300000);
+        }
+      }
+    }
 
     if (this.isEditMode) {
       const caasEvents = connectCaasEvents(this.fsxaApi);
@@ -202,6 +225,21 @@ class App extends TsxComponent<AppProps> {
     });
   }
 
+  private async fetchDatasetByRoute(route: string) {
+    // fetch dataset from caas
+    const { items } = await FSXAApiSingleton.instance.fetchByFilter({
+      filters: [
+        {
+          field: "routes.route",
+          operator: ComparisonQueryOperatorEnum.EQUALS,
+          value: route,
+        },
+      ],
+      locale: this.locale,
+    });
+    return items[0] as DatasetType;
+  }
+
   @ProvideReactive("requestRouteChange")
   async requestRouteChange(newRoute: string | null) {
     if (newRoute) this.handleRouteChange(newRoute);
@@ -245,9 +283,13 @@ class App extends TsxComponent<AppProps> {
       return null;
     }
     try {
+      const dataset = this.currentPath
+        ? getStoredItem(this.$store, this.currentPath)?.value
+        : undefined;
       const currentNode = determineCurrentRoute(
         this.navigationData,
         this.currentPath,
+        dataset,
       );
       if (currentNode && (currentNode as any).seoRouteRegex !== null) {
         return this.currentPath ? (

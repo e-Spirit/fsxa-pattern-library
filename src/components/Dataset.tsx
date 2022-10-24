@@ -93,6 +93,12 @@ class Dataset extends RenderUtils<DatasetProps> {
         "You either have to provide an id or the route of a dataset",
       );
     }
+
+    const storedDatasetItem = this.route
+      ? this.getStoredItem(this.route)
+      : null;
+    if (storedDatasetItem) return storedDatasetItem.value;
+
     const { items } = await this.fsxaApi.fetchByFilter({
       filters: this.id ? this.idFilter! : this.routeFilter!,
       locale: this.locale,

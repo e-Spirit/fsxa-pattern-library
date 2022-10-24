@@ -98,7 +98,11 @@ class BaseComponent<
    */
   get currentPage(): NavigationItem | null {
     try {
-      return determineCurrentRoute(this.navigationData, this.currentPath);
+      return determineCurrentRoute(
+        this.navigationData,
+        this.currentPath,
+        this.currentDataset,
+      );
     } catch (err) {
       // page could not be found
       return null;
