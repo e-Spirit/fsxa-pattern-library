@@ -7,6 +7,7 @@ import {
   NavigationItem,
 } from "fsxa-api";
 import { Store } from "vuex";
+import { findNodeInSeoRouteMap } from "./navigation";
 
 export function getStoredItem<Value = any>(
   $store: Store<RootState>,
@@ -59,6 +60,46 @@ export function findNavigationItemInNavigationData(
   return null;
 }
 
+async function fetchDatasetByRoute(
+  fsxaApi: FSXAApi,
+  route: string,
+  locale: string,
+) {
+  // fetch dataset from caas
+  const { items } = await fsxaApi.fetchByFilter({
+    filters: [
+      {
+        field: "routes.route",
+        operator: ComparisonQueryOperatorEnum.EQUALS,
+        value: route,
+      },
+    ],
+    locale,
+  });
+  return items[0] as Dataset;
+}
+
+export async function fetchDatasetIfNavigationDataMissing(
+  $store: Store<RootState>,
+  $fsxaApi: FSXAApi,
+  locale: string,
+  currentPath?: string,
+) {
+  const navigationData = $store.state.fsxa.navigation;
+  // we try to find the current path in our navigation data
+  // If data is missing we try to fetch it and cache it in the store
+  if (!navigationData || !currentPath) return;
+  const path = decodeURIComponent(currentPath || "");
+  const node = findNodeInSeoRouteMap(path, navigationData);
+  let dataset = getStoredItem($store, currentPath)?.value;
+  if (!node && !dataset) {
+    dataset = await fetchDatasetByRoute($fsxaApi, locale, path);
+    if (dataset) {
+      setStoredItem($store, path, dataset, 300000);
+    }
+  }
+}
+
 export interface TriggerRouteChangeParams {
   route?: string;
   pageId?: string;
@@ -72,7 +113,15 @@ export async function triggerRouteChange(
   globalSettingsKey?: string,
 ): Promise<string | null> {
   if (!params.locale || params.locale === currentLocale) {
-    if (params.route) return params.route;
+    if (params.route) {
+      await fetchDatasetIfNavigationDataMissing(
+        $store,
+        $fsxaApi,
+        currentLocale,
+        params.route,
+      );
+      return params.route;
+    }
     if (params.pageId)
       return (
         findNavigationItemInNavigationData($store, {

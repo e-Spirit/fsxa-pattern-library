@@ -94,10 +94,8 @@ class Dataset extends RenderUtils<DatasetProps> {
       );
     }
 
-    const storedDatasetItem = this.route
-      ? this.getStoredItem(this.route)
-      : null;
-    if (storedDatasetItem) return storedDatasetItem.value;
+    const dataset = this.route ? this.getStoredItem(this.route) : null;
+    if (dataset) return dataset;
 
     const { items } = await this.fsxaApi.fetchByFilter({
       filters: this.id ? this.idFilter! : this.routeFilter!,
