@@ -1,6 +1,6 @@
 import { Component as TsxComponent } from "vue-tsx-support";
 import { Component, Inject, InjectReactive } from "vue-property-decorator";
-import { FSXAGetters, FSXAActions } from "@/store";
+import { FSXAGetters } from "@/store";
 import {
   FSXAApiSingleton,
   NavigationData,
