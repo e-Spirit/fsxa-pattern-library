@@ -4,10 +4,35 @@ declare interface Window {
   TPP_SNAP?: any;
 }
 
+describe("snap loading", () => {
+  beforeEach(() => {
+    document.body.innerHTML = "";
+    Object.defineProperties(window, {
+      TPP_SNAP: {
+        value: undefined,
+        writable: true,
+      },
+    });
+  });
+
+  it("Won't add tpp snap script tags, when the application is the top frame", async () => {
+    importTPPSnapAPI();
+    expect(document.body.innerHTML).toEqual("");
+  });
+});
+
 describe("tpp snap lib", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
-    Object.assign(window, { TPP_SNAP: undefined });
+    Object.defineProperties(window, {
+      TPP_SNAP: {
+        value: undefined,
+        writable: true,
+      },
+      top: {
+        value: "<CONTENT-CREATOR-FRAME>",
+      },
+    });
   });
 
   it("only version parameter set", async () => {
