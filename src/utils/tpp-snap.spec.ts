@@ -4,7 +4,7 @@ declare interface Window {
   TPP_SNAP?: any;
 }
 
-describe("don't load snap", () => {
+describe("snap loading", () => {
   beforeEach(() => {
     document.body.innerHTML = "";
     Object.defineProperties(window, {
@@ -15,7 +15,7 @@ describe("don't load snap", () => {
     });
   });
 
-  it("don't load for top-frame pwa's", async () => {
+  it("Won't add tpp snap script tags, when the application is the top frame", async () => {
     importTPPSnapAPI();
     expect(document.body.innerHTML).toEqual("");
   });

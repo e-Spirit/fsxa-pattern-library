@@ -16,12 +16,12 @@ export const importTPPSnapAPI = (
   options: ImportTPPSnapAPIOptions = {},
 ): Promise<any> =>
   new Promise(resolve => {
-    // Never resolve the promise, if the PWA is `window.top`,
-    //  to prevent console errors during local development.
+    // To prevent console errors during local development,
+    // never resolve the promise, if the PWA is `window.top`,
     // No content can be changed outside the ContentCreator!
     if (window.top === window.self) {
       console.warn(
-        "You are running FSXA in PREVIEW mode outside of the ContentCreator. No InEdit features could be used.",
+        "You are running your application outside of the ContentCreator. InEdit will not be available.",
       );
       return;
     }
