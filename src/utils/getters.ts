@@ -33,6 +33,13 @@ export function setStoredItem(
   });
 }
 
+export function setNavigation(
+  $store: Store<RootState>,
+  payload: NavigationData,
+) {
+  $store.dispatch(FSXAActions.setNavigation, payload);
+}
+
 export function findNavigationItemInNavigationData(
   $store: Store<RootState>,
   params: {

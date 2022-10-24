@@ -1,6 +1,6 @@
 import { Component as TsxComponent } from "vue-tsx-support";
 import { Component, Inject, InjectReactive } from "vue-property-decorator";
-import { FSXAGetters } from "@/store";
+import { FSXAGetters, FSXAActions } from "@/store";
 import {
   FSXAApiSingleton,
   NavigationData,
@@ -13,6 +13,7 @@ import {
   findNavigationItemInNavigationData,
   getStoredItem,
   setStoredItem,
+  setNavigation,
   triggerRouteChange,
 } from "@/utils/getters";
 import { RequestRouteChangeParams } from "@/types/components";
@@ -158,6 +159,14 @@ class BaseComponent<
    */
   get tppSnap(): any {
     return getTPPSnap();
+  }
+
+  /**
+   * Save your navigation data in the vuex-store
+   * You can use this function to store or update your navigation that were fetched from a server request
+   */
+  setNavigation(payload: NavigationData) {
+    return setNavigation(this.$store, payload);
   }
 
   /**
