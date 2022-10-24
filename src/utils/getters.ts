@@ -93,7 +93,7 @@ export async function fetchDatasetIfNavigationDataMissing(
   const node = findNodeInSeoRouteMap(path, navigationData);
   let dataset = getStoredItem($store, currentPath)?.value;
   if (!node && !dataset) {
-    dataset = await fetchDatasetByRoute($fsxaApi, locale, path);
+    dataset = await fetchDatasetByRoute($fsxaApi, path, locale);
     if (dataset) {
       setStoredItem($store, path, dataset, 300000);
     }
