@@ -15,6 +15,7 @@ import { initializeApp } from "@/store/actions/initializeApp";
 import { CreateStoreProxyOptions } from "@/types/fsxa-pattern-library";
 import { getMockDatasetData } from "../../testing/getMockDatasetData";
 import Dataset from "@/components/Dataset";
+import BaseComponent from "@/components/base/BaseComponent";
 
 const API_URL = "http://fsxa.local";
 
@@ -107,28 +108,43 @@ describe("App", () => {
     return app.findByText("Resource could not be found", { exact: false });
   });
 
-  it("should fail if current path doesnt exists for de_DE locale", async () => {
+  it("should get the proper current dataset for given path", async () => {
     const { store, localVue } = setup();
-
     const navigationData = getMockNavigationData();
     const datasetData = getMockDatasetData();
+    // Provide current path
+    const currentPath = "/Produkte/Stick-Up-Cam-Sicherheitskamera-FST-35J.html";
+    const provide = {
+      __reactiveInject__: {
+        currentPath,
+      },
+    };
 
-    const srv = await nock(API_URL)
+    await nock(API_URL)
       .post(FSXAProxyRoutes.FETCH_NAVIGATION_ROUTE)
       .reply(200, navigationData)
       .post(FSXAProxyRoutes.FETCH_BY_FILTER_ROUTE)
       .reply(200, datasetData);
 
-    const currentPath = "/Produkte/Stick-Up-Cam-Sicherheitskamera-FST-35J.html";
-
-    const wrapper = mount(App, {
+    const wrapper = shallowMount(BaseComponent, {
       store,
       localVue,
-      propsData: {
-        currentPath,
-      },
+      provide,
     });
-    // const dataSet = wrapper.findComponent(Dataset);
-    console.log(wrapper.html());
+
+    // Store the navigation data
+    await store.dispatch(FSXAActions.setNavigation, navigationData);
+    expect(wrapper.vm.navigationData).toEqual(navigationData);
+
+    // store the dataset
+    wrapper.vm.setStoredItem(currentPath, datasetData);
+
+    // get the caasDocumentId from the dataset
+    const pageRef = wrapper.vm.currentDataset?.routes.find(
+      route => route.route === currentPath,
+    )?.pageRef;
+
+    // Check if dataset provided by caas match with navigation caas id document
+    expect(wrapper.vm.currentPage?.caasDocumentId).toBe(pageRef);
   });
 });
