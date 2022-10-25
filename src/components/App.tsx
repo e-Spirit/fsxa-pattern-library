@@ -31,7 +31,7 @@ import {
 } from "@/utils/caas-events";
 import {
   getStoredItem,
-  fetchDatasetIfNavigationDataMissing,
+  fetchDatasetIfMissing,
   triggerRouteChange,
 } from "@/utils/getters";
 
@@ -90,7 +90,7 @@ class App extends TsxComponent<AppProps> {
 
   async serverPrefetch() {
     await this.initialize();
-    await fetchDatasetIfNavigationDataMissing(
+    await fetchDatasetIfMissing(
       this.$store,
       this.fsxaApi,
       this.$store.getters[FSXAGetters.locale],

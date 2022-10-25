@@ -79,24 +79,30 @@ async function fetchDatasetByRoute(
   return items[0] as Dataset;
 }
 
-export async function fetchDatasetIfNavigationDataMissing(
+/**
+ * we try to find the current path in our navigation data
+ * If data is missing we try to fetch it and cache it in the store
+ * @param $store
+ * @param $fsxaApi
+ * @param locale
+ * @param currentPath
+ * @returns
+ */
+
+export async function fetchDatasetIfMissing(
   $store: Store<RootState>,
   $fsxaApi: FSXAApi,
   locale: string,
   currentPath?: string,
 ) {
   const navigationData = $store.state.fsxa.navigation;
-  // we try to find the current path in our navigation data
-  // If data is missing we try to fetch it and cache it in the store
   if (!navigationData || !currentPath) return;
   const path = decodeURIComponent(currentPath || "");
-  const node = findNodeInSeoRouteMap(path, navigationData);
-  let dataset = getStoredItem($store, currentPath)?.value;
-  if (!node && !dataset) {
-    dataset = await fetchDatasetByRoute($fsxaApi, path, locale);
-    if (dataset) {
-      setStoredItem($store, path, dataset, 300000);
-    }
+  if (findNodeInSeoRouteMap(path, navigationData)) return;
+  if (getStoredItem($store, currentPath)) return;
+  const dataset = await fetchDatasetByRoute($fsxaApi, path, locale);
+  if (dataset) {
+    setStoredItem($store, path, dataset, 300000);
   }
 }
 
@@ -114,7 +120,7 @@ export async function triggerRouteChange(
 ): Promise<string | null> {
   if (!params.locale || params.locale === currentLocale) {
     if (params.route) {
-      await fetchDatasetIfNavigationDataMissing(
+      await fetchDatasetIfMissing(
         $store,
         $fsxaApi,
         currentLocale,
