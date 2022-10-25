@@ -89,7 +89,7 @@ async function fetchDatasetByRoute(
  * @returns
  */
 
-export async function fetchDatasetIfMissing(
+export async function fetchMissingDataset(
   $store: Store<RootState>,
   $fsxaApi: FSXAApi,
   locale: string,
@@ -120,12 +120,7 @@ export async function triggerRouteChange(
 ): Promise<string | null> {
   if (!params.locale || params.locale === currentLocale) {
     if (params.route) {
-      await fetchDatasetIfMissing(
-        $store,
-        $fsxaApi,
-        currentLocale,
-        params.route,
-      );
+      await fetchMissingDataset($store, $fsxaApi, currentLocale, params.route);
       return params.route;
     }
     if (params.pageId)
