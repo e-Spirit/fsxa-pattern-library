@@ -133,7 +133,7 @@ describe("App", () => {
     });
 
     // Store the navigation data
-    await store.dispatch(FSXAActions.setNavigation, navigationData);
+    store.state.fsxa.navigation = navigationData;
     expect(wrapper.vm.navigationData).toEqual(navigationData);
 
     // store the dataset

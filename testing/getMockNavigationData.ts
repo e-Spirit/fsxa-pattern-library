@@ -27,7 +27,7 @@ export const getMockNavigationData = (): NavigationData => ({
       customData: null,
       permissions: null!,
     },
-    "287fc44a-f953-49db-85c1-63273a26b440": {
+    "9ffc3704-50f4-4e97-bfb4-3ac397e7784a": {
       id: "1d476c92-4d26-47f8-b4bc-88434d60dc89",
       parentIds: [],
       label: "CT Test",
@@ -38,7 +38,7 @@ export const getMockNavigationData = (): NavigationData => ({
       customData: null,
       permissions: null!,
     },
-    "4c59c1f8-700c-4822-9080-20e276b473db": {
+    "b1362730-4ee2-4473-bc02-529e47b08e95": {
       id: "7547b2ca-53e3-4dc2-9a32-bddd863da212",
       parentIds: [],
       label: "Stick up cam",
