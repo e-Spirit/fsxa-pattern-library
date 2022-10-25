@@ -21,7 +21,7 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
+import { FSXAApi, FSXAApiSingleton, Dataset as DatasetType } from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { importTPPSnapAPI } from "@/utils";
@@ -240,6 +240,10 @@ class App extends TsxComponent<AppProps> {
   get navigationData() {
     return this.$store.state.fsxa.navigation;
   }
+  get currentDataset(): DatasetType | null {
+    if (!this.currentPath) return null;
+    return getStoredItem(this.$store, this.currentPath) || null;
+  }
 
   renderContent() {
     if (this.$slots.default) return this.$slots.default || null;
@@ -255,13 +259,10 @@ class App extends TsxComponent<AppProps> {
       return null;
     }
     try {
-      const dataset = this.currentPath
-        ? getStoredItem(this.$store, this.currentPath)
-        : undefined;
       const currentNode = determineCurrentRoute(
         this.navigationData,
         this.currentPath,
-        dataset,
+        this.currentDataset,
       );
       if (currentNode && (currentNode as any).seoRouteRegex !== null) {
         return this.currentPath ? (
