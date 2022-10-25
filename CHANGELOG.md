@@ -1,3 +1,10 @@
+# [8.13.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.12.0...v8.13.0) (2022-10-25)
+
+
+### Features
+
+* **navigationData:** provide vuex action to mutate navigation data ([#94](https://github.com/e-Spirit/fsxa-pattern-library/issues/94)) ([7b1b3f0](https://github.com/e-Spirit/fsxa-pattern-library/commit/7b1b3f0cfb14a9fbf291bb87a144647e19002916))
+
 # [8.12.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.5...v8.12.0) (2022-10-24)
 
 
