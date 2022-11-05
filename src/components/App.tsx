@@ -99,29 +99,42 @@ class App extends TsxComponent<AppProps> {
     if (this.isEditMode) {
       const caasEvents = connectCaasEvents(this.fsxaApi);
 
-      const routeToPreviewId = async (previewId: string) => {
+      const routeToPreviewId = async (previewId: string, force = false) => {
         const [pageId, locale] = previewId.split(".");
-        console.debug("Triggering route change", {
-          params: {
-            locale,
-            pageId,
-          },
-          currentLocale: this.$store.getters[FSXAGetters.locale],
-        });
-        const newRoute = await triggerRouteChange(
-          this.$store,
-          this.fsxaApi,
-          {
-            locale,
-            pageId,
-          },
-          this.$store.getters[FSXAGetters.locale],
-          this.$store.getters[FSXAGetters.getGlobalSettingsKey],
-        );
+        let newRoute: string | null = null;
+
+        if (pageId) {
+          console.debug("Triggering route change", {
+            params: {
+              locale,
+              pageId,
+            },
+            currentLocale: this.$store.getters[FSXAGetters.locale],
+          });
+
+          const callTriggerRouteChange = () =>
+            triggerRouteChange(
+              this.$store,
+              this.fsxaApi,
+              {
+                locale,
+                pageId,
+              },
+              this.$store.getters[FSXAGetters.locale],
+              this.$store.getters[FSXAGetters.getGlobalSettingsKey],
+            );
+
+          newRoute = force ? null : await callTriggerRouteChange();
+          if (newRoute === null) {
+            // retry (or forced), after store re-initialization to handle new routes
+            await this.initialize(this.$store.getters[FSXAGetters.locale]);
+            newRoute = await callTriggerRouteChange();
+          }
+        }
         if (newRoute != null) {
           this.handleRouteChange(newRoute);
         } else {
-          console.warn("Unable to route to ", newRoute);
+          console.warn("Unable to route to ", { pageId, locale });
         }
       };
 
