@@ -21,7 +21,12 @@ import Page from "./Page";
 import ErrorBoundary from "./internal/ErrorBoundary";
 import InfoBox from "./internal/InfoBox";
 import Code from "./internal/Code";
-import { FSXAApi, FSXAApiSingleton } from "fsxa-api";
+import {
+  CaaSApi_Dataset,
+  ComparisonQueryOperatorEnum,
+  FSXAApi,
+  FSXAApiSingleton,
+} from "fsxa-api";
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { importTPPSnapAPI } from "@/utils";
@@ -99,42 +104,50 @@ class App extends TsxComponent<AppProps> {
     if (this.isEditMode) {
       const caasEvents = connectCaasEvents(this.fsxaApi);
 
-      const routeToPreviewId = async (previewId: string, force = false) => {
+      const routeToPreviewId = async (previewId: string) => {
         const [pageId, locale] = previewId.split(".");
-        let newRoute: string | null = null;
+        console.debug("Triggering route change", { pageId, locale });
 
         if (pageId) {
-          console.debug("Triggering route change", {
-            params: {
-              locale,
-              pageId,
-            },
-            currentLocale: this.$store.getters[FSXAGetters.locale],
-          });
+          // lookup route for `pageId` from store
+          let newRoute: string | null = await triggerRouteChange(
+            this.$store,
+            this.fsxaApi,
+            { locale, pageId },
+            this.$store.getters[FSXAGetters.locale],
+            this.$store.getters[FSXAGetters.getGlobalSettingsKey],
+          );
 
-          const callTriggerRouteChange = () =>
-            triggerRouteChange(
-              this.$store,
-              this.fsxaApi,
-              {
-                locale,
-                pageId,
-              },
-              this.$store.getters[FSXAGetters.locale],
-              this.$store.getters[FSXAGetters.getGlobalSettingsKey],
-            );
-
-          newRoute = force ? null : await callTriggerRouteChange();
+          // if no route found, lookup from api
           if (newRoute === null) {
-            // retry (or forced), after store re-initialization to handle new routes
-            await this.initialize(this.$store.getters[FSXAGetters.locale]);
-            newRoute = await callTriggerRouteChange();
+            const response = await this.fsxaApi.fetchByFilter({
+              filters: [
+                {
+                  field: "identifier",
+                  operator: ComparisonQueryOperatorEnum.EQUALS,
+                  value: pageId,
+                },
+              ],
+              locale: locale,
+              additionalParams: {
+                keys: [{ type: 1, route: 1, "routes.route": 1 }],
+              },
+            });
+            const item = response?.items?.[0] as Partial<
+              Pick<CaaSApi_Dataset, "routes" | "route">
+            >;
+            newRoute = item?.route ?? item?.routes?.[0]?.route ?? null;
+            if (newRoute) {
+              await this.initialize(this.$store.getters[FSXAGetters.locale]);
+            }
           }
-        }
-        if (newRoute != null) {
-          this.handleRouteChange(newRoute);
-        } else {
-          console.warn("Unable to route to ", { pageId, locale });
+
+          if (newRoute != null) {
+            // TODO `handleRouteChange` may not work after a deletion?
+            this.handleRouteChange(newRoute);
+          } else {
+            console.warn("Unable to find route by ", { pageId, locale });
+          }
         }
       };
 
@@ -182,23 +195,38 @@ class App extends TsxComponent<AppProps> {
               });
               return false;
             });
-            TPP_SNAP.onNavigationChange(async () => {
-              console.debug("onNavigationChange triggered");
-              TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-                if (caasEvents.isConnected()) {
-                  await caasEvents.waitFor(previewId, {
-                    timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-                  });
-                } else {
-                  // no realtime events, so just wait
-                  await new Promise(resolve =>
-                    setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
+            TPP_SNAP.onNavigationChange(
+              async (newPagePreviewId: string | null) => {
+                console.debug("onNavigationChange triggered", {
+                  newPagePreviewId,
+                });
+                if (!newPagePreviewId) {
+                  // if non previewId (for a just created page) is set, refresh the current page
+                  await TPP_SNAP.getPreviewElement().then(
+                    async (currentPreviewId: string) => {
+                      // rendered navigations may change, wait for it
+                      if (caasEvents.isConnected()) {
+                        await caasEvents.waitFor(currentPreviewId, {
+                          timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
+                        });
+                      } else {
+                        // no realtime events, so just wait
+                        await new Promise(resolve =>
+                          setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
+                        );
+                      }
+                    },
                   );
+                  // re-initilize store
+                  await this.initialize(
+                    this.$store.getters[FSXAGetters.locale],
+                  );
+                  if (newPagePreviewId) {
+                    await routeToPreviewId(newPagePreviewId);
+                  }
                 }
-                await this.initialize(this.$store.getters[FSXAGetters.locale]);
-                if (previewId) await routeToPreviewId(previewId);
-              });
-            });
+              },
+            );
             TPP_SNAP.fsxaHooksRegistered = true;
           });
         })
