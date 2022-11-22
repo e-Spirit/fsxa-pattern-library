@@ -50,14 +50,14 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
     content.map(this.renderContentElement);
 
   renderContent(content: PageBody, options?: { addSectionButton?: string }) {
-    const sections = this.renderContentElements(content.children);
+    const renderedSections = this.renderContentElements(content.children);
     return this.isDevMode ? (
       <div data-preview-id={content.previewId} class="pl-w-full pl-h-full">
-        {sections}
+        {renderedSections}
         <AddSectionButton bodyName={options?.addSectionButton} />
       </div>
     ) : (
-      sections
+      renderedSections
     );
   }
 
@@ -191,6 +191,19 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
     return this.layouts ? this.layouts[this.type] || null : null;
   }
 
+  // Display only those sections which are not hidden in the preview mode
+  filterContentSections(content: PageBody): PageBody {
+    if (this.isEditMode) {
+      // since object are passed by reference we need to create a new object
+      const filteredContent: PageBody = JSON.parse(JSON.stringify(content));
+      filteredContent.children = filteredContent.children.filter(
+        section => section.type === "Section" && !!section.displayed,
+      );
+      return filteredContent;
+    }
+    return content;
+  }
+
   render() {
     let content = null;
     if (this.mappedLayout != null) {
@@ -202,7 +215,10 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
             const renderingOptions: { addSectionButton?: string } = {};
             if (options?.showAddSectionButtonInPreview)
               renderingOptions.addSectionButton = content.name;
-            return this.renderContent(content, renderingOptions);
+            return this.renderContent(
+              this.filterContentSections(content),
+              renderingOptions,
+            );
           },
         }),
         {},
