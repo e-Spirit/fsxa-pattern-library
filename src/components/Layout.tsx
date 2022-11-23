@@ -50,14 +50,14 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
     content.map(this.renderContentElement);
 
   renderContent(content: PageBody, options?: { addSectionButton?: string }) {
-    const renderedSections = this.renderContentElements(content.children);
+    const sections = this.renderContentElements(content.children);
     return this.isDevMode ? (
       <div data-preview-id={content.previewId} class="pl-w-full pl-h-full">
-        {renderedSections}
+        {sections}
         <AddSectionButton bodyName={options?.addSectionButton} />
       </div>
     ) : (
-      renderedSections
+      sections
     );
   }
 
