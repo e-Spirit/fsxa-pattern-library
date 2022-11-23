@@ -10,6 +10,7 @@ import {
 import InfoBox from "@/components/internal/InfoBox";
 import Code from "@/components/internal/Code";
 import TabbedContent from "@/components/internal/TabbedContent";
+import { getCircularReplacer } from "@/utils/json-stringify";
 
 @Component({
   name: "FSXARichText",
@@ -94,7 +95,7 @@ class RichText extends BaseComponent<RichTextProps, {}, Record<string, any>> {
                 title: "data",
                 content: (
                   <Code key="data" language="json">
-                    {JSON.stringify(element.data, null, 2)}
+                    {JSON.stringify(element.data, getCircularReplacer(), 2)}
                   </Code>
                 ),
               },
@@ -122,7 +123,7 @@ class RichText extends BaseComponent<RichTextProps, {}, Record<string, any>> {
 /**
  * Content-JSON
  **/
-${JSON.stringify(this.content, null, 2)}
+${JSON.stringify(this.content, getCircularReplacer(), 2)}
 `}
                   </Code>
                 ),

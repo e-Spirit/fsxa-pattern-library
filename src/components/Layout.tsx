@@ -15,6 +15,7 @@ import RenderUtils from "./base/RenderUtils";
 import { AppComponents, RenderingOptions } from "@/types/components";
 import InfoToolTip from "./internal/InfoToolTip";
 import AddSectionButton from "./AddSectionButton";
+import { getCircularReplacer } from "@/utils/json-stringify";
 
 export interface LayoutProps<Data, Meta> {
   pageId: string;
@@ -143,7 +144,7 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
               content: (
                 <div>
                   <Code key="data" language="json">
-                    {JSON.stringify(this.data, null, 2)}
+                    {JSON.stringify(this.data, getCircularReplacer(), 2)}
                   </Code>
                 </div>
               ),
@@ -152,7 +153,7 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
               title: "meta",
               content: (
                 <Code key="meta" language="json">
-                  {JSON.stringify(this.meta, null, 2)}
+                  {JSON.stringify(this.meta, getCircularReplacer(), 2)}
                 </Code>
               ),
             },
