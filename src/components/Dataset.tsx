@@ -83,6 +83,11 @@ class Dataset extends RenderUtils<DatasetProps> {
               },
             ],
           },
+          {
+            operator: ComparisonQueryOperatorEnum.EQUALS,
+            value: "Dataset",
+            field: "fsType",
+          },
         ]
       : null;
   }
