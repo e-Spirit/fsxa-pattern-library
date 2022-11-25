@@ -11,6 +11,7 @@ import Code from "./internal/Code";
 import InfoBox from "./internal/InfoBox";
 import TabbedContent, { TabbedContentItem } from "./internal/TabbedContent";
 import { AppComponents } from "@/types/components";
+import { getCircularReplacer } from "@/utils/json-stringify";
 
 export interface SectionProps<Data, Meta> {
   type: string;
@@ -125,7 +126,7 @@ class Section<
                 title: "payload",
                 content: (
                   <Code key="payload" language="json">
-                    {JSON.stringify(this.data, null, 2)}
+                    {JSON.stringify(this.data, getCircularReplacer(), 2)}
                   </Code>
                 ),
               },
@@ -133,7 +134,7 @@ class Section<
                 title: "meta",
                 content: (
                   <Code key="meta" language="json">
-                    {JSON.stringify(this.meta, null, 2)}
+                    {JSON.stringify(this.meta, getCircularReplacer(), 2)}
                   </Code>
                 ),
               },
