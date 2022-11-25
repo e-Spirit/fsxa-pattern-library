@@ -54,6 +54,7 @@ const Actions = {
   initializeApp: "initializeApp",
   hydrateClient: "hydrateClient",
   setStoredItem: "setStoredItem",
+  setNavigation: "setNavigation",
 };
 
 const Getters = {
@@ -66,6 +67,7 @@ export const FSXAActions = {
   initializeApp: `${prefix}/${Actions.initializeApp}`,
   hydrateClient: `${prefix}/${Actions.hydrateClient}`,
   setStoredItem: `${prefix}/${Actions.setStoredItem}`,
+  setNavigation: `${prefix}/${Actions.setNavigation}`,
 };
 
 const GETTER_NAVIGATION_DATA = "navigationData";
@@ -115,9 +117,12 @@ export function getFSXAModule<R extends RootState>(
       [Actions.setStoredItem]: async function({ commit }, payload) {
         commit("setStoredItem", payload);
       },
+      [Actions.setNavigation]: function({ commit }, payload) {
+        commit("setNavigation", payload);
+      },
     },
     mutations: {
-      setNavigation(state, payload) {
+      setNavigation(state, payload: NavigationData) {
         state.navigation = payload;
       },
       setAppAsInitializing(state) {

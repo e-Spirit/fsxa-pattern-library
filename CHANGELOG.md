@@ -1,3 +1,31 @@
+## [8.13.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.1...v8.13.2) (2022-11-23)
+
+
+### Bug Fixes
+
+* **devmode:** fix stringification of circular json in dev mode ([#101](https://github.com/e-Spirit/fsxa-pattern-library/issues/101)) ([15b9ff3](https://github.com/e-Spirit/fsxa-pattern-library/commit/15b9ff32d88306f8bcbcc26e9ae1f61f9daa3801))
+
+## [8.13.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.0...v8.13.1) (2022-11-14)
+
+
+### Bug Fixes
+
+* **fsxa-api:** update to latest version ([#100](https://github.com/e-Spirit/fsxa-pattern-library/issues/100)) ([3d63d0d](https://github.com/e-Spirit/fsxa-pattern-library/commit/3d63d0d46d991615d3fa5fde6aa612f8857dcc30))
+
+# [8.13.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.12.0...v8.13.0) (2022-10-25)
+
+
+### Features
+
+* **navigationData:** provide vuex action to mutate navigation data ([#94](https://github.com/e-Spirit/fsxa-pattern-library/issues/94)) ([7b1b3f0](https://github.com/e-Spirit/fsxa-pattern-library/commit/7b1b3f0cfb14a9fbf291bb87a144647e19002916))
+
+# [8.12.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.5...v8.12.0) (2022-10-24)
+
+
+### Features
+
+* **snap:** prevent loading snap.js when PWA is the top frame ([#97](https://github.com/e-Spirit/fsxa-pattern-library/issues/97)) ([36c7f4d](https://github.com/e-Spirit/fsxa-pattern-library/commit/36c7f4d23c4da0360483d769d577da8a2d9ef722))
+
 ## [8.11.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.11.4...v8.11.5) (2022-10-21)
 
 

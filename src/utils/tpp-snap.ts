@@ -16,6 +16,16 @@ export const importTPPSnapAPI = (
   options: ImportTPPSnapAPIOptions = {},
 ): Promise<any> =>
   new Promise(resolve => {
+    // To prevent console errors during local development,
+    // never resolve the promise, if the PWA is `window.top`,
+    // No content can be changed outside the ContentCreator!
+    if (window.top === window.self) {
+      console.warn(
+        "You are running your application outside of the ContentCreator. InEdit will not be available.",
+      );
+      return;
+    }
+
     if (isClient()) {
       const tppSnap = getTPPSnap();
       if (tppSnap !== null) {
