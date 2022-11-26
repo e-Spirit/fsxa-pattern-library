@@ -14,6 +14,7 @@ import {
   FSXA_INJECT_KEY_LOADER,
   FSXA_INJECT_KEY_COMPONENTS,
   FSXA_INJECT_KEY_TPP_VERSION,
+  FSXA_INJECT_KEY_CUSTOM_SNAP_HOOKS,
   FSXA_INJECT_DEV_MODE_INFO,
   FSXA_INJECT_USE_ERROR_BOUNDARY_WRAPPER,
 } from "@/constants";
@@ -30,13 +31,8 @@ import {
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { importTPPSnapAPI } from "@/utils";
-import {
-  connectCaasEvents,
-  DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-} from "@/utils/caas-events";
 import { triggerRouteChange } from "@/utils/getters";
-
-const CAAS_CHANGE_DELAY_MS = 300;
+import { registerTppHooks } from "@/utils/tpp-snap-hooks";
 
 @Component({
   name: "FSXAApp",
@@ -48,10 +44,13 @@ class App extends TsxComponent<AppProps> {
   @Prop({ required: true }) defaultLocale!: AppProps["defaultLocale"];
   @Prop({ required: true }) handleRouteChange!: AppProps["handleRouteChange"];
   @Prop() fsTppVersion: AppProps["fsTppVersion"];
+  @Prop({ default: false }) customSnapHooks!: AppProps["customSnapHooks"];
   @Prop({ default: true })
   useErrorBoundaryWrapper!: AppProps["useErrorBoundaryWrapper"];
   @ProvideReactive("currentPath") path = this.currentPath;
   @ProvideReactive(FSXA_INJECT_KEY_DEV_MODE) injectedDevMode = this.devMode;
+  @ProvideReactive(FSXA_INJECT_KEY_CUSTOM_SNAP_HOOKS)
+  injectedCustomSnapHooks = this.customSnapHooks;
   @ProvideReactive(FSXA_INJECT_KEY_COMPONENTS) injectedComponents = this
     .components;
 
@@ -102,136 +101,29 @@ class App extends TsxComponent<AppProps> {
     if (this.appState === FSXAAppState.not_initialized) await this.initialize();
 
     if (this.isEditMode) {
-      const caasEvents = connectCaasEvents(this.fsxaApi);
-
-      const routeToPreviewId = async (previewId: string) => {
-        const [pageId, locale] = previewId.split(".");
-        console.debug("Triggering route change", { pageId, locale });
-
-        if (pageId) {
-          // lookup route for `pageId` from store
-          let newRoute: string | null = await triggerRouteChange(
-            this.$store,
-            this.fsxaApi,
-            { locale, pageId },
-            this.$store.getters[FSXAGetters.locale],
-            this.$store.getters[FSXAGetters.getGlobalSettingsKey],
-          );
-
-          // if no route found, lookup from api
-          if (newRoute === null) {
-            const response = await this.fsxaApi.fetchByFilter({
-              filters: [
-                {
-                  field: "identifier",
-                  operator: ComparisonQueryOperatorEnum.EQUALS,
-                  value: pageId,
-                },
-              ],
-              locale: locale,
-              additionalParams: {
-                keys: [{ type: 1, route: 1, "routes.route": 1 }],
-              },
-            });
-            const item = response?.items?.[0] as Partial<
-              Pick<CaaSApi_Dataset, "routes" | "route">
-            >;
-            newRoute = item?.route ?? item?.routes?.[0]?.route ?? null;
-            if (newRoute) {
-              await this.initialize(this.$store.getters[FSXAGetters.locale]);
-            }
-          }
-
-          if (newRoute != null) {
-            this.handleRouteChange(newRoute);
-          } else {
-            console.warn("Unable to find route by ", { pageId, locale });
-          }
-        }
-      };
-
-      importTPPSnapAPI({
+      // initialize TPP
+      const TPP_SNAP = await importTPPSnapAPI({
         version: this.tppVersion,
         url: this.$store.getters[FSXAGetters.getSnapUrl],
-      })
-        .then(TPP_SNAP => {
-          if (!TPP_SNAP) {
-            throw new Error("Could not find global TPP_SNAP object.");
-          }
-          TPP_SNAP.onInit(async (success: boolean) => {
-            if (!success) throw new Error("Could not initialize TPP");
+      });
 
-            if (TPP_SNAP.fsxaHooksRegistered) {
-              console.debug(
-                "Hooks already registered, skipping registrations.",
-              );
-              return;
-            }
+      if (!this.customSnapHooks) {
+        // predefine store utils
+        const forceUpdateStore = () =>
+          this.initialize(this.$store.getters[FSXAGetters.locale]);
+        const routeToPreviewId = async (previewId: string) => {
+          const [pageId, locale] = previewId.split(".");
+          await this.requestRouteChangeByPageId(pageId, locale);
+        };
 
-            console.debug("Registering FSXA hooks");
-            TPP_SNAP.onRequestPreviewElement(async (previewId: string) => {
-              console.debug("onRequestPreviewElement triggered", previewId);
-              await caasEvents.waitFor(previewId, {
-                timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-              });
-              await routeToPreviewId(previewId);
-            });
-            TPP_SNAP.onRerenderView(() => {
-              console.debug("onRerenderView triggered");
-              TPP_SNAP.getPreviewElement().then(async (previewId: string) => {
-                if (caasEvents.isConnected()) {
-                  await caasEvents.waitFor(previewId, {
-                    timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-                    allowedEventTypes: ["replace"],
-                  });
-                } else {
-                  // no realtime events, so just wait
-                  await new Promise(resolve =>
-                    setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
-                  );
-                }
-                await this.initialize(this.$store.getters[FSXAGetters.locale]);
-              });
-              return false;
-            });
-            TPP_SNAP.onNavigationChange(
-              async (newPagePreviewId: string | null) => {
-                console.debug("onNavigationChange triggered", {
-                  newPagePreviewId,
-                });
-                if (!newPagePreviewId) {
-                  // if non previewId (for a just created page) is set, refresh the current page
-                  await TPP_SNAP.getPreviewElement().then(
-                    async (currentPreviewId: string) => {
-                      // rendered navigations may change, wait for it
-                      if (caasEvents.isConnected()) {
-                        await caasEvents.waitFor(currentPreviewId, {
-                          timeout: DEFAULT_CAAS_EVENT_TIMEOUT_IN_MS,
-                        });
-                      } else {
-                        // no realtime events, so just wait
-                        await new Promise(resolve =>
-                          setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
-                        );
-                      }
-                    },
-                  );
-                  // re-initilize store
-                  await this.initialize(
-                    this.$store.getters[FSXAGetters.locale],
-                  );
-                  if (newPagePreviewId) {
-                    await routeToPreviewId(newPagePreviewId);
-                  }
-                }
-              },
-            );
-            TPP_SNAP.fsxaHooksRegistered = true;
-          });
-        })
-        .catch(e => {
-          console.error(e);
+        // register default fsxa tpp hooks
+        await registerTppHooks({
+          fsxaApi: this.fsxaApi,
+          TPP_SNAP,
+          forceUpdateStore,
+          routeToPreviewId,
         });
+      }
     }
   }
 
@@ -240,6 +132,51 @@ class App extends TsxComponent<AppProps> {
       defaultLocale: locale ? locale : this.defaultLocale,
       initialPath: this.currentPath,
     });
+  }
+
+  async requestRouteChangeByPageId(pageId: string, locale?: string) {
+    console.debug("Try to resolve route", { pageId, locale });
+
+    if (pageId) {
+      // lookup route for `pageId` from store
+      let newRoute: string | null = await triggerRouteChange(
+        this.$store,
+        this.fsxaApi,
+        { locale: locale ?? this.$store.getters[FSXAGetters.locale], pageId },
+        this.$store.getters[FSXAGetters.locale],
+        this.$store.getters[FSXAGetters.getGlobalSettingsKey],
+      );
+
+      // if no route found, lookup from api
+      if (newRoute === null) {
+        const response = await this.fsxaApi.fetchByFilter({
+          filters: [
+            {
+              field: "identifier",
+              operator: ComparisonQueryOperatorEnum.EQUALS,
+              value: pageId,
+            },
+          ],
+          locale: locale ?? this.$store.getters[FSXAGetters.locale],
+          additionalParams: {
+            keys: [{ type: 1, route: 1, "routes.route": 1 }],
+          },
+        });
+        const item = response?.items?.[0] as Partial<
+          Pick<CaaSApi_Dataset, "routes" | "route">
+        >;
+        newRoute = item?.route ?? item?.routes?.[0]?.route ?? null;
+        if (newRoute) {
+          await this.initialize(this.$store.getters[FSXAGetters.locale]);
+        }
+      }
+
+      if (newRoute != null) {
+        this.handleRouteChange(newRoute);
+      } else {
+        console.warn("Unable to find route by ", { pageId, locale });
+      }
+    }
   }
 
   @ProvideReactive("requestRouteChange")

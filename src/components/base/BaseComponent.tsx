@@ -18,6 +18,7 @@ import {
 } from "@/utils/getters";
 import { RequestRouteChangeParams } from "@/types/components";
 import {
+  FSXA_INJECT_KEY_CUSTOM_SNAP_HOOKS,
   FSXA_INJECT_KEY_DEV_MODE,
   FSXA_INJECT_KEY_TPP_VERSION,
 } from "@/constants";
@@ -38,6 +39,8 @@ class BaseComponent<
   private currentPath!: string;
   @InjectReactive({ from: FSXA_INJECT_KEY_TPP_VERSION })
   fsTppVersion!: string;
+  @InjectReactive({ from: FSXA_INJECT_KEY_CUSTOM_SNAP_HOOKS })
+  customSnapHooks!: boolean;
   @Inject({ from: FSXA_INJECT_KEY_DEV_MODE, default: false })
   isDevMode!: boolean;
   @Inject({

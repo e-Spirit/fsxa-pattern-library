@@ -34,6 +34,13 @@ export class FSXABaseComponent<
   fsTppVersion: string;
 
   /**
+   * Use custom TPP_SNAP hooks, instead of `registerTppHooks()`
+   *
+   * {@link https://docs.e-spirit.com/tpp/snap/index.html}
+   */
+  customSnapHooks: boolean;
+
+  /**
    * This method will trigger a route change request
    *
    * You can pass in a pageId, route or locale
@@ -322,6 +329,12 @@ export interface AppProps {
    * @deprecated use `FSXA_SNAP_URL` instead {@link https://github.com/e-Spirit/fsxa-pattern-library/#snap-url}
    */
   fsTppVersion?: string;
+  /**
+   * Use custom TPP_SNAP hooks, instead of `registerTppHooks()`
+   *
+   * {@link https://docs.e-spirit.com/tpp/snap/index.html}
+   */
+  customSnapHooks?: boolean;
   /**
    * When enabled, events for `insert`, `replace` and `delete` CaaS documents can be observed and handled.
    *
