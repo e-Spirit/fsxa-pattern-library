@@ -1,4 +1,5 @@
 import { FSXA_INJECT_KEY_SET_PORTAL_CONTENT } from "@/constants";
+import { getCircularReplacer } from "@/utils/json-stringify";
 import { RichTextElement } from "fsxa-api/dist/types";
 import Component from "vue-class-component";
 import { Inject, Prop } from "vue-property-decorator";
@@ -72,7 +73,11 @@ class MissingRichTextComponent extends BaseComponent<
                 title: "data",
                 content: (
                   <Code key="data" language="json">
-                    {JSON.stringify(this.element.data, null, 2)}
+                    {JSON.stringify(
+                      this.element.data,
+                      getCircularReplacer(),
+                      2,
+                    )}
                   </Code>
                 ),
               },
@@ -100,7 +105,7 @@ class MissingRichTextComponent extends BaseComponent<
 /**
  * Content-JSON
  **/
-${JSON.stringify(this.element.content, null, 2)}
+${JSON.stringify(this.element.content, getCircularReplacer(), 2)}
 `}
                   </Code>
                 ),

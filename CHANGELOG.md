@@ -1,3 +1,10 @@
+## [8.13.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.1...v8.13.2) (2022-11-23)
+
+
+### Bug Fixes
+
+* **devmode:** fix stringification of circular json in dev mode ([#101](https://github.com/e-Spirit/fsxa-pattern-library/issues/101)) ([15b9ff3](https://github.com/e-Spirit/fsxa-pattern-library/commit/15b9ff32d88306f8bcbcc26e9ae1f61f9daa3801))
+
 ## [8.13.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.0...v8.13.1) (2022-11-14)
 
 
