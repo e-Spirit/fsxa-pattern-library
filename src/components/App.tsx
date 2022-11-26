@@ -143,7 +143,6 @@ class App extends TsxComponent<AppProps> {
           }
 
           if (newRoute != null) {
-            // TODO `handleRouteChange` may not work after a deletion?
             this.handleRouteChange(newRoute);
           } else {
             console.warn("Unable to find route by ", { pageId, locale });
