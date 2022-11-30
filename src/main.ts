@@ -5,8 +5,12 @@ import TsxApp from "./../examples/tsx";
 // @ts-ignore
 // import SFCApp from "./../examples/sfc/index.vue";
 import createStore from "./store";
-import { getFSXAConfigFromEnvFile } from "./utils/config";
-import { FSXAContentMode, FSXARemoteApiConfig, LogLevel } from "fsxa-api";
+import {
+  FSXAConfiguration,
+  FSXAContentMode,
+  FSXARemoteApiConfig,
+  LogLevel,
+} from "fsxa-api";
 Vue.config.productionTip = false;
 import "prismjs";
 import "prismjs/components/prism-json";
@@ -17,6 +21,19 @@ import "prismjs/themes/prism-okaidia.css";
 import "setimmediate";
 import { initializeApi } from "./utils";
 import { CreateStoreRemoteOptions } from "./types/fsxa-pattern-library";
+
+const getFSXAConfigFromEnvFile = (): FSXAConfiguration & {
+  snapUrl?: string;
+} => {
+  return {
+    apiKey: process.env.VUE_APP_API_KEY as string,
+    caas: process.env.VUE_APP_CAAS as string,
+    projectId: process.env.VUE_APP_PROJECT_ID as string,
+    navigationService: process.env.VUE_APP_NAVIGATION_SERVICE as string,
+    tenantId: process.env.VUE_APP_TENANT_ID as string,
+    snapUrl: process.env.VUE_APP_SNAP_URL as string,
+  };
+};
 
 const remoteApiConfig: FSXARemoteApiConfig = {
   apikey: getFSXAConfigFromEnvFile().apiKey,

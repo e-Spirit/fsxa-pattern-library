@@ -62,8 +62,9 @@ describe("App", () => {
     renderApp({ store, localVue });
 
     expect(store.dispatch).toHaveBeenCalledWith(FSXAActions.initializeApp, {
-      defaultLocale: "de",
+      locale: "de",
       initialPath: "/some/path",
+      useExactDatasetRouting: false,
     });
   });
   it("fetches navigation data", async () => {
