@@ -35,6 +35,16 @@ class Page extends BaseComponent<PageProps> {
     if (!this.pageData && !this.loadedPage) {
       this.fetchPage();
     }
+
+    console.log("mounted");
+
+    // @ts-expect-error CustomEvent is not known
+    document.body.addEventListener("tpp-update", (event: CustomEvent) => {
+      if (!event.defaultPrevented) {
+        event.preventDefault();
+        this.fetchPage();
+      }
+    });
   }
 
   async fetchPage() {
@@ -55,7 +65,11 @@ class Page extends BaseComponent<PageProps> {
     }
   }
 
+  // ✨ use [key] to re-render on store changes {@see https://michaelnthiessen.com/force-re-render/}
+  key = Date.now();
+
   get loadedPage(): APIPage | null | undefined {
+    this.key = Date.now();
     return this.id ? this.getStoredItem(this.id) : undefined;
   }
 
@@ -94,6 +108,7 @@ class Page extends BaseComponent<PageProps> {
 
     return (
       <Layout
+        key={this.key}
         pageId={this.id!}
         previewId={this.page.previewId}
         type={this.page.layout}

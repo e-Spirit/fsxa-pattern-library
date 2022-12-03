@@ -19,7 +19,6 @@ export const registerTppHooks = async ({
   forceUpdateStore,
   routeToPreviewId,
 }: RegisterTppHooksOptions) => {
-  console.log({ TPP_SNAP });
   if (!TPP_SNAP) throw new Error("Could not find global TPP_SNAP object.");
 
   TPP_SNAP.onInit(async (success: boolean) => {
@@ -60,6 +59,18 @@ export const registerTppHooks = async ({
           forceUpdateStore();
           // return for now, the ContentCreator will request the Homepage as the next step
           return true;
+        } else if ($node) {
+          console.log({ $node });
+          const canceled = !$node.dispatchEvent(
+            new CustomEvent("tpp-update", {
+              bubbles: true,
+              cancelable: true,
+              detail: { previewId, content },
+            }),
+          );
+          if (canceled) {
+            return true;
+          }
         }
 
         // TODO update partial store content

@@ -101,6 +101,7 @@ class Dataset extends RenderUtils<DatasetProps> {
   }
 
   get page(): APIPage | undefined {
+    // TODO check if TNG-1207 needs to re-render here
     return this.pageId ? this.getStoredItem(this.pageId) : undefined;
   }
 
