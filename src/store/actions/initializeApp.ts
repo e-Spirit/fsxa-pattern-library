@@ -1,43 +1,13 @@
 import { ActionContext } from "vuex";
 import {
-  ComparisonQueryOperatorEnum,
   Dataset,
   FetchNavigationParams,
   FSXAApi,
   FSXAApiErrors,
-  LogicalQueryOperatorEnum,
   NavigationData,
-  QueryBuilderQuery,
 } from "fsxa-api";
+import { createDatasetRouteFilters } from "@/utils/navigation";
 import { FSXAVuexState, RootState } from "../";
-//import { createDatasetRouteFilters } from "../../utils/navigation";
-
-// Duplicating this function for now due to issues importing the existing one.
-// TODO: Remove this duplicate.
-function createDatasetRouteFilters(route: string): QueryBuilderQuery[] {
-  return [
-    {
-      operator: LogicalQueryOperatorEnum.OR,
-      filters: [
-        {
-          field: "route",
-          operator: ComparisonQueryOperatorEnum.EQUALS,
-          value: route,
-        },
-        {
-          field: "routes.route",
-          operator: ComparisonQueryOperatorEnum.EQUALS,
-          value: route,
-        },
-      ],
-    },
-    {
-      operator: ComparisonQueryOperatorEnum.EQUALS,
-      value: "Dataset",
-      field: "fsType",
-    },
-  ];
-}
 
 function isNotFoundError(errorLike: unknown) {
   return (
