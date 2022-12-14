@@ -1,6 +1,6 @@
 import { FSXAVuexState, RootState } from "@/store";
 import { FSXAProxyApi, LogLevel } from "fsxa-api";
-import { initializeApp } from "@/store/actions/initializeApp";
+import { createAppInitialization } from "@/store/actions/initializeApp";
 import { ActionContext } from "vuex";
 import { getMockNavigationData } from "../../../testing/getMockNavigationData";
 
@@ -20,7 +20,7 @@ describe("initializeApp action", () => {
 
   const setup = () => {
     const fsxaApi = new FSXAProxyApi("http://fsxa.local", LogLevel.NONE);
-    const action = initializeApp(fsxaApi);
+    const action = createAppInitialization(fsxaApi);
     return { fsxaApi, action };
   };
 
@@ -29,7 +29,7 @@ describe("initializeApp action", () => {
     const ctx = getMockContext();
     const navigationData = getMockNavigationData();
     fsxaApi.fetchNavigation = jest.fn().mockResolvedValue(navigationData);
-    await action(ctx, { defaultLocale: "jp" });
+    await action(ctx, { locale: "jp" });
 
     expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
       expect.objectContaining({
@@ -47,14 +47,14 @@ describe("initializeApp action", () => {
     const { fsxaApi, action } = setup();
     const ctx = getMockContext();
 
-    await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
+    await action(ctx, { locale: "jp", initialPath: "somewhere" });
     expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
       expect.objectContaining({
         initialPath: "somewhere",
         locale: "jp",
       }),
     );
-    await action(ctx, { defaultLocale: "jp", initialPath: undefined });
+    await action(ctx, { locale: "jp", initialPath: undefined });
     expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
       expect.objectContaining({
         initialPath: "/",
@@ -70,7 +70,7 @@ describe("initializeApp action", () => {
 
     // mock the api to return some data on the root path
     fsxaApi.fetchNavigation = jest.fn().mockResolvedValue(navigationData);
-    await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
+    await action(ctx, { locale: "jp", initialPath: "somewhere" });
     expect(fsxaApi.fetchNavigation).not.toHaveBeenCalledWith(
       expect.objectContaining({
         initialPath: "/",
@@ -81,7 +81,7 @@ describe("initializeApp action", () => {
     fsxaApi.fetchNavigation = jest.fn().mockImplementation(async conf => {
       return conf.initialPath === "/" ? null : navigationData;
     });
-    await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
+    await action(ctx, { locale: "jp", initialPath: "somewhere" });
     expect(fsxaApi.fetchNavigation).toHaveBeenCalledWith(
       expect.objectContaining({
         initialPath: "somewhere",
@@ -101,7 +101,7 @@ describe("initializeApp action", () => {
     navData.meta.identifier.languageId = "langId";
 
     fsxaApi.fetchNavigation = jest.fn().mockResolvedValue(navData);
-    await action(ctx, { defaultLocale: "jp", initialPath: "somewhere" });
+    await action(ctx, { locale: "jp", initialPath: "somewhere" });
     expect(fsxaApi.fetchProjectProperties).toHaveBeenCalledWith(
       expect.objectContaining({
         locale: "langId",
