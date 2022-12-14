@@ -50,8 +50,9 @@ export const createAppInitialization = (fsxaApi: FSXAApi) => async (
 
   // reset store
   commit("setAppAsInitializing");
-  try {
-    let navigationData: NavigationData | null = null;
+
+  async function fetchExactDatasetRouting(): Promise<NavigationData | null> {
+    let navigationData = null;
     if (payload.useExactDatasetRouting) {
       const dataset = await fetchDatasetByRoute(fsxaApi, route);
       if (dataset) {
@@ -67,19 +68,30 @@ export const createAppInitialization = (fsxaApi: FSXAApi) => async (
         });
       }
     }
+    return navigationData;
+  }
+
+  async function fetchNavigationDataFallback(): Promise<NavigationData | null> {
+    let navigationData = await fetchNavigationOrNull(fsxaApi, {
+      locale: payload.locale,
+      initialPath: route,
+    });
     if (!navigationData) {
+      // unable to find path in NavigationData. Fetch Nav for root
       navigationData = await fetchNavigationOrNull(fsxaApi, {
         locale: payload.locale,
-        initialPath: route,
+        initialPath: "/",
       });
-      if (!navigationData) {
-        // unable to find path in NavigationData. Fetch Nav for root
-        navigationData = await fetchNavigationOrNull(fsxaApi, {
-          locale: payload.locale,
-          initialPath: "/",
-        });
-      }
     }
+
+    return navigationData;
+  }
+
+  try {
+    const navigationData =
+      (await fetchExactDatasetRouting()) ||
+      (await fetchNavigationDataFallback());
+
     if (!navigationData) {
       commit("setError", {
         message: "Could not fetch navigation-data from NavigationService",
