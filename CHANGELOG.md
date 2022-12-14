@@ -1,3 +1,10 @@
+# [8.14.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.2...v8.14.0) (2022-12-14)
+
+
+### Features
+
+* **content-projection:** add new content projection routing ([#106](https://github.com/e-Spirit/fsxa-pattern-library/issues/106)) ([09ce0db](https://github.com/e-Spirit/fsxa-pattern-library/commit/09ce0dbb900550776debc24f100cc9c7de8c1ea3))
+
 ## [8.13.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.1...v8.13.2) (2022-11-23)
 
 
