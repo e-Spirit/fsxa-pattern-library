@@ -1,3 +1,10 @@
+## [8.14.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.14.0...v8.14.1) (2022-12-15)
+
+
+### Bug Fixes
+
+* **nuxtbuild:** remove navigation import using absolute path ([#111](https://github.com/e-Spirit/fsxa-pattern-library/issues/111)) ([2f794ae](https://github.com/e-Spirit/fsxa-pattern-library/commit/2f794ae916bc1ec9082a2bcb1385bfa118fc39b4))
+
 # [8.14.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.13.2...v8.14.0) (2022-12-14)
 
 
