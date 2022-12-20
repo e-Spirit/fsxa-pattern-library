@@ -129,7 +129,7 @@ Next, the FSXAApp can be used in the template, passing different parameters ther
 | useErrorBoundaryWrapper | For new projects set to false is recommended. When set to true, adds a div around error boundary. |
 | handleRouteChange       | Required callback that will be triggered, when the route should be changed                        |
 | currentPath             | You can specify the path of the page that should be displayed                                     |
-| components              | Mapping of the FirstSpirit components                                                             |
+| components              | Mapping of the FirstSpirit components.                                                            |
 
 This is what the component looks like:
 

@@ -1,4 +1,5 @@
 import { FSXAActions, FSXAGetters, RootState } from "@/store";
+import { fetchDatasetByRoute } from "@/store/actions/initializeApp";
 import {
   ComparisonQueryOperatorEnum,
   Dataset,
@@ -6,6 +7,7 @@ import {
   NavigationData,
   NavigationItem,
 } from "fsxa-api";
+import Vue from "vue";
 import { Store } from "vuex";
 
 export function getStoredItem<Value = any>(
@@ -41,20 +43,19 @@ export function setNavigation(
 }
 
 export function findNavigationItemInNavigationData(
-  $store: Store<RootState>,
+  navigationData: NavigationData | null,
   params: {
     seoRoute?: string;
     pageId?: string;
   },
 ): NavigationItem | null {
+  if (!navigationData) return null;
   if (
     (!params.pageId && !params.seoRoute) ||
     (params.pageId && params.seoRoute)
   ) {
     return null;
   }
-  const navigationData: NavigationData =
-    $store.getters[FSXAGetters.navigationData];
   if (params.pageId) {
     return navigationData.idMap[params.pageId] || null;
   }
@@ -71,79 +72,111 @@ export interface TriggerRouteChangeParams {
   pageId?: string;
   locale?: string;
 }
+
 export async function triggerRouteChange(
   $store: Store<RootState>,
   $fsxaApi: FSXAApi,
   params: TriggerRouteChangeParams,
   currentLocale: string,
   globalSettingsKey?: string,
+  useExactDatasetRouting?: boolean,
 ): Promise<string | null> {
+  console.debug("triggerRouteChange", { currentLocale, params });
+  const navigationData: NavigationData =
+    $store.getters[FSXAGetters.navigationData];
+
   if (!params.locale || params.locale === currentLocale) {
-    if (params.route) return params.route;
+    if (params.route) {
+      if (useExactDatasetRouting) {
+        fetchDatasetByRoute($fsxaApi, params.route).then(dataset => {
+          console.debug(
+            `Storing dataset ${dataset.id} for route ${params.route}.`,
+          );
+          $store.dispatch(FSXAActions.setStoredItem, {
+            key: params.route,
+            value: dataset,
+            fetchedAt: new Date().getTime(),
+            ttl: 300000,
+          });
+        });
+      }
+      return params.route;
+    }
     if (params.pageId)
       return (
-        findNavigationItemInNavigationData($store, {
+        findNavigationItemInNavigationData(navigationData, {
           pageId: params.pageId,
         })?.seoRoute || null
       );
   }
   if (params.locale && params.locale !== currentLocale) {
+    const currentPageId = findNavigationItemInNavigationData(navigationData, {
+      pageId: params.pageId,
+      seoRoute: params.route,
+    })?.id;
+
     const currentDataset = params.route
       ? ($store.state.fsxa.stored[params.route]?.value as Dataset) || null
       : null;
 
-    // we will store the possible old datasetId and pageRef, so that we can fetch the translated one as well and redirect to the new seoRoute
-    const currentDatasetId = currentDataset?.id || null;
-    const currentPageId =
-      findNavigationItemInNavigationData($store, {
-        pageId: params.pageId,
-        seoRoute: params.route,
-      })?.id || null;
-    let pageRef = "";
-    if (currentDataset && params.route) {
-      const routes = currentDataset.routes;
-      pageRef = routes.find(el => el.route === params.route)?.pageRef || "";
-    }
     // We throw away the old state and reinitialize the app with the new locale
     await $store.dispatch(FSXAActions.initializeApp, {
-      defaultLocale: params.locale,
+      locale: params.locale,
       globalSettingsKey,
     });
 
-    if (currentDatasetId) {
-      // we will load the new dataset from the caas
+    if (currentDataset) {
+      // fetching dataset with target locale
       const {
         items: [dataset],
       } = (await $fsxaApi.fetchByFilter({
         filters: [
           {
             operator: ComparisonQueryOperatorEnum.EQUALS,
-            value: currentDatasetId,
+            value: currentDataset.id,
             field: "identifier",
           },
         ],
         locale: params.locale,
       })) as { items: Dataset[] };
       if (dataset) {
+        const currentContentProjectionPageId =
+          currentDataset.routes.find(el => el.route === params.route)
+            ?.pageRef || "";
+        // Finding localized route of dataset for current content projection page
         const route =
+          dataset.routes?.find(
+            el => el.pageRef === currentContentProjectionPageId,
+          )?.route ||
           dataset.route ||
-          dataset.routes.find(el => el.pageRef === pageRef)?.route ||
           "";
-        $store.dispatch(FSXAActions.setStoredItem, {
-          key: route,
-          value: dataset,
-          ttl: 300000,
-          fetchedAt: new Date().getTime(),
-        });
+        if (route !== "") {
+          $store.dispatch(FSXAActions.setStoredItem, {
+            key: route,
+            value: dataset,
+            ttl: 300000,
+            fetchedAt: new Date().getTime(),
+          });
+        }
         return route;
       }
     } else if (currentPageId) {
+      // Using navigation data of new locale that was fetched by initializeApp to
+      // find localized seoRoute of current page.
+      const navigationData: NavigationData =
+        $store.getters[FSXAGetters.navigationData];
       return (
-        findNavigationItemInNavigationData($store, {
+        findNavigationItemInNavigationData(navigationData, {
           pageId: currentPageId,
         })?.seoRoute || null
       );
     }
   }
   return null;
+}
+
+export function isExactDatasetRoutingEnabled(vue: Vue): boolean {
+  // Assuming that pattern lib is used in Nuxt environment where $config is available.
+  if (!(vue as any).$config) return false;
+  return (vue as any).$config.FSXA_USE_EXACT_DATASET_ROUTING === true || false;
 }

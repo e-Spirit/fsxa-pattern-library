@@ -1,6 +1,6 @@
 {
   "name": "fsxa-pattern-library",
-  "version": "8.13.2",
+  "version": "8.14.1",
   "author": {
     "name": "Tobias Golbs",
     "email": "golbs@e-spirit.com"
@@ -29,7 +29,7 @@
     "README.md"
   ],
   "dependencies": {
-    "fsxa-api": "^10.6.7",
+    "fsxa-api": "^10.7.0",
     "prismjs": "^1.27.0",
     "setimmediate": "^1.0.5",
     "vue": "^2.6.14",
