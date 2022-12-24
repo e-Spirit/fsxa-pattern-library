@@ -106,7 +106,9 @@ export const registerTppHooks = async ({
       console.debug("onNavigationChange triggered", {
         newPagePreviewId,
       });
-      if (!newPagePreviewId) {
+      if (newPagePreviewId) {
+        await routeToPreviewId(newPagePreviewId);
+      } else {
         // if non previewId (for a just created page) is set, refresh the current page
         await TPP_SNAP.getPreviewElement().then(
           async (currentPreviewId: string) => {
@@ -124,9 +126,6 @@ export const registerTppHooks = async ({
           },
         );
         await forceUpdateStore();
-        if (newPagePreviewId) {
-          await routeToPreviewId(newPagePreviewId);
-        }
       }
     });
   });
