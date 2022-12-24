@@ -12,7 +12,7 @@ import {
   CreateStoreProxyOptions,
   CreateStoreRemoteOptions,
 } from "../types/fsxa-pattern-library";
-import { initializeApp } from "./actions/initializeApp";
+import { createAppInitialization } from "./actions/initializeApp";
 export interface FSXAAppError {
   message: string;
   description?: string;
@@ -110,7 +110,9 @@ export function getFSXAModule<R extends RootState>(
       snapUrl: options.snapUrl ?? null,
     }),
     actions: {
-      [Actions.initializeApp]: initializeApp(FSXAApiSingleton.instance),
+      [Actions.initializeApp]: createAppInitialization(
+        FSXAApiSingleton.instance,
+      ),
       [Actions.hydrateClient]: function({ commit }, payload: FSXAVuexState) {
         commit("setInitialStateFromServer", payload);
       },

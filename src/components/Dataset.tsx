@@ -11,6 +11,7 @@ import {
 import Page from "./Page";
 import RenderUtils from "./base/RenderUtils";
 import { DatasetProps } from "@/types/components";
+import { createDatasetRouteFilters } from "@/utils/navigation";
 
 @Component({
   name: "FSXADataset",
@@ -25,17 +26,18 @@ class Dataset extends RenderUtils<DatasetProps> {
   }
 
   mounted() {
-    if (!this.page || !this.dataset)
+    if (!this.page || !this.dataset) {
       this.fetchData().catch(error => {
         console.error("[Dataset.mounted]", error);
       });
+    }
   }
 
   async fetchData() {
     if (!this.locale) return;
     const [page, dataset] = await Promise.all([
       this.fetchPage(),
-      this.fetchDataset(),
+      !this.dataset ? this.fetchDataset() : null,
     ]);
     if (page) this.setStoredItem(this.pageId!, page);
     if (dataset) this.setStoredItem(this.id ? this.id : this.route!, dataset);
@@ -65,28 +67,6 @@ class Dataset extends RenderUtils<DatasetProps> {
       : null;
   }
 
-  get routeFilter(): QueryBuilderQuery[] | null {
-    return this.route
-      ? [
-          {
-            operator: LogicalQueryOperatorEnum.OR,
-            filters: [
-              {
-                field: "route",
-                operator: ComparisonQueryOperatorEnum.EQUALS,
-                value: this.route,
-              },
-              {
-                field: "routes.route",
-                operator: ComparisonQueryOperatorEnum.EQUALS,
-                value: this.route,
-              },
-            ],
-          },
-        ]
-      : null;
-  }
-
   async fetchDataset() {
     if (!this.id && !this.route) {
       throw new Error(
@@ -94,9 +74,12 @@ class Dataset extends RenderUtils<DatasetProps> {
       );
     }
     const { items } = await this.fsxaApi.fetchByFilter({
-      filters: this.id ? this.idFilter! : this.routeFilter!,
+      filters: this.id
+        ? this.idFilter!
+        : createDatasetRouteFilters(this.route!),
       locale: this.locale,
     });
+
     return items.length ? items[0] : null;
   }
 

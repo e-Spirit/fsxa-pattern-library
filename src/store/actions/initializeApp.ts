@@ -1,10 +1,40 @@
 import { ActionContext } from "vuex";
-import { FSXAApi, FSXAApiErrors } from "fsxa-api";
+import {
+  ComparisonQueryOperatorEnum,
+  Dataset,
+  FetchNavigationParams,
+  FSXAApi,
+  FSXAApiErrors,
+  LogicalQueryOperatorEnum,
+  NavigationData,
+  QueryBuilderQuery,
+} from "fsxa-api";
+
 import { FSXAVuexState, RootState } from "../";
 
-export interface InitializeAppPayload {
-  defaultLocale: string;
-  initialPath?: string;
+function createDatasetRouteFilters(route: string): QueryBuilderQuery[] {
+  return [
+    {
+      operator: LogicalQueryOperatorEnum.OR,
+      filters: [
+        {
+          field: "route",
+          operator: ComparisonQueryOperatorEnum.EQUALS,
+          value: route,
+        },
+        {
+          field: "routes.route",
+          operator: ComparisonQueryOperatorEnum.EQUALS,
+          value: route,
+        },
+      ],
+    },
+    {
+      operator: ComparisonQueryOperatorEnum.EQUALS,
+      value: "Dataset",
+      field: "fsType",
+    },
+  ];
 }
 
 function isNotFoundError(errorLike: unknown) {
@@ -15,31 +45,80 @@ function isNotFoundError(errorLike: unknown) {
   );
 }
 
-export const initializeApp = (fsxaApi: FSXAApi) => async (
+async function fetchNavigationOrNull(
+  fsxaApi: FSXAApi,
+  params: FetchNavigationParams,
+) {
+  try {
+    return await fsxaApi.fetchNavigation(params);
+  } catch (reason) {
+    if (isNotFoundError(reason)) return null;
+    throw reason;
+  }
+}
+
+export async function fetchDatasetByRoute(fsxaApi: FSXAApi, route: string) {
+  const { items } = await fsxaApi.fetchByFilter({
+    filters: createDatasetRouteFilters(route),
+  });
+  return items[0] as Dataset;
+}
+
+export interface InitializeAppPayload {
+  locale: string;
+  initialPath?: string;
+  useExactDatasetRouting?: boolean;
+}
+export const createAppInitialization = (fsxaApi: FSXAApi) => async (
   { commit }: ActionContext<FSXAVuexState, RootState>,
   payload: InitializeAppPayload,
 ): Promise<void> => {
-  function fetchNavigationByPath(path: string) {
-    return fsxaApi
-      .fetchNavigation({
-        initialPath: path,
-        locale: payload.defaultLocale,
-      })
-      ?.catch(reason => {
-        if (isNotFoundError(reason)) return null;
-        throw reason;
-      });
-  }
   console.debug("Initializing app", { payload });
-  const path = payload.initialPath ? decodeURI(payload.initialPath) : "/";
+  const route = payload.initialPath ? decodeURI(payload.initialPath) : "/";
 
+  // reset store
   commit("setAppAsInitializing");
-  try {
-    let navigationData = await fetchNavigationByPath(path);
+
+  async function fetchExactDatasetRouting(): Promise<NavigationData | null> {
+    let navigationData = null;
+    if (payload.useExactDatasetRouting) {
+      const dataset = await fetchDatasetByRoute(fsxaApi, route);
+      if (dataset) {
+        console.debug(`Storing dataset ${dataset.id} for route ${route}.`);
+        commit("setStoredItem", {
+          key: payload.initialPath,
+          value: dataset,
+          fetchedAt: new Date().getTime(),
+          ttl: 300000,
+        });
+        navigationData = await fetchNavigationOrNull(fsxaApi, {
+          locale: dataset.locale,
+        });
+      }
+    }
+    return navigationData;
+  }
+
+  async function fetchNavigationDataFallback(): Promise<NavigationData | null> {
+    let navigationData = await fetchNavigationOrNull(fsxaApi, {
+      locale: payload.locale,
+      initialPath: route,
+    });
     if (!navigationData) {
       // unable to find path in NavigationData. Fetch Nav for root
-      navigationData = await fetchNavigationByPath("/");
+      navigationData = await fetchNavigationOrNull(fsxaApi, {
+        locale: payload.locale,
+        initialPath: "/",
+      });
     }
+
+    return navigationData;
+  }
+
+  try {
+    const navigationData =
+      (await fetchExactDatasetRouting()) ||
+      (await fetchNavigationDataFallback());
 
     if (!navigationData) {
       commit("setError", {

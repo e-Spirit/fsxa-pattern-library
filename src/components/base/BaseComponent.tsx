@@ -15,6 +15,7 @@ import {
   setStoredItem,
   setNavigation,
   triggerRouteChange,
+  isExactDatasetRoutingEnabled,
 } from "@/utils/getters";
 import { RequestRouteChangeParams } from "@/types/components";
 import {
@@ -22,7 +23,7 @@ import {
   FSXA_INJECT_KEY_DEV_MODE,
   FSXA_INJECT_KEY_TPP_VERSION,
 } from "@/constants";
-import { determineCurrentRoute } from "@/utils/navigation";
+import { getNavigationNodeByPath } from "@/utils/navigation";
 import { getTPPSnap } from "@/utils";
 
 @Component({
@@ -78,6 +79,7 @@ class BaseComponent<
         },
         this.locale,
         this.$store.getters[FSXAGetters.getGlobalSettingsKey],
+        isExactDatasetRoutingEnabled(this),
       ),
     );
   }
@@ -89,9 +91,12 @@ class BaseComponent<
    */
   getUrlByPageId(pageId: string) {
     return (
-      findNavigationItemInNavigationData(this.$store, {
-        pageId,
-      })?.seoRoute || null
+      findNavigationItemInNavigationData(
+        this.$store.getters[FSXAGetters.navigationData],
+        {
+          pageId,
+        },
+      )?.seoRoute || null
     );
   }
 
@@ -102,7 +107,12 @@ class BaseComponent<
    */
   get currentPage(): NavigationItem | null {
     try {
-      return determineCurrentRoute(this.navigationData, this.currentPath);
+      return getNavigationNodeByPath(
+        isExactDatasetRoutingEnabled(this),
+        this.navigationData,
+        this.currentPath,
+        this.currentDataset,
+      );
     } catch (err) {
       // page could not be found
       return null;

@@ -1,6 +1,6 @@
 import { FSXAActions, FSXAAppError, FSXAAppState, FSXAGetters } from "@/store";
 import {
-  determineCurrentRoute,
+  getNavigationNodeByPath,
   NAVIGATION_ERROR_404,
 } from "@/utils/navigation";
 import Component from "vue-class-component";
@@ -31,7 +31,11 @@ import {
 import { AppProps } from "@/types/components";
 import PortalProvider from "./internal/PortalProvider";
 import { importTPPSnapAPI } from "@/utils";
-import { triggerRouteChange } from "@/utils/getters";
+import {
+  getStoredItem,
+  isExactDatasetRoutingEnabled,
+  triggerRouteChange,
+} from "@/utils/getters";
 import { registerTppHooks } from "@/utils/tpp-snap-hooks";
 
 @Component({
@@ -108,9 +112,16 @@ class App extends TsxComponent<AppProps> {
       });
 
       if (!this.customSnapHooks) {
+        // Note: The OCM event handlers are registered on the first App instance that is rendered.
+        // This means the handlers capture and reference variables of that first component instance
+        // which can contain outdated values when new App instances are created and rendered (e.g.,
+        // after navigating or switching language).
+        // This is why some instance variables are not accessed in these handlers and alternatives
+        // are used (e.g., location path instead of currentPath property).
+
         // predefine store utils
-        const forceUpdateStore = () =>
-          this.initialize(this.$store.getters[FSXAGetters.locale]);
+        const forceUpdateStore = (path = window.location.pathname) =>
+          this.initialize(this.$store.getters[FSXAGetters.locale], path);
         const routeToPreviewId = async (previewId: string) => {
           const [pageId, locale] = previewId.split(".");
           await this.requestRouteChangeByPageId(pageId, locale);
@@ -127,10 +138,11 @@ class App extends TsxComponent<AppProps> {
     }
   }
 
-  initialize(locale?: string) {
+  initialize(locale?: string, path?: string) {
     return this.$store.dispatch(FSXAActions.initializeApp, {
-      defaultLocale: locale ? locale : this.defaultLocale,
-      initialPath: this.currentPath,
+      locale: locale ? locale : this.defaultLocale,
+      initialPath: path ? path : this.currentPath,
+      useExactDatasetRouting: isExactDatasetRoutingEnabled(this),
     });
   }
 
@@ -142,7 +154,7 @@ class App extends TsxComponent<AppProps> {
       let newRoute: string | null = await triggerRouteChange(
         this.$store,
         this.fsxaApi,
-        { locale: locale ?? this.$store.getters[FSXAGetters.locale], pageId },
+        { pageId, locale: locale ?? this.$store.getters[FSXAGetters.locale] },
         this.$store.getters[FSXAGetters.locale],
         this.$store.getters[FSXAGetters.getGlobalSettingsKey],
       );
@@ -222,10 +234,13 @@ class App extends TsxComponent<AppProps> {
       return null;
     }
     try {
-      const currentNode = determineCurrentRoute(
+      const currentNode = getNavigationNodeByPath(
+        isExactDatasetRoutingEnabled(this),
         this.navigationData,
         this.currentPath,
+        this.currentPath ? getStoredItem(this.$store, this.currentPath) : null,
       );
+      // is content projection
       if (currentNode && (currentNode as any).seoRouteRegex !== null) {
         return this.currentPath ? (
           <Dataset
