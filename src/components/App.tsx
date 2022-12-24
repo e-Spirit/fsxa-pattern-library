@@ -142,7 +142,10 @@ class App extends TsxComponent<AppProps> {
             >;
             newRoute = item?.route ?? item?.routes?.[0]?.route ?? null;
             if (newRoute) {
-              await this.initialize(this.$store.getters[FSXAGetters.locale]);
+              await this.initialize(
+                this.$store.getters[FSXAGetters.locale],
+                newRoute,
+              );
             }
           }
 
@@ -212,7 +215,9 @@ class App extends TsxComponent<AppProps> {
                 console.debug("onNavigationChange triggered", {
                   newPagePreviewId,
                 });
-                if (!newPagePreviewId) {
+                if (newPagePreviewId) {
+                  await routeToPreviewId(newPagePreviewId);
+                } else {
                   // if non previewId (for a just created page) is set, refresh the current page
                   await TPP_SNAP.getPreviewElement().then(
                     async (currentPreviewId: string) => {
@@ -227,15 +232,13 @@ class App extends TsxComponent<AppProps> {
                           setTimeout(resolve, CAAS_CHANGE_DELAY_MS),
                         );
                       }
+                      await this.initialize(
+                        this.$store.getters[FSXAGetters.locale],
+                        window.location.pathname,
+                      );
+                      await routeToPreviewId(currentPreviewId);
                     },
                   );
-                  // re-initilize store
-                  await this.initialize(
-                    this.$store.getters[FSXAGetters.locale],
-                  );
-                  if (newPagePreviewId) {
-                    await routeToPreviewId(newPagePreviewId);
-                  }
                 }
               },
             );
