@@ -20,6 +20,8 @@ class Page extends BaseComponent<PageProps> {
   @Prop({ required: false }) id: PageProps["id"];
   @Prop({ required: false }) pageData: PageProps["pageData"];
 
+  removeTppUpdateListener?: () => void;
+
   serverPrefetch() {
     return this.fetchPage();
   }
@@ -36,15 +38,32 @@ class Page extends BaseComponent<PageProps> {
       this.fetchPage();
     }
 
-    console.log("mounted");
+    const onTppUpdateHandler = (event: CustomEvent<unknown>) => {
+      console.debug("tpp-update", event.detail);
+      try {
+        // @ts-expect-error the tpp-update CustomEvent is not typed
+        if (event.detail.content.fsType === "Dataset") {
+          // changing a dataset could be very complex, so better rerender the view
+          // achive this by not preventDefault this event
+          return;
+        }
+      } catch (ignore) {
+        // the event detail may not have content or a fsType
+      }
 
-    // @ts-expect-error CustomEvent is not known
-    document.body.addEventListener("tpp-update", (event: CustomEvent) => {
       if (!event.defaultPrevented) {
         event.preventDefault();
         this.fetchPage();
       }
-    });
+    };
+    // @ts-expect-error the tpp-update CustomEvent is not typed
+    document.body.addEventListener("tpp-update", onTppUpdateHandler);
+    this.removeTppUpdateListener = () =>
+      // @ts-expect-error the tpp-update CustomEvent is not typed
+      document.body.removeEventListener("tpp-update", onTppUpdateHandler);
+  }
+  beforeDestroy() {
+    this.removeTppUpdateListener?.();
   }
 
   async fetchPage() {
@@ -69,7 +88,7 @@ class Page extends BaseComponent<PageProps> {
   key = Date.now();
 
   get loadedPage(): APIPage | null | undefined {
-    this.key = Date.now();
+    this.key = Date.now(); // update the [key] any time the store item gets updated
     return this.id ? this.getStoredItem(this.id) : undefined;
   }
 

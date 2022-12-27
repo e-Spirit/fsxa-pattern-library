@@ -53,14 +53,13 @@ export const registerTppHooks = async ({
           content,
         });
 
-        // /^element-with-id-[0-9]+-not-found$/.test(previewId)
         if (content === null && $node === null) {
           // page or dataset has been deleted. update the store and
-          forceUpdateStore();
           // return for now, the ContentCreator will request the Homepage as the next step
-          return true;
+          // INFO: the previewId matches /^element-with-id-[0-9]+-not-found$/
+          forceUpdateStore(); // the force update is used to remove rendered menu items
+          return false;
         } else if ($node) {
-          console.log({ $node });
           const canceled = !$node.dispatchEvent(
             new CustomEvent("tpp-update", {
               bubbles: true,
@@ -68,16 +67,9 @@ export const registerTppHooks = async ({
               detail: { previewId, content },
             }),
           );
-          if (canceled) {
-            return true;
-          }
+          // prevent `onRerenderView` if the event has canceled (handled anywhere else)
+          if (canceled) return false;
         }
-
-        // TODO update partial store content
-        // TODO double check tpp-snap's fallback implementation {@see https://github.com/e-Spirit/ocm-snap/blob/main/snap/index.js#L282}
-
-        // return nothing -> triggers onRerenderView
-        return true;
       },
     );
 

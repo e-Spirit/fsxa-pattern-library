@@ -6,7 +6,6 @@ import {
   PageBodyContent,
   Section,
   QueryBuilderQuery,
-  LogicalQueryOperatorEnum,
 } from "fsxa-api";
 import Page from "./Page";
 import RenderUtils from "./base/RenderUtils";
@@ -84,7 +83,6 @@ class Dataset extends RenderUtils<DatasetProps> {
   }
 
   get page(): APIPage | undefined {
-    // TODO check if TNG-1207 needs to re-render here
     return this.pageId ? this.getStoredItem(this.pageId) : undefined;
   }
 

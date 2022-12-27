@@ -120,8 +120,9 @@ class App extends TsxComponent<AppProps> {
         // are used (e.g., location path instead of currentPath property).
 
         // predefine store utils
-        const forceUpdateStore = (path = window.location.pathname) =>
-          this.initialize(this.$store.getters[FSXAGetters.locale], path);
+        const forceUpdateStore = async (path = window.location.pathname) => {
+          await this.initialize(this.$store.getters[FSXAGetters.locale], path);
+        };
         const routeToPreviewId = async (previewId: string) => {
           const [pageId, locale] = previewId.split(".");
           await this.requestRouteChangeByPageId(pageId, locale);
