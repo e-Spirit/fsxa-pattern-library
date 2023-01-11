@@ -16,6 +16,7 @@ import { AppComponents, RenderingOptions } from "@/types/components";
 import InfoToolTip from "./internal/InfoToolTip";
 import AddSectionButton from "./AddSectionButton";
 import { getCircularReplacer } from "@/utils/json-stringify";
+import { displayHiddenSections } from "@/utils/getters";
 
 export interface LayoutProps<Data, Meta> {
   pageId: string;
@@ -191,20 +192,20 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
     return this.layouts ? this.layouts[this.type] || null : null;
   }
 
-  // Display only those sections which are not hidden in the preview mode
-  filterContentSections(content: PageBody): PageBody {
-    if (this.isEditMode) {
-      // since object are passed by reference we need to create a new object
-      const filteredContent: PageBody = JSON.parse(JSON.stringify(content));
-      // we filter either the children with displayed true or displayed is not set at all
-      filteredContent.children = filteredContent.children.filter(
-        section =>
-          section.type === "Section" &&
-          [true, undefined].includes(section.displayed),
-      );
-      return filteredContent;
+  getContentWithVisibleSections(content: PageBody): PageBody {
+    if (displayHiddenSections(this)) {
+      // no need to filter the content for hidden sections when they all should be rendered
+      return content;
     }
-    return content;
+    // since objects are passed by reference we need to create a new object
+    const filteredContent: PageBody = JSON.parse(JSON.stringify(content));
+    // we filter either the children with displayed true or displayed is not set at all
+    filteredContent.children = filteredContent.children.filter(
+      section =>
+        section.type === "Section" &&
+        [true, undefined].includes(section.displayed),
+    );
+    return filteredContent;
   }
 
   render() {
@@ -219,7 +220,7 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
             if (options?.showAddSectionButtonInPreview)
               renderingOptions.addSectionButton = content.name;
             return this.renderContent(
-              this.filterContentSections(content),
+              this.getContentWithVisibleSections(content),
               renderingOptions,
             );
           },
