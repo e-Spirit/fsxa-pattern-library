@@ -1,16 +1,10 @@
-import createStore from "@/store";
-import { CreateStoreProxyOptions } from "@/types/fsxa-pattern-library";
+import { PageBody, Section } from "fsxa-api";
+import { getContentWithVisibleSections } from "@/utils/misc";
 
-import Vuex, { Store } from "vuex";
-import Layout from "./Layout";
-import { createLocalVue, shallowMount } from "@vue/test-utils";
-import { FSXAContentMode, LogLevel, PageBody, Section } from "fsxa-api";
-import { initializeApi } from "@/utils";
-
-describe.only("getContentWithVisibleSections", () => {
+describe("getContentWithVisibleSections", () => {
   const dummySectionWithoutDisplayedProperty: Section = {
     type: "Section",
-    id: "testId",
+    id: "dummySectionWithoutDisplayedProperty",
     previewId: "testID",
     sectionType: "testType",
     data: {},
@@ -19,7 +13,7 @@ describe.only("getContentWithVisibleSections", () => {
 
   const displayedDummySection: Section = {
     type: "Section",
-    id: "testId",
+    id: "displayedDummySection",
     previewId: "testID",
     sectionType: "testType",
     data: {},
@@ -29,7 +23,7 @@ describe.only("getContentWithVisibleSections", () => {
 
   const hiddenDummySection: Section = {
     type: "Section",
-    id: "testId",
+    id: "hiddenDummySection",
     previewId: "testID",
     sectionType: "testType",
     data: {},
@@ -37,33 +31,48 @@ describe.only("getContentWithVisibleSections", () => {
     children: [],
   };
 
+  const dummyContent: PageBody = {
+    type: "PageBody",
+    name: "dummy",
+    previewId: "dummy",
+    children: [
+      hiddenDummySection,
+      displayedDummySection,
+      dummySectionWithoutDisplayedProperty,
+    ],
+  };
+
   it("returns all content (with hidden sections) when 'displayed' field is not set", async () => {
-    const dummyContent: PageBody = {
-      type: "PageBody",
-      name: "dummy",
-      previewId: "dummy",
-      children: [
-        hiddenDummySection,
-        displayedDummySection,
+    const content = getContentWithVisibleSections(dummyContent);
+    expect(content.children.length).toBe(2);
+    expect(content.children).toEqual(
+      expect.arrayContaining([
         dummySectionWithoutDisplayedProperty,
-      ],
-    };
-
-    // const sut = wrapper.vm.getContentWithVisibleSections(dummyContent);
-    // expect(sut.children).toContain(hiddenDummySection);
-    // expect(sut.children).toContain(displayedDummySection);
-    // expect(sut.children).toContain(dummySectionWithoutDisplayedProperty);
+        displayedDummySection,
+      ]),
+    );
   });
 
-  it("returns all content (with hidden sections) in default configuration", async () => {
-    expect(true).toBe(true);
-  });
-
-  it("returns all content (with hidden sections) when feature toggle is true", async () => {
-    expect(true).toBe(true);
+  it("returns all content (with hidden sections) in default configuration or feature toggle is true", async () => {
+    const content = getContentWithVisibleSections(dummyContent, true);
+    expect(content.children.length).toBe(3);
+    expect(content.children).toEqual(
+      expect.arrayContaining([
+        dummySectionWithoutDisplayedProperty,
+        displayedDummySection,
+        hiddenDummySection,
+      ]),
+    );
   });
 
   it("returns filtered content (with hidden no sections) when feature toggle is false", async () => {
-    expect(true).toBe(true);
+    const content = getContentWithVisibleSections(dummyContent, false);
+    expect(content.children.length).toBe(2);
+    expect(content.children).toEqual(
+      expect.arrayContaining([
+        dummySectionWithoutDisplayedProperty,
+        displayedDummySection,
+      ]),
+    );
   });
 });
