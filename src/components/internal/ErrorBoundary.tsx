@@ -29,19 +29,19 @@ class ErrorBoundary extends BaseComponent<ErrorBoundaryProps> {
   useErrorBoundaryWrapper!: boolean;
 
   mounted() {
-    if (this.previewId) {
+    if (this.previewId && this.$el?.nodeType === Node.ELEMENT_NODE) {
       /**
        * The ErrorBoundary handles the possible missing `[data-preview-id]`.
        * First, `onMounted` this tries to find the {previewId} on, respectively inside, the current node.
        * If the {previewId} can't be found, the ErrorBoundary adds the {previewId} to the current element.
        */
       const previewIdExists =
-        this.$el?.querySelector(`[data-preview-id="${this.previewId}"]`) ??
-        this.$el?.matches(`[data-preview-id="${this.previewId}"]`);
+        this.$el.querySelector(`[data-preview-id="${this.previewId}"]`) ??
+        this.$el.matches(`[data-preview-id="${this.previewId}"]`);
 
       if (!previewIdExists) {
         // It's added directly to the DOM to not pollute the VDOM
-        this.$el?.setAttribute("data-preview-id", this.previewId);
+        this.$el.setAttribute("data-preview-id", this.previewId);
       }
     }
   }

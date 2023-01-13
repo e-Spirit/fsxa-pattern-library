@@ -81,7 +81,9 @@ class Page extends BaseComponent<PageProps> {
         TPP_SNAP.isConnected
           .then((connected: boolean) => {
             if (connected && typeof this.page !== "undefined" && this.page) {
-              TPP_SNAP.setPreviewElement(this.page.previewId);
+              TPP_SNAP.setPreviewElement(
+                this.currentDataset?.previewId ?? this.page.previewId,
+              );
             }
           })
           .catch((e: any) => {
