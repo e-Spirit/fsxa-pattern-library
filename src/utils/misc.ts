@@ -4,7 +4,7 @@ export const getContentWithVisibleSections = (
   content: PageBody,
   displayHiddenSections?: Boolean,
 ): PageBody => {
-  if (displayHiddenSections) {
+  if (!displayHiddenSections) {
     // no need to filter the content for hidden sections when they all should be rendered
     return content;
   }
