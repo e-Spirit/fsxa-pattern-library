@@ -38,10 +38,8 @@ class Page extends BaseComponent<PageProps> {
       this.fetchPage();
     }
 
-    const onTppUpdateHandler = (event: CustomEvent<unknown>) => {
-      console.debug("tpp-update", event.detail);
+    const onTppUpdateHandler = (event: any) => {
       try {
-        // @ts-expect-error the tpp-update CustomEvent is not typed
         if (event.detail.content.fsType === "Dataset") {
           // changing a dataset could be very complex, so better rerender the view
           // achive this by not preventDefault this event
@@ -56,10 +54,8 @@ class Page extends BaseComponent<PageProps> {
         this.fetchPage();
       }
     };
-    // @ts-expect-error the tpp-update CustomEvent is not typed
     document.body.addEventListener("tpp-update", onTppUpdateHandler);
     this.removeTppUpdateListener = () =>
-      // @ts-expect-error the tpp-update CustomEvent is not typed
       document.body.removeEventListener("tpp-update", onTppUpdateHandler);
   }
   beforeDestroy() {
