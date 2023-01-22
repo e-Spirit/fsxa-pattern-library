@@ -5,6 +5,7 @@ to the "outside world", meaning it handles the data coming from the FirstSpirit
 [CaaS](https://docs.e-spirit.com/module/caas/CaaS_Product_Documentation_EN.html)
 (via the [FSXA-API](https://github.com/e-Spirit/fsxa-api)) and the NavigationService.
 
+
 ### About the FSXA
 
 The FirstSpirit Experience Accelerator (FSXA) is the hybrid solution of a digital

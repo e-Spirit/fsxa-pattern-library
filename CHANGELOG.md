@@ -1,3 +1,10 @@
+# [8.15.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.14.1...v8.15.0) (2023-01-13)
+
+
+### Features
+
+* **editor-flow:** Navigate to dataset when created ([cf31677](https://github.com/e-Spirit/fsxa-pattern-library/commit/cf3167744522e7285325d23528b3c6e39bae8237))
+
 ## [8.14.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.14.0...v8.14.1) (2022-12-15)
 
 
