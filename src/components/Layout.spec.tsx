@@ -1,5 +1,5 @@
 import { PageBody, Section } from "fsxa-api";
-import { getContentWithVisibleSections } from "@/utils/misc";
+import { removeHiddenSections } from "@/utils/misc";
 
 describe("getContentWithVisibleSections", () => {
   const dummySectionWithoutDisplayedProperty: Section = {
@@ -42,31 +42,8 @@ describe("getContentWithVisibleSections", () => {
     ],
   };
 
-  it("returns all content (with hidden sections) when 'displayed' field is not set", async () => {
-    const content = getContentWithVisibleSections(dummyContent);
-    expect(content.children.length).toBe(2);
-    expect(content.children).toEqual(
-      expect.arrayContaining([
-        dummySectionWithoutDisplayedProperty,
-        displayedDummySection,
-      ]),
-    );
-  });
-
-  it("returns all content (with hidden sections) in default configuration or feature toggle is true", async () => {
-    const content = getContentWithVisibleSections(dummyContent, true);
-    expect(content.children.length).toBe(3);
-    expect(content.children).toEqual(
-      expect.arrayContaining([
-        dummySectionWithoutDisplayedProperty,
-        displayedDummySection,
-        hiddenDummySection,
-      ]),
-    );
-  });
-
-  it("returns filtered content (with hidden no sections) when feature toggle is false", async () => {
-    const content = getContentWithVisibleSections(dummyContent, false);
+  it("filters hidden sections", async () => {
+    const content = removeHiddenSections(dummyContent);
     expect(content.children.length).toBe(2);
     expect(content.children).toEqual(
       expect.arrayContaining([

@@ -17,7 +17,7 @@ import InfoToolTip from "./internal/InfoToolTip";
 import AddSectionButton from "./AddSectionButton";
 import { getCircularReplacer } from "@/utils/json-stringify";
 import { displayHiddenSections } from "@/utils/getters";
-import { getContentWithVisibleSections } from "@/utils/misc";
+import { removeHiddenSections } from "@/utils/misc";
 
 export interface LayoutProps<Data, Meta> {
   pageId: string;
@@ -204,13 +204,11 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
             const renderingOptions: { addSectionButton?: string } = {};
             if (options?.showAddSectionButtonInPreview)
               renderingOptions.addSectionButton = content.name;
-            return this.renderContent(
-              getContentWithVisibleSections(
-                content,
-                displayHiddenSections(this),
-              ),
-              renderingOptions,
-            );
+
+            if (!displayHiddenSections(this)) {
+                content = removeHiddenSections(content)
+            }
+            return this.renderContent(content, renderingOptions);
           },
         }),
         {},
