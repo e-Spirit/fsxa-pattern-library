@@ -184,5 +184,5 @@ export function isExactDatasetRoutingEnabled(vue: Vue): boolean {
 export function displayHiddenSections(vue: Vue): boolean {
   // Assuming that pattern lib is used in Nuxt environment where $config is available.
   if (!(vue as any).$config) return true;
-  return (vue as any).$config.FSXA_DISPLAY_HIDDEN_SECTIONS === false || true;
+  return (vue as any).$config.FSXA_DISPLAY_HIDDEN_SECTIONS !== false;
 }
