@@ -20,6 +20,8 @@ class Page extends BaseComponent<PageProps> {
   @Prop({ required: false }) id: PageProps["id"];
   @Prop({ required: false }) pageData: PageProps["pageData"];
 
+  removeTppUpdateListener?: () => void;
+
   serverPrefetch() {
     return this.fetchPage();
   }
@@ -35,6 +37,29 @@ class Page extends BaseComponent<PageProps> {
     if (!this.pageData && !this.loadedPage) {
       this.fetchPage();
     }
+
+    const onTppUpdateHandler = (event: any) => {
+      try {
+        if (event.detail.content.fsType === "Dataset") {
+          // changing a dataset could be very complex, so better rerender the view
+          // achive this by not preventDefault this event
+          return;
+        }
+      } catch (ignore) {
+        // the event detail may not have content or a fsType
+      }
+
+      if (!event.defaultPrevented) {
+        event.preventDefault();
+        this.fetchPage();
+      }
+    };
+    document.body.addEventListener("tpp-update", onTppUpdateHandler);
+    this.removeTppUpdateListener = () =>
+      document.body.removeEventListener("tpp-update", onTppUpdateHandler);
+  }
+  beforeDestroy() {
+    this.removeTppUpdateListener?.();
   }
 
   async fetchPage() {
@@ -55,7 +80,11 @@ class Page extends BaseComponent<PageProps> {
     }
   }
 
+  // ✨ use [key] to re-render on store changes {@see https://michaelnthiessen.com/force-re-render/}
+  key = Date.now();
+
   get loadedPage(): APIPage | null | undefined {
+    this.key = Date.now(); // update the [key] any time the store item gets updated
     return this.id ? this.getStoredItem(this.id) : undefined;
   }
 
@@ -94,6 +123,7 @@ class Page extends BaseComponent<PageProps> {
 
     return (
       <Layout
+        key={this.key}
         pageId={this.id!}
         previewId={this.page.previewId}
         type={this.page.layout}
