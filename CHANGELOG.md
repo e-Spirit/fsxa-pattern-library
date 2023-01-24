@@ -1,3 +1,10 @@
+# [8.17.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.16.0...v8.17.0) (2023-01-24)
+
+
+### Features
+
+* **tpp-snap:** add `onContentChange` handler ([#105](https://github.com/e-Spirit/fsxa-pattern-library/issues/105)) ([67013dd](https://github.com/e-Spirit/fsxa-pattern-library/commit/67013dd4efa45a11e6cf8a2c783b2c4f80b7a84b))
+
 # [8.16.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.15.0...v8.16.0) (2023-01-24)
 
 
