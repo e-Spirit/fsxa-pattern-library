@@ -1,3 +1,10 @@
+# [8.16.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.15.0...v8.16.0) (2023-01-24)
+
+
+### Features
+
+* **layout:** hide not displayed sections depending on FSXA_DISPLAY_HIDDEN_SECTIONS flag ([#102](https://github.com/e-Spirit/fsxa-pattern-library/issues/102)) ([70a8b3b](https://github.com/e-Spirit/fsxa-pattern-library/commit/70a8b3b85dd3f9e7dbfead5348ae430211bbfc62))
+
 # [8.15.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.14.1...v8.15.0) (2023-01-13)
 
 
