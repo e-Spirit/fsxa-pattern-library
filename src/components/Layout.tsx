@@ -205,8 +205,9 @@ class Layout<Data = {}, Meta = {}> extends RenderUtils<
             if (options?.showAddSectionButtonInPreview)
               renderingOptions.addSectionButton = content.name;
 
-            if (!displayHiddenSections(this)) {
-                content = removeHiddenSections(content)
+            // hidden sections can only exist in editMode
+            if (this.isEditMode && !displayHiddenSections(this)) {
+              content = removeHiddenSections(content);
             }
             return this.renderContent(content, renderingOptions);
           },
