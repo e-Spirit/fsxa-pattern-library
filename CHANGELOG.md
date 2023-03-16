@@ -1,3 +1,10 @@
+## [8.18.3](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.2...v8.18.3) (2023-03-16)
+
+
+### Bug Fixes
+
+* **changelog:** fix unfitting log entry ([#119](https://github.com/e-Spirit/fsxa-pattern-library/issues/119)) ([4b1e403](https://github.com/e-Spirit/fsxa-pattern-library/commit/4b1e403c4ad4e800b6eac39c25f3a7d386eb994b))
+
 ## [8.18.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.1...v8.18.2) (2023-03-16)
 
 
