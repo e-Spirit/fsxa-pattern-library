@@ -1,3 +1,10 @@
+## [8.18.4](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.3...v8.18.4) (2023-03-16)
+
+
+### Bug Fixes
+
+* **gitignore:** add Dockerfile to gitignore ([#120](https://github.com/e-Spirit/fsxa-pattern-library/issues/120)) ([0bc0e37](https://github.com/e-Spirit/fsxa-pattern-library/commit/0bc0e37d1902541dfc198b759176f3905bcc5dcf))
+
 ## [8.18.3](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.2...v8.18.3) (2023-03-16)
 
 
