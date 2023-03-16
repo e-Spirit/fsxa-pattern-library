@@ -1,3 +1,5 @@
+import { displayHiddenSections } from "@/utils/getters";
+import { shouldHideSection } from "@/utils/misc";
 import { PageBodyContent } from "fsxa-api/dist/types";
 import { Component } from "vue-property-decorator";
 import Section from "../Section";
@@ -12,6 +14,15 @@ class RenderUtils<
   Slots = {}
 > extends BaseComponent<Props, EventsWithOn, Slots> {
   renderContentElement(content: PageBodyContent) {
+    if (
+      shouldHideSection({
+        content,
+        displayHiddenSections: displayHiddenSections(this),
+        isEditMode: this.isEditMode,
+      })
+    ) {
+      return null;
+    }
     switch (content.type) {
       case "Section":
         return (
@@ -50,4 +61,5 @@ class RenderUtils<
     }
   }
 }
+
 export default RenderUtils;
