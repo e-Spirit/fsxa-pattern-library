@@ -1,3 +1,10 @@
+## [8.18.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.1...v8.18.2) (2023-03-16)
+
+
+### Bug Fixes
+
+* **layout:** fix circular reference on content of layout component ([#116](https://github.com/e-Spirit/fsxa-pattern-library/issues/116)) ([933aaea](https://github.com/e-Spirit/fsxa-pattern-library/commit/933aaea90d302567f6fbf096b184e1782dc061c7))
+
 ## [8.18.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.0...v8.18.1) (2023-03-09)
 
 
