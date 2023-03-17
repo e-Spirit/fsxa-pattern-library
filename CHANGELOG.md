@@ -1,3 +1,10 @@
+## [8.18.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.4...v8.18.5) (2023-03-17)
+
+
+### Bug Fixes
+
+* **imagemap:** update fsxa-stack to the latest dependencies ([#121](https://github.com/e-Spirit/fsxa-pattern-library/issues/121)) ([739054b](https://github.com/e-Spirit/fsxa-pattern-library/commit/739054bcf37642a4c27263bf6e507d74f519adb8))
+
 ## [8.18.4](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.3...v8.18.4) (2023-03-16)
 
 
