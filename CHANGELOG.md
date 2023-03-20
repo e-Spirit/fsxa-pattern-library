@@ -1,3 +1,10 @@
+# [8.19.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.5...v8.19.0) (2023-03-20)
+
+
+### Features
+
+* **authorizationheaders:** update fsxa stack to the latest dependencies ([#122](https://github.com/e-Spirit/fsxa-pattern-library/issues/122)) ([80c57b4](https://github.com/e-Spirit/fsxa-pattern-library/commit/80c57b4d80ddbfeed42feb0dff694175cb127ffd))
+
 ## [8.18.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.4...v8.18.5) (2023-03-17)
 
 
