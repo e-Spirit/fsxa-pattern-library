@@ -1,3 +1,10 @@
+## [8.19.1](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.0...v8.19.1) (2023-03-21)
+
+
+### Bug Fixes
+
+* **dependencies:** update fsxa-stack to the latest dependencies ([#123](https://github.com/e-Spirit/fsxa-pattern-library/issues/123)) ([59bf013](https://github.com/e-Spirit/fsxa-pattern-library/commit/59bf013e46f03ef3f379375b0ca949779e9b4d82))
+
 # [8.19.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.18.5...v8.19.0) (2023-03-20)
 
 
