@@ -373,7 +373,7 @@ Refer to the [testing library documentation](https://testing-library.com/docs/vu
 
 ## Legal Notices
 
-FSXA-Pattern-library is a product of [Crownpeak Technology GmbH](http://www.e-spirit.com), Dortmund, Germany.
+FSXA-Pattern-library is an example solution of [Crownpeak Technology GmbH](http://www.e-spirit.com), Dortmund, Germany.
 The FSXA-Pattern-library is subject to the Apache-2.0 license.
 
 ## Disclaimer
