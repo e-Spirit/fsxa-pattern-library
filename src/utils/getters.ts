@@ -90,7 +90,7 @@ export async function triggerRouteChange(
       if (useExactDatasetRouting) {
         const dataset = await fetchDatasetByRoute($fsxaApi, params.route);
         console.debug(
-          `Storing dataset ${dataset.id} for route ${params.route}.`,
+          `Storing dataset ${dataset?.id} for route ${params.route}.`,
         );
 
         $store.dispatch(FSXAActions.setStoredItem, {
