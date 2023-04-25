@@ -88,16 +88,18 @@ export async function triggerRouteChange(
   if (!params.locale || params.locale === currentLocale) {
     if (params.route) {
       if (useExactDatasetRouting) {
-        fetchDatasetByRoute($fsxaApi, params.route).then(dataset => {
-          console.debug(
-            `Storing dataset ${dataset.id} for route ${params.route}.`,
-          );
-          $store.dispatch(FSXAActions.setStoredItem, {
-            key: params.route,
-            value: dataset,
-            fetchedAt: new Date().getTime(),
-            ttl: 300000,
-          });
+        const dataset = await fetchDatasetByRoute($fsxaApi, params.route);
+        if (!dataset)
+          throw new Error(`Dataset for given route ${params.route} not found`);
+        console.debug(
+          `Storing dataset ${dataset.id} for route ${params.route}.`,
+        );
+
+        $store.dispatch(FSXAActions.setStoredItem, {
+          key: params.route,
+          value: dataset,
+          fetchedAt: new Date().getTime(),
+          ttl: 300000,
         });
       }
       return params.route;
