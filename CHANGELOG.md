@@ -1,3 +1,10 @@
+## [8.19.3](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.2...v8.19.3) (2023-04-25)
+
+
+### Bug Fixes
+
+* **getters:** trigger route change not waiting for dataset fetch ([#126](https://github.com/e-Spirit/fsxa-pattern-library/issues/126)) ([d84384f](https://github.com/e-Spirit/fsxa-pattern-library/commit/d84384fb171fecd2c16f9b3f7141fc879f480c90))
+
 ## [8.19.2](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.1...v8.19.2) (2023-04-14)
 
 
