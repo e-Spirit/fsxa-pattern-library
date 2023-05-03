@@ -1,3 +1,10 @@
+## [8.19.4](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.3...v8.19.4) (2023-05-03)
+
+
+### Bug Fixes
+
+* **triggerRouteChange:** do not throw errors for missing datasets ([#128](https://github.com/e-Spirit/fsxa-pattern-library/issues/128)) ([67e3fb5](https://github.com/e-Spirit/fsxa-pattern-library/commit/67e3fb5ee2757e9407106294be62e2c33e79a85e))
+
 ## [8.19.3](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.2...v8.19.3) (2023-04-25)
 
 
