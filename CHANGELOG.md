@@ -1,3 +1,10 @@
+## [8.19.5](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.4...v8.19.5) (2023-05-09)
+
+
+### Bug Fixes
+
+* **deps:** update transitive dependencies loader-utils ([#129](https://github.com/e-Spirit/fsxa-pattern-library/issues/129)) ([d208e0f](https://github.com/e-Spirit/fsxa-pattern-library/commit/d208e0f0b6a896d7288388625f44efb2df1404ad))
+
 ## [8.19.4](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.19.3...v8.19.4) (2023-05-03)
 
 
