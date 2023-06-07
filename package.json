@@ -1,9 +1,9 @@
 {
-  "name": "fsxa-pattern-library",
+  "name": "@neo-reply/fsxa-pattern-library",
   "version": "8.19.5",
   "author": {
-    "name": "Tobias Golbs",
-    "email": "golbs@e-spirit.com"
+    "name": "Neo Reply",
+    "email": "neo@reply.de"
   },
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -99,7 +99,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/e-Spirit/fsxa-pattern-library.git"
+    "url": "https://github.com/Neo-Reply/neo-fsxa-pattern-library.git"
   },
   "types": "src/types/fsxa-pattern-library.d.ts"
 }
