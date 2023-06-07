@@ -101,5 +101,8 @@
     "type": "git",
     "url": "https://github.com/Neo-Reply/neo-fsxa-pattern-library.git"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "types": "src/types/fsxa-pattern-library.d.ts"
 }
