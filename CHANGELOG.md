@@ -1,3 +1,10 @@
+# [8.20.0](https://github.com/Neo-Reply/neo-fsxa-pattern-library/compare/v8.19.5...v8.20.0) (2023-06-07)
+
+
+### Features
+
+* **version bumb for first release:** version bumb ([b425f40](https://github.com/Neo-Reply/neo-fsxa-pattern-library/commit/b425f40e8f24d10cd088a138023284a81f72a72e))
+
 # 1.0.0 (2023-06-07)
 
 
