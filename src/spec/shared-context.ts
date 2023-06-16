@@ -20,7 +20,7 @@ const options: CreateStoreProxyOptions = {
   },
 };
 
-describe("TestContext", () => {
+describe("TestSharedContext", () => {
   it("should not be the same instance if another is instantiated", () => {
     const instanceOne = initializeApi(options);
     const instanceTwo = initializeApi(options);
@@ -29,28 +29,9 @@ describe("TestContext", () => {
     expect(instanceOne !== instanceTwo).toBeTruthy();
   });
 
-  it("should be the same instance if no other instances", () => {
+  it("should verify single instance", () => {
     const instanceOne = initializeApi(options);
 
     expect(FSXAApiSingleton.instance === instanceOne).toBeTruthy();
-  });
-
-  it("should be the same instance if another is instantiated with the same options(old implementation)", () => {
-    let _api: FSXAApi;
-
-    const fsxasingletone = jest
-      .fn(FSXAApiSingleton.init)
-      .mockImplementation(api => {
-        if (!_api) {
-          _api = api;
-        }
-
-        return _api;
-      });
-
-    const instanceOne = fsxasingletone(new FSXAProxyApi(API_URL), {});
-    const instanceTwo = fsxasingletone(new FSXAProxyApi(API_URL), {});
-
-    expect(instanceOne === instanceTwo).toBeTruthy();
   });
 });
