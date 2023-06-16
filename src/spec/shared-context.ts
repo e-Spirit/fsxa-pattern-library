@@ -29,7 +29,7 @@ describe("TestSharedContext", () => {
     expect(instanceOne !== instanceTwo).toBeTruthy();
   });
 
-  it("should verify single instance", () => {
+  it("should verify single instance created", () => {
     const instanceOne = initializeApi(options);
 
     expect(FSXAApiSingleton.instance === instanceOne).toBeTruthy();
