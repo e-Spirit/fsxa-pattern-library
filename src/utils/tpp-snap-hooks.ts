@@ -6,7 +6,7 @@ import {
 
 const CAAS_CHANGE_DELAY_IN_MS = 300;
 
-const CUSTOM_TPP_UPDATE_EVENT = "tpp-update";
+export const CUSTOM_TPP_UPDATE_EVENT = "tpp-update";
 
 export type RegisterTppHooksOptions = {
   fsxaApi: FSXAApi;
