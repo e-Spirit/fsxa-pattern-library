@@ -12,12 +12,12 @@ export function initializeApi(
   options: CreateStoreProxyOptions | CreateStoreRemoteOptions,
 ) {
   if (options.mode === "remote") {
-    FSXAApiSingleton.init(new FSXARemoteApi(options.config), {
+    return FSXAApiSingleton.init(new FSXARemoteApi(options.config), {
       logLevel: options.config.logLevel,
       enableEventStream: options.config.enableEventStream,
     });
   } else {
-    FSXAApiSingleton.init(
+    return FSXAApiSingleton.init(
       new FSXAProxyApi(
         typeof window !== "undefined"
           ? options.config.clientUrl
