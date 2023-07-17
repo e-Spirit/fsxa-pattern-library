@@ -5,8 +5,9 @@ import BaseComponent from "@/components/base/BaseComponent";
 import { FSXA_INJECT_KEY_LOADER } from "@/constants";
 
 import Layout from "./Layout";
-import { getTPPSnap, isClient } from "@/utils";
+import { getTPPSnap } from "@/utils";
 import { FSXAAppState } from "@/store";
+import { CUSTOM_TPP_UPDATE_EVENT } from "@/utils/tpp-snap-hooks";
 
 export interface PageProps {
   id?: string;
@@ -29,41 +30,47 @@ class Page extends BaseComponent<PageProps> {
   @Watch("id")
   handleIdChange(id: string, prevId: string) {
     if (id !== prevId && id != null) {
-      this.fetchPage();
+      this.fetchPage(true);
     }
+  }
+
+  createTppUpdateHandler() {
+    const onTppUpdateHandler = (event: any) => {
+      if (event.detail?.content?.fsType === "Dataset") {
+        // changing a dataset could be very complex, so better rerender the view
+        // achive this by not preventDefault this event
+        return;
+      }
+
+      if (!event.defaultPrevented) {
+        event.preventDefault();
+        // Force Update of Data, since Backend data might have been changed
+        this.fetchPage(true);
+      }
+    };
+    document.body.addEventListener(CUSTOM_TPP_UPDATE_EVENT, onTppUpdateHandler);
+    this.removeTppUpdateListener = () =>
+      document.body.removeEventListener(
+        CUSTOM_TPP_UPDATE_EVENT,
+        onTppUpdateHandler,
+      );
   }
 
   mounted() {
     if (!this.pageData && !this.loadedPage) {
       this.fetchPage();
     }
-
-    const onTppUpdateHandler = (event: any) => {
-      try {
-        if (event.detail.content.fsType === "Dataset") {
-          // changing a dataset could be very complex, so better rerender the view
-          // achive this by not preventDefault this event
-          return;
-        }
-      } catch (ignore) {
-        // the event detail may not have content or a fsType
-      }
-
-      if (!event.defaultPrevented) {
-        event.preventDefault();
-        this.fetchPage();
-      }
-    };
-    document.body.addEventListener("tpp-update", onTppUpdateHandler);
-    this.removeTppUpdateListener = () =>
-      document.body.removeEventListener("tpp-update", onTppUpdateHandler);
+    if (this.isEditMode) {
+      this.createTppUpdateHandler();
+    }
   }
+
   beforeDestroy() {
     this.removeTppUpdateListener?.();
   }
 
-  async fetchPage() {
-    if (this.pageData) return;
+  async fetchPage(forceRefetch = false) {
+    if (this.pageData && !forceRefetch) return;
     if (!this.id) {
       throw new Error(
         "You either have to pass already loaded pageData or the id of the page that should be loaded.",
@@ -75,16 +82,13 @@ class Page extends BaseComponent<PageProps> {
         locale: this.locale,
       });
       this.setStoredItem(this.id, page);
+      this.setTppPreviewElement();
     } catch (err) {
       this.setStoredItem(this.id, null);
     }
   }
 
-  // ✨ use [key] to re-render on store changes {@see https://michaelnthiessen.com/force-re-render/}
-  key = Date.now();
-
   get loadedPage(): APIPage | null | undefined {
-    this.key = Date.now(); // update the [key] any time the store item gets updated
     return this.id ? this.getStoredItem(this.id) : undefined;
   }
 
@@ -92,19 +96,8 @@ class Page extends BaseComponent<PageProps> {
     return this.pageData || this.loadedPage;
   }
 
-  render() {
-    if (
-      typeof this.page === "undefined" ||
-      this.$store.state.fsxa.appState !== FSXAAppState.ready
-    ) {
-      const LoaderComponent = this.loaderComponent || "div";
-      return <LoaderComponent />;
-    }
-    if (this.page === null) {
-      throw new Error("Could not load page");
-    }
-
-    if (this.isEditMode && isClient()) {
+  setTppPreviewElement() {
+    if (this.isEditMode) {
       const TPP_SNAP = getTPPSnap();
       if (TPP_SNAP) {
         TPP_SNAP.isConnected
@@ -120,10 +113,26 @@ class Page extends BaseComponent<PageProps> {
           });
       }
     }
+  }
+
+  updated() {
+    this.setTppPreviewElement();
+  }
+
+  render() {
+    if (
+      typeof this.page === "undefined" ||
+      this.$store.state.fsxa.appState !== FSXAAppState.ready
+    ) {
+      const LoaderComponent = this.loaderComponent || "div";
+      return <LoaderComponent />;
+    }
+    if (this.page === null) {
+      throw new Error("Could not load page");
+    }
 
     return (
       <Layout
-        key={this.key}
         pageId={this.id!}
         previewId={this.page.previewId}
         type={this.page.layout}
