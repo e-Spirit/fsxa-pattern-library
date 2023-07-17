@@ -1,3 +1,17 @@
+# [8.21.0](https://github.com/Neo-Reply/neo-fsxa-pattern-library/compare/v8.20.0...v8.21.0) (2023-07-17)
+
+
+### Bug Fixes
+
+* **dependencies:** update test description ([#134](https://github.com/Neo-Reply/neo-fsxa-pattern-library/issues/134)) ([ad092dc](https://github.com/Neo-Reply/neo-fsxa-pattern-library/commit/ad092dca2fb1a1e044275dc1ceb26ad7ae89c650))
+
+
+### Features
+
+* **dependencies:** update fsxa dependencies ([#132](https://github.com/Neo-Reply/neo-fsxa-pattern-library/issues/132)) ([07a614d](https://github.com/Neo-Reply/neo-fsxa-pattern-library/commit/07a614d49e81819fd80f743ee55b5d3af696e3ca))
+* **dependencies:** update fsxa stack ([#133](https://github.com/Neo-Reply/neo-fsxa-pattern-library/issues/133)) ([a7dab38](https://github.com/Neo-Reply/neo-fsxa-pattern-library/commit/a7dab380fb9df23abe30670bf00ecafccfa2f96b))
+* **dependencies:** update fsxa stack ([#135](https://github.com/Neo-Reply/neo-fsxa-pattern-library/issues/135)) ([e40b0e2](https://github.com/Neo-Reply/neo-fsxa-pattern-library/commit/e40b0e2026ce3d14a5b3fc95a4b24a117409186a))
+
 # [8.22.0](https://github.com/e-Spirit/fsxa-pattern-library/compare/v8.21.1...v8.22.0) (2023-06-22)
 
 ### Features
