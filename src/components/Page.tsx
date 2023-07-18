@@ -21,6 +21,8 @@ class Page extends BaseComponent<PageProps> {
   @Prop({ required: false }) id: PageProps["id"];
   @Prop({ required: false }) pageData: PageProps["pageData"];
 
+  key = "fsxa_page_" + 0;
+
   removeTppUpdateListener?: () => void;
 
   serverPrefetch() {
@@ -69,8 +71,8 @@ class Page extends BaseComponent<PageProps> {
     this.removeTppUpdateListener?.();
   }
 
-  async fetchPage(forceRefetch = false) {
-    if (this.pageData && !forceRefetch) return;
+  async fetchPage(forceRerender = false) {
+    if (this.pageData && !forceRerender) return;
     if (!this.id) {
       throw new Error(
         "You either have to pass already loaded pageData or the id of the page that should be loaded.",
@@ -83,6 +85,7 @@ class Page extends BaseComponent<PageProps> {
       });
       this.setStoredItem(this.id, page);
       this.setTppPreviewElement();
+      if (forceRerender) this.key = "fsxa_page_" + Date.now();
     } catch (err) {
       this.setStoredItem(this.id, null);
     }
@@ -127,12 +130,15 @@ class Page extends BaseComponent<PageProps> {
       const LoaderComponent = this.loaderComponent || "div";
       return <LoaderComponent />;
     }
-    if (this.page === null) {
-      throw new Error("Could not load page");
+    if (!this.page) {
+      console.error(`Page not found for id: ${this.id}`);
+      const LoaderComponent = this.loaderComponent || "div";
+      return <LoaderComponent />;
     }
 
     return (
       <Layout
+        key={this.key}
         pageId={this.id!}
         previewId={this.page.previewId}
         type={this.page.layout}
