@@ -1,6 +1,6 @@
-## **<span style="color:red">!</span> Important Notice: This Repository is Deprecated <span style="color:red">!</span>**
+# :exclamation: Important Notice: This Repository is Deprecated
 
-**Important Notice**
+## Important Notice
 
 This repository has been deprecated and is no longer actively maintained. We recommend you use the [crownpeak-pwa-template](https://github.com/e-Spirit/crownpeak-pwa-template) instead.
 
