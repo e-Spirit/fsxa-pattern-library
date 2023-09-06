@@ -1,3 +1,7 @@
+# :exclamation: Important Notice
+
+This repository has been deprecated and is no longer actively maintained. We recommend you use the [crownpeak-pwa-template](https://github.com/e-Spirit/crownpeak-pwa-template) instead.
+
 # FSXA-Pattern-library
 
 The FSXA-Pattern-library manages the connection of the FSXA JavaScript Frontend
